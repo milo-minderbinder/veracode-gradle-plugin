@@ -1,0 +1,51 @@
+= veracode-gradle-plugin
+:toc:
+
+Veracode Gradle Plugin that automates Veracode application security scanning activities.
+
+As a set of Gradle tasks, it is meant to be usable either as a command line submission tool or integrated as part of a continuous integration build process.
+
+It helps perform the following tasks:
+
+* Perform Veracode submissions for applications.
+* Scan results for flaws.
+
+== Pre-Requisites
+
+* Veracode account & application to perform scanning.
+* Veracode Java API JAR file (copy to `buildSrc/lib` directory).
+The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAPI.zip[zip file] is found in the https://analysiscenter.veracode.com/auth/helpCenter/api/c_about_wrappers.html[documentation] from Veracode's website.
+* JDK 7+ is a requirement for the Veracode Java API.
+
+== Getting Started
+
+* Clone project.
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `buildSrc/lib` directory.
+* Rename `sample-gradle.properties` to `gradle.properties` and edit its contents to setup Veracode credentials.
+* Execute `./gradlew tasks` to see available tasks.
+
+== LICENSE
+
+MIT License
+
+Copyright (c) 2017 Calgary Scientific Incorporated
+
+Copyright (c) 2013-2014 kctang
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
