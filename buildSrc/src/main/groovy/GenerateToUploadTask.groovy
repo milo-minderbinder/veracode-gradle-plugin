@@ -1,15 +1,15 @@
 class GenerateToUploadTask extends VeracodeTask {
-	static final String NAME = 'generateToUpload'
+    static final String NAME = 'generateToUpload'
 
-	GenerateToUploadTask() {
-		description = "Grabs all jar files from the dir provided and filter it into a the 'build/to-upload' folder"
-		requiredArguments << 'dir' << "force${VeracodeTask.OPTIONAL}"
-	}
+    GenerateToUploadTask() {
+        description = "Grabs all jar files from the dir provided and filter it into a the 'build/to-upload' folder"
+        requiredArguments << 'dir' << "force${VeracodeTask.OPTIONAL}"
+    }
 
-	void run() {
-		List<File> files = []
+    void run() {
+        List<File> files = []
 
-		// prevent uploading if "to-upload" is not empty unless user force
+        // prevent uploading if "to-upload" is not empty unless user force
         if (!project.hasProperty('force')) {
             File toUploadDir = new File('build/to-upload')
             if (toUploadDir.isDirectory() && toUploadDir.list().size() > 0) {
@@ -40,5 +40,5 @@ class GenerateToUploadTask extends VeracodeTask {
         }
 
         println "${files.size()} file(s) copied to build/to-upload"
-	}
+    }
 }

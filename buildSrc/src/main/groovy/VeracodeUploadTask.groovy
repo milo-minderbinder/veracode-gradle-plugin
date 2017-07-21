@@ -2,18 +2,18 @@ import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 
 class VeracodeUploadTask extends VeracodeTask {
-	static final String NAME = 'veracodeUpload'
+    static final String NAME = 'veracodeUpload'
 
-	VeracodeUploadTask() {
-		description = "Uploads all files from 'build/to-upload' folder to Veracode based on the application id provided"
-		requiredArguments << 'appId' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
-	}
+    VeracodeUploadTask() {
+        description = "Uploads all files from 'build/to-upload' folder to Veracode based on the application id provided"
+        requiredArguments << 'appId' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
+    }
 
-	void run() {
-		String xmlResponse = ''
-		UploadAPIWrapper update = loginUpdate()
-		File uploadFolder = new File('build/to-upload')
-		def error
+    void run() {
+        String xmlResponse = ''
+        UploadAPIWrapper update = loginUpdate()
+        File uploadFolder = new File('build/to-upload')
+        def error
         def tries = 1;
         def maxTries = Integer.parseInt((hasProperty('maxUploadAttempts') ? maxUploadAttempts : '10'))
 
@@ -35,7 +35,7 @@ class VeracodeUploadTask extends VeracodeTask {
                     project.delete file.absolutePath
                     println "Processed $file.name"
                 } catch (Exception e) {
-                	println ''
+                    println ''
                     println e
                     println ''
                     println "Upload failing at take ${tries}"

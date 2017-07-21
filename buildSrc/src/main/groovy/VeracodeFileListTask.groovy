@@ -1,13 +1,13 @@
 class VeracodeFileListTask extends VeracodeTask {
-	static final String NAME = 'veracodeFileList'
+    static final String NAME = 'veracodeFileList'
 
-	VeracodeFileListTask() {
-		description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
-		requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
-	}
+    VeracodeFileListTask() {
+        description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
+        requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
+    }
 
-	void run() {
-		String xmlResponse
+    void run() {
+        String xmlResponse
         if (project.hasProperty('buildId')) {
             xmlResponse = loginUpdate().getFileList(project.appId, project.buildId)
         } else {
@@ -19,5 +19,5 @@ class VeracodeFileListTask extends VeracodeTask {
         }
         println ''
         println 'Total files = ' + filelist.children().size()
-	}
+    }
 }
