@@ -1,13 +1,13 @@
 class VeracodeBuildInfoTask extends VeracodeTask {
-	static final String NAME = 'veracodeBuildInfo'
+    static final String NAME = 'veracodeBuildInfo'
 
-	VeracodeBuildInfoTask() {
-		description = "Lists latest build information for the applicaiton id passed in. If a build id is provided, that build's information will be listed instead"
-		requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
-	}
+    VeracodeBuildInfoTask() {
+        description = "Lists latest build information for the applicaiton id passed in. If a build id is provided, that build's information will be listed instead"
+        requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
+    }
 
-	void run() {
-		String xmlResponse
+    void run() {
+        String xmlResponse
         if (project.hasProperty('buildId')) {
             xmlResponse = loginUpdate().getBuildInfo(project.appId, project.buildId)
         } else {
@@ -22,5 +22,5 @@ class VeracodeBuildInfoTask extends VeracodeTask {
         buildInfo.build[0].children()[0].attributes().each { k, v ->
             println "\t$k=$v"
         }
-	}
+    }
 }

@@ -1,13 +1,13 @@
 class VeracodePreScanResultsTask extends VeracodeTask {
-	static final String NAME = 'veracodePreScanResults'
+    static final String NAME = 'veracodePreScanResults'
 
-	VeracodePreScanResultsTask() {
-		description = 'Gets the results for Veracode pre-scan for the application id passed in'
-		requiredArguments << 'appId' << "buildId${OPTIONAL}"
-	}
+    VeracodePreScanResultsTask() {
+        description = 'Gets the results for Veracode pre-scan for the application id passed in'
+        requiredArguments << 'appId' << "buildId${OPTIONAL}"
+    }
 
-	void run() {
-		String xmlResponse
+    void run() {
+        String xmlResponse
         if (project.hasProperty('buildId')) {
             xmlResponse = loginUpdate().getPreScanResults(project.appId, project.buildId)
         } else {
@@ -15,6 +15,6 @@ class VeracodePreScanResultsTask extends VeracodeTask {
         }
 
         Node result = writeXml('build/pre-scan-results.xml', xmlResponse)
-        println ((result.name().equals('error')) ? result.text() : 'Pre-scan completed')
-	}
+        println((result.name().equals('error')) ? result.text() : 'Pre-scan completed')
+    }
 }

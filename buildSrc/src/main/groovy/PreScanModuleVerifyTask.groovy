@@ -1,13 +1,13 @@
 class PreScanModuleVerifyTask extends VeracodeTask {
-	static final String NAME = 'preScanModuleVerify'
+    static final String NAME = 'preScanModuleVerify'
 
-	PreScanModuleVerifyTask() {
-		description = 'Verifies that all jars uploaded to Veracode are categorized in the blacklists/whitelist'
-		requiredArguments << 'appId'
-	}
+    PreScanModuleVerifyTask() {
+        description = 'Verifies that all jars uploaded to Veracode are categorized in the blacklists/whitelist'
+        requiredArguments << 'appId'
+    }
 
-	void run() {
-		println "Verifying against modules list modules-*.txt..."
+    void run() {
+        println "Verifying against modules list modules-*.txt..."
         println ""
 
         def blackListErr = readListFromFile(new File("src/apps/${project.appId}/modules-blacklist-error.txt"))
@@ -55,5 +55,5 @@ class PreScanModuleVerifyTask extends VeracodeTask {
                 }
             }
         }
-	}
+    }
 }
