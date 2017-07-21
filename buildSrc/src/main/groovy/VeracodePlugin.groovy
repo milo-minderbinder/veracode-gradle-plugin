@@ -24,7 +24,7 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
         project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
         project.configure(project.getTasks()) {
-            it.veracodeUser = project.veracodeUser
+            it.veracodeCredentials = project.veracodeCredentials
         }
     }
 }
