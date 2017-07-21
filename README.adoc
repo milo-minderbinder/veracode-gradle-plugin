@@ -21,7 +21,8 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 * Clone project.
 * Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `buildSrc/lib` directory.
-* Rename `sample-gradle.properties` to `gradle.properties` and edit its contents to setup Veracode credentials.
+* Rename the `sample-gradle.properties` file to `gradle.properties` and edit its contents to setup Veracode credentials.
+Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
 * Execute `./gradlew tasks` to see available tasks.
 
 == LICENSE

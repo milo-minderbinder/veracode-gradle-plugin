@@ -3,7 +3,7 @@ import org.gradle.api.Project
 
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.extensions.create('veracodeUser', VeracodeTask.VeracodeUser)
+        project.extensions.create('veracodeCredentials', VeracodeTask.VeracodeCredentials)
 
         project.task(VeracodeAppListTask.NAME, type: VeracodeAppListTask)
         project.task(VeracodeAppInfoTask.NAME, type: VeracodeAppInfoTask)
