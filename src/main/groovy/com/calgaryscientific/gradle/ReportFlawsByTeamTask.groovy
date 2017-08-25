@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 import groovy.json.*
 import java.rmi.UnexpectedException
 

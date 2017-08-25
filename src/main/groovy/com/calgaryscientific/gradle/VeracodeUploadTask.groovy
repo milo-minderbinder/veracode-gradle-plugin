@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 

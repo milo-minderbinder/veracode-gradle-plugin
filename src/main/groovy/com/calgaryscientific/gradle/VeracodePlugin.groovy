@@ -1,9 +1,11 @@
+package com.calgaryscientific.gradle
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.extensions.create('veracodeCredentials', VeracodeTask.VeracodeCredentials)
+        project.extensions.create('veracodeCredentials', VeracodeCredentials)
 
         project.task(VeracodeAppListTask.NAME, type: VeracodeAppListTask)
         project.task(VeracodeAppInfoTask.NAME, type: VeracodeAppInfoTask)
@@ -23,8 +25,5 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
         project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
-        project.configure(project.getTasks()) {
-            it.veracodeCredentials = project.veracodeCredentials
-        }
     }
 }

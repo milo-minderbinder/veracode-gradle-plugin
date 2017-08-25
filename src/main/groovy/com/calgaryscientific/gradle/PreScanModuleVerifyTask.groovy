@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class PreScanModuleVerifyTask extends VeracodeTask {
     static final String NAME = 'preScanModuleVerify'
 

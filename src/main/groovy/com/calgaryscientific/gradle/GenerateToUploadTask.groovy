@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class GenerateToUploadTask extends VeracodeTask {
     static final String NAME = 'generateToUpload'
 
