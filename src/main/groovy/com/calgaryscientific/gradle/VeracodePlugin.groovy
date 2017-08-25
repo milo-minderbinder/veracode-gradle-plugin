@@ -33,22 +33,25 @@ class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('veracodeCredentials', VeracodeCredentials)
 
-        project.task(VeracodeAppListTask.NAME, type: VeracodeAppListTask)
-        project.task(VeracodeAppInfoTask.NAME, type: VeracodeAppInfoTask)
-        project.task(VeracodeBuildListTask.NAME, type: VeracodeBuildListTask)
-        project.task(VeracodeBuildInfoTask.NAME, type: VeracodeBuildInfoTask)
-        project.task(VeracodeFileListTask.NAME, type: VeracodeFileListTask)
+        // App tasks
+        project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)
+        project.task(VeracodeBeginScanTask.NAME, type: VeracodeBeginScanTask)
         project.task(VeracodeCreateBuildTask.NAME, type: VeracodeCreateBuildTask)
         project.task(VeracodeDeleteBuildTask.NAME, type: VeracodeDeleteBuildTask)
-        project.task(GenerateToUploadTask.NAME, type: GenerateToUploadTask)
-        project.task(VeracodeUploadTask.NAME, type: VeracodeUploadTask)
-        project.task(VeracodePreScanTask.NAME, type: VeracodePreScanTask)
-        project.task(VeracodePreScanResultsTask.NAME, type: VeracodePreScanResultsTask)
-        project.task(PreScanModuleVerifyTask.NAME, type: PreScanModuleVerifyTask)
-        project.task(VeracodeScanTask.NAME, type: VeracodeScanTask)
-        def veracodeScanResultsTask = project.task(VeracodeScanResultsTask.NAME, type: VeracodeScanResultsTask)
-        project.task(VeracodeScanResultsInCsvTask.NAME, type: VeracodeScanResultsInCsvTask, dependsOn: veracodeScanResultsTask)
+        project.task(VeracodeGetAppInfoTask.NAME, type: VeracodeGetAppInfoTask)
+        project.task(VeracodeGetAppListTask.NAME, type: VeracodeGetAppListTask)
+        project.task(VeracodeGetBuildInfoTask.NAME, type: VeracodeGetBuildInfoTask)
+        project.task(VeracodeGetBuildListTask.NAME, type: VeracodeGetBuildListTask)
+        project.task(VeracodeGetFileListTask.NAME, type: VeracodeGetFileListTask)
+        project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)
+        project.task(VeracodeUploadFileTask.NAME, type: VeracodeUploadFileTask)
+
+        // Common tasks
+        project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
+        project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
+
+        // TODO: Review these tasks
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
         project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
     }
