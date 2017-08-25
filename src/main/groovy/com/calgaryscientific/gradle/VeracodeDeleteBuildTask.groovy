@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class VeracodeDeleteBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeDeleteBuild'
 

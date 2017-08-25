@@ -19,11 +19,54 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 == Getting Started
 
-* Clone project.
-* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `buildSrc/lib` directory.
-* Rename the `sample-gradle.properties` file to `gradle.properties` and edit its contents to setup Veracode credentials.
+=== Compile and publish the project
+
+* Clone the project.
+
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory in the root of the project.
+
+* Build and publish to mavenLocal by running:
++
+`gradle uploadArchives`
+
+=== Apply the plugin into your project
+
+* Create a new Gradle project.
+
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory within your project.
+
+* Apply the plugin:
++
+[source,groovy]
+----
+apply plugin: 'groovy'
+
+buildscript {
+    apply plugin: 'groovy'
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath files('./lib/VeracodeJavaAPI.jar')
+        classpath 'com.calgaryscientific.gradle:veracodePlugin:1.0-SNAPSHOT'
+    }
+}
+
+apply plugin: 'com.calgaryscientific.gradle.veracode'
+
+veracodeCredentials {
+    username = "$veracodeUsername" <1>
+    password = "$veracodePassword"
+    id = "$veracodeID" <1>
+    key = "$veracodeKey"
+}
+----
+<1> You are only required to use either username and password combination or API id and key.
+
+* Rename the `sample-gradle.properties` file to `gradle.properties` within your project and edit its contents to setup Veracode credentials.
 Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
-* Execute `./gradlew tasks` to see available tasks.
+
+* Execute `gradle tasks` to see available tasks.
 
 == LICENSE
 

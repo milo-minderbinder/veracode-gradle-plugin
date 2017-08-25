@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class VeracodeBuildListTask extends VeracodeTask {
     static final String NAME = 'veracodeBuildList'
 

@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class VeracodeScanResultsInCsvTask extends VeracodeTask {
     static final String NAME = 'veracodeScanResultsInCsv'
 

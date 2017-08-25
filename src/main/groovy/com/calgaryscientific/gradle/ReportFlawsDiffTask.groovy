@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class ReportFlawsDiffTask extends VeracodeTask {
     static final String NAME = 'reportFlawsDiff'
 

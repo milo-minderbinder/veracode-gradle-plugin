@@ -24,6 +24,8 @@
  * SOFTWARE.
  ******************************************************************************/
 
+package com.calgaryscientific.gradle
+
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
@@ -48,7 +50,6 @@ abstract class VeracodeTask extends DefaultTask {
     ]
 
     def requiredArguments = []
-    VeracodeCredentials veracodeCredentials
 
     VeracodeTask() {
         group = 'Veracode'
@@ -95,20 +96,20 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected UploadAPIWrapper loginUpdate() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        if (veracodeCredentials.apiCredentials) {
-            api.setUpApiCredentials(veracodeCredentials.id, veracodeCredentials.key)
+        if (project.veracodeCredentials.apiCredentials) {
+            api.setUpApiCredentials(project.veracodeCredentials.id, project.veracodeCredentials.key)
         } else {
-            api.setUpCredentials(veracodeCredentials.username, veracodeCredentials.password)
+            api.setUpCredentials(project.veracodeCredentials.username, project.veracodeCredentials.password)
         }
         return api
     }
 
     protected ResultsAPIWrapper loginResults() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        if (veracodeCredentials.apiCredentials) {
-            api.setUpApiCredentials(veracodeCredentials.id, veracodeCredentials.key)
+        if (project.veracodeCredentials.apiCredentials) {
+            api.setUpApiCredentials(project.veracodeCredentials.id, project.veracodeCredentials.key)
         } else {
-            api.setUpCredentials(veracodeCredentials.username, veracodeCredentials.password)
+            api.setUpCredentials(project.veracodeCredentials.username, project.veracodeCredentials.password)
         }
         return api
     }
@@ -131,13 +132,5 @@ abstract class VeracodeTask extends DefaultTask {
             set.add(line)
         }
         return new ArrayList<String>(set)
-    }
-
-    static class VeracodeCredentials {
-        boolean apiCredentials
-        String username
-        String password
-        String id
-        String key
     }
 }

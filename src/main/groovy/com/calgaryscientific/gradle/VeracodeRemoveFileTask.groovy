@@ -1,3 +1,5 @@
+package com.calgaryscientific.gradle
+
 class VeracodeRemoveFileTask extends VeracodeTask {
     static final String NAME = 'veracodeRemoveFile'
 
