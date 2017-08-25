@@ -26,16 +26,29 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodePreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodePreScan'
+class VeracodeGetBuildInfoTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetBuildInfo'
 
-    VeracodePreScanTask() {
-        description = 'Start Veracode pre-scan for the application id passed in'
-        requiredArguments << 'appId'
+    VeracodeGetBuildInfoTask() {
+        description = "Lists latest build information for the applicaiton id passed in. If a build id is provided, that build's information will be listed instead"
+        requiredArguments << 'appId' << "buildId${VeracodeTask.OPTIONAL}"
     }
 
     void run() {
-        writeXml('build/pre-scan.xml', loginUpdate().beginPreScan(project.appId))
-        println 'Check build/pre-scan.xml for response status.'
+        String xmlResponse
+        if (project.hasProperty('buildId')) {
+            xmlResponse = loginUpdate().getBuildInfo(project.appId, project.buildId)
+        } else {
+            xmlResponse = loginUpdate().getBuildInfo(project.appId)
+        }
+        Node buildInfo = writeXml('build/build-info.xml', xmlResponse) // need to print twice, so assign var
+        println '[Build]'
+        buildInfo.build[0].attributes().each() { k, v ->
+            println "\t$k=$v"
+        }
+        println '[Analysis Unit]'
+        buildInfo.build[0].children()[0].attributes().each { k, v ->
+            println "\t$k=$v"
+        }
     }
 }

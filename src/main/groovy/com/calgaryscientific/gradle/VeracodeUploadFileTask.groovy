@@ -29,10 +29,10 @@ package com.calgaryscientific.gradle
 import groovy.io.FileType
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 
-class VeracodeUploadTask extends VeracodeTask {
-    static final String NAME = 'veracodeUpload'
+class VeracodeUploadFileTask extends VeracodeTask {
+    static final String NAME = 'veracodeUploadFile'
 
-    VeracodeUploadTask() {
+    VeracodeUploadFileTask() {
         description = "Uploads all files from 'build/to-upload' folder to Veracode based on the application id provided"
         requiredArguments << 'appId' << "maxUploadAttempts${VeracodeTask.OPTIONAL}"
     }

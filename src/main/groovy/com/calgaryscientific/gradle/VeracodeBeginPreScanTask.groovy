@@ -26,16 +26,16 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeScanResults'
+class VeracodeBeginPreScanTask extends VeracodeTask {
+    static final String NAME = 'veracodeBeginPreScan'
 
-    VeracodeScanResultsTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'buildId'
+    VeracodeBeginPreScanTask() {
+        description = 'Start Veracode pre-scan for the application id passed in'
+        requiredArguments << 'appId'
     }
 
     void run() {
-        String xmlResponse = loginResults().detailedReport(project.buildId)
-        writeXml('build/scan-results.xml', xmlResponse)
+        writeXml('build/pre-scan.xml', loginUpdate().beginPreScan(project.appId))
+        println 'Check build/pre-scan.xml for response status.'
     }
 }
