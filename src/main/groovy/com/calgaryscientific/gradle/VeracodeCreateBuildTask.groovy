@@ -37,7 +37,7 @@ class VeracodeCreateBuildTask extends VeracodeTask {
     void run() {
         Node buildInfo = writeXml(
                 'build/create-build.xml',
-                loginUpdate().createBuild(project.appId, project.buildName))
+                uploadAPI().createBuild(project.appId, project.buildName))
         if (buildInfo.name().equals('error')) {
             println buildInfo.text()
         } else {

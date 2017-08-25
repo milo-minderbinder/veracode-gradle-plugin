@@ -37,9 +37,9 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
     void run() {
         String xmlResponse
         if (project.hasProperty('buildId')) {
-            xmlResponse = loginUpdate().getPreScanResults(project.appId, project.buildId)
+            xmlResponse = uploadAPI().getPreScanResults(project.appId, project.buildId)
         } else {
-            xmlResponse = loginUpdate().getPreScanResults(project.appId)
+            xmlResponse = uploadAPI().getPreScanResults(project.appId)
         }
 
         Node result = writeXml('build/pre-scan-results.xml', xmlResponse)

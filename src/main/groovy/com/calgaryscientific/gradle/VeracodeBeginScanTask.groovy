@@ -48,6 +48,6 @@ class VeracodeBeginScanTask extends VeracodeTask {
             println 'WARNING: Not all the files in whitelist are being scanned. Some modules no longer exist? Manual whitelist maintenance should be performed.'
         }
 
-        writeXml('build/scan.xml', loginUpdate().beginScan(project.appId, moduleIds.join(","), 'false'))
+        writeXml('build/scan.xml', uploadAPI().beginScan(project.appId, moduleIds.join(","), 'false'))
     }
 }

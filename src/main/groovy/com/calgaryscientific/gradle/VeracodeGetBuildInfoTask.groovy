@@ -37,9 +37,9 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
     void run() {
         String xmlResponse
         if (project.hasProperty('buildId')) {
-            xmlResponse = loginUpdate().getBuildInfo(project.appId, project.buildId)
+            xmlResponse = uploadAPI().getBuildInfo(project.appId, project.buildId)
         } else {
-            xmlResponse = loginUpdate().getBuildInfo(project.appId)
+            xmlResponse = uploadAPI().getBuildInfo(project.appId)
         }
         Node buildInfo = writeXml('build/build-info.xml', xmlResponse) // need to print twice, so assign var
         println '[Build]'

@@ -39,7 +39,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     void run() {
         String xmlResponse = ''
-        UploadAPIWrapper update = loginUpdate()
+        UploadAPIWrapper update = uploadAPI()
         File uploadFolder = new File('build/to-upload')
         def error
         def tries = 1;

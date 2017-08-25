@@ -94,22 +94,32 @@ abstract class VeracodeTask extends DefaultTask {
         arg.endsWith(OPTIONAL)
     }
 
-    protected UploadAPIWrapper loginUpdate() {
+    protected boolean useAPICredentials() {
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        if (vc.username != "" && vc.password != "") {
+            return false
+        }
+        return true
+    }
+
+    protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        if (project.veracodeCredentials.apiCredentials) {
-            api.setUpApiCredentials(project.veracodeCredentials.id, project.veracodeCredentials.key)
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        if (useAPICredentials()) {
+            api.setUpApiCredentials(vc.id, vc.key)
         } else {
-            api.setUpCredentials(project.veracodeCredentials.username, project.veracodeCredentials.password)
+            api.setUpCredentials(vc.username, vc.password)
         }
         return api
     }
 
-    protected ResultsAPIWrapper loginResults() {
+    protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        if (project.veracodeCredentials.apiCredentials) {
-            api.setUpApiCredentials(project.veracodeCredentials.id, project.veracodeCredentials.key)
+        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        if (useAPICredentials()) {
+            api.setUpApiCredentials(vc.id, vc.key)
         } else {
-            api.setUpCredentials(project.veracodeCredentials.username, project.veracodeCredentials.password)
+            api.setUpCredentials(vc.username, vc.password)
         }
         return api
     }
