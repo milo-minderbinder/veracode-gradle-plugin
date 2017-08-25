@@ -35,7 +35,7 @@ class VeracodeGetBuildListTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/build-list.xml', loginUpdate().getBuildList(project.appId)
+        writeXml('build/build-list.xml', uploadAPI().getBuildList(project.appId)
         ).each() { build ->
             println "${build.@build_id}=${build.@version}"
         }

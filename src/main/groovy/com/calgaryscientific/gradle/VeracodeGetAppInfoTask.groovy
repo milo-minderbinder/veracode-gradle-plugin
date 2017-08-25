@@ -35,7 +35,7 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/app-info.xml', loginUpdate().getAppInfo(project.appId)
+        writeXml('build/app-info.xml', uploadAPI().getAppInfo(project.appId)
         ).application[0].attributes().each() { k, v ->
             println "$k=$v"
         }
