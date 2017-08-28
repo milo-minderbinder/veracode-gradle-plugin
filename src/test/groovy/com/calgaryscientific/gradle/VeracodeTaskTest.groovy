@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.testkit.runner.UnexpectedBuildFailure
 import spock.lang.Specification
 import org.gradle.testkit.runner.GradleRunner
 import static org.gradle.testkit.runner.TaskOutcome.*
@@ -49,6 +50,34 @@ class VeracodeTaskTest extends Specification {
                 .withPluginClasspath()
                 .withArguments(tasks)
                 .build()
+    }
+
+    def 'Test build failure when arguments are missing'() {
+        given:
+        buildFile << """
+            plugins {
+                id 'com.calgaryscientific.gradle.veracode'
+            }
+            task getBuildList (type: com.calgaryscientific.gradle.VeracodeGetBuildListTask) {
+            }
+        """
+
+        when:
+        def result = GradleBuild('getBuildList')
+
+        then:
+        def e = thrown(UnexpectedBuildFailure)
+        e.toString().contains("Missing required arguments")
+    }
+
+    def 'Test error message on missing parameters'() {
+        when:
+        List<String> requiredArgs = ["appId"]
+        List<String> optionalArgs = ["buildId"]
+        String correctUsage = VeracodeTask.correctUsage('VeracodeGetBuildList', requiredArgs, optionalArgs)
+
+        then:
+        correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -PappId=123 [-PbuildId=123]"
     }
 
     def 'Test veracodeCredentials usage'() {
