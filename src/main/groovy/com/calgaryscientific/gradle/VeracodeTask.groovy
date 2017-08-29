@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -33,9 +34,10 @@ import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
+@CompileStatic
 abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
-    final static def validArguments = [
+    final static Map<String, String> validArguments = [
             'app_id'           : '123',
             'build_id'         : '123',
             'build_version'    : 'xxx',
@@ -76,7 +78,7 @@ abstract class VeracodeTask extends DefaultTask {
             hasRequiredArguments &= getProject().hasProperty(arg)
         }
         if (!hasRequiredArguments) {
-            fail(correctUsage(name, requiredArguments, optionalArguments))
+            fail(correctUsage(this.name, this.requiredArguments, this.optionalArguments))
         }
         return hasRequiredArguments
     }
@@ -85,10 +87,6 @@ abstract class VeracodeTask extends DefaultTask {
     final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
-    protected boolean isArgumentOptional(String arg) {
-        arg.endsWith(OPTIONAL)
-    }
-
     protected boolean useAPICredentials() {
         VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
         if (vc.username != "" && vc.password != "") {
@@ -128,15 +126,15 @@ abstract class VeracodeTask extends DefaultTask {
         new XmlParser().parseText(GFileUtils.readFile(new File(filename)))
     }
 
-    protected List readListFromFile(File file) {
-        def set = new HashSet<Set>();
+    protected List<String> readListFromFile(File file) {
+        List<String> set = []
         file.eachLine { line ->
             if (set.contains(line)) {
                 println "ERROR: duplicate line: [$line]"
             }
             set.add(line)
         }
-        return new ArrayList<String>(set)
+        return set
     }
 
     protected fail(String msg) {
