@@ -34,11 +34,11 @@ class ReportFlawsByTeamTask extends VeracodeTask {
 
     ReportFlawsByTeamTask() {
         description = 'Creates a report for flaws categorized to teams'
-        requiredArguments << 'appId' << 'mode'
+        requiredArguments << 'app_id' << 'mode'
     }
 
     void run() {
-        def teams = new JsonSlurper().parse(new FileReader("src/apps/${project.appId}/teams.json")).teams
+        def teams = new JsonSlurper().parse(new FileReader("src/apps/${project.app_id}/teams.json")).teams
         int count = 0
 
         readXml('build/scan-results.xml').severity.each() { severity ->

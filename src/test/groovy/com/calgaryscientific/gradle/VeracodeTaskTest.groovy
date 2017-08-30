@@ -72,12 +72,12 @@ class VeracodeTaskTest extends Specification {
 
     def 'Test error message on missing parameters'() {
         when:
-        List<String> requiredArgs = ["appId"]
-        List<String> optionalArgs = ["buildId"]
+        List<String> requiredArgs = ["app_id"]
+        List<String> optionalArgs = ["build_id"]
         String correctUsage = VeracodeTask.correctUsage('VeracodeGetBuildList', requiredArgs, optionalArgs)
 
         then:
-        correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -PappId=123 [-PbuildId=123]"
+        correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -Papp_id=123 [-Pbuild_id=123]"
     }
 
     def 'Test veracodeCredentials usage'() {

@@ -30,14 +30,14 @@ class VeracodeCreateBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateBuild'
 
     VeracodeCreateBuildTask() {
-        description = 'Creates a new build under the application id passed in, with the buildName as the identifier for the new build'
-        requiredArguments << 'appId' << 'buildName'
+        description = 'Creates a new build under the application id passed in, with the build_version as the identifier for the new build'
+        requiredArguments << 'app_id' << 'build_version'
     }
 
     void run() {
         Node buildInfo = writeXml(
                 'build/create-build.xml',
-                uploadAPI().createBuild(project.appId, project.buildName))
+                uploadAPI().createBuild(project.app_id, project.build_version))
         if (buildInfo.name().equals('error')) {
             println buildInfo.text()
         } else {

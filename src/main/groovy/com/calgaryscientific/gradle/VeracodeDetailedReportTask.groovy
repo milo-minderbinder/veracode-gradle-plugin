@@ -31,11 +31,11 @@ class VeracodeDetailedReportTask extends VeracodeTask {
 
     VeracodeDetailedReportTask() {
         description = 'Gets the Veracode scan results based on the build id passed in'
-        requiredArguments << 'buildId'
+        requiredArguments << 'build_id'
     }
 
     void run() {
-        String xmlResponse = resultsAPI().detailedReport(project.buildId)
+        String xmlResponse = resultsAPI().detailedReport(project.build_id)
         writeXml('build/scan-results.xml', xmlResponse)
     }
 }

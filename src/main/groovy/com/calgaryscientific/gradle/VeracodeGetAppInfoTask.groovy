@@ -31,11 +31,11 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
 
     VeracodeGetAppInfoTask() {
         description = 'Lists application information based on the application id passed in'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
-        writeXml('build/app-info.xml', uploadAPI().getAppInfo(project.appId)
+        writeXml('build/app-info.xml', uploadAPI().getAppInfo(project.app_id)
         ).application[0].attributes().each() { k, v ->
             println "$k=$v"
         }

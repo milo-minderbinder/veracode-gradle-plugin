@@ -31,16 +31,16 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
 
     VeracodeGetBuildInfoTask() {
         description = "Lists latest build information for the applicaiton id passed in. If a build id is provided, that build's information will be listed instead"
-        requiredArguments << 'appId'
-        optionalArguments << 'buildId'
+        requiredArguments << 'app_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {
         String xmlResponse
-        if (project.hasProperty('buildId')) {
-            xmlResponse = uploadAPI().getBuildInfo(project.appId, project.buildId)
+        if (project.hasProperty('build_id')) {
+            xmlResponse = uploadAPI().getBuildInfo(project.app_id, project.build_id)
         } else {
-            xmlResponse = uploadAPI().getBuildInfo(project.appId)
+            xmlResponse = uploadAPI().getBuildInfo(project.app_id)
         }
         Node buildInfo = writeXml('build/build-info.xml', xmlResponse) // need to print twice, so assign var
         println '[Build]'

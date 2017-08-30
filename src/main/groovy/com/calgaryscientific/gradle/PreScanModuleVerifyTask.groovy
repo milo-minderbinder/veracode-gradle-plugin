@@ -31,17 +31,17 @@ class PreScanModuleVerifyTask extends VeracodeTask {
 
     PreScanModuleVerifyTask() {
         description = 'Verifies that all jars uploaded to Veracode are categorized in the blacklists/whitelist'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
         println "Verifying against modules list modules-*.txt..."
         println ""
 
-        def blackListErr = readListFromFile(new File("src/apps/${project.appId}/modules-blacklist-error.txt"))
-        def blackListExt = readListFromFile(new File("src/apps/${project.appId}/modules-blacklist-external.txt"))
-        def blackListInt = readListFromFile(new File("src/apps/${project.appId}/modules-blacklist-internal.txt"))
-        def whiteList = readListFromFile(new File("src/apps/${project.appId}/modules-whitelist.txt"))
+        def blackListErr = readListFromFile(new File("src/apps/${project.app_id}/modules-blacklist-error.txt"))
+        def blackListExt = readListFromFile(new File("src/apps/${project.app_id}/modules-blacklist-external.txt"))
+        def blackListInt = readListFromFile(new File("src/apps/${project.app_id}/modules-blacklist-internal.txt"))
+        def whiteList = readListFromFile(new File("src/apps/${project.app_id}/modules-whitelist.txt"))
 
         def allList = blackListErr + blackListExt + blackListInt + whiteList
         allList = allList.sort()

@@ -31,11 +31,11 @@ class VeracodeGetBuildListTask extends VeracodeTask {
 
     VeracodeGetBuildListTask() {
         description = 'Lists builds that are under the apllication id passed in'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
-        writeXml('build/build-list.xml', uploadAPI().getBuildList(project.appId)
+        writeXml('build/build-list.xml', uploadAPI().getBuildList(project.app_id)
         ).each() { build ->
             println "${build.@build_id}=${build.@version}"
         }

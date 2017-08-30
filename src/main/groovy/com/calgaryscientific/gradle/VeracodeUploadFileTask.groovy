@@ -34,7 +34,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     VeracodeUploadFileTask() {
         description = "Uploads all files from 'build/to-upload' folder to Veracode based on the application id provided"
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
         optionalArguments << 'maxUploadAttempts'
     }
 
@@ -60,7 +60,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
             // upload each file in build/to-upload
             for (File file : fileList) {
                 try {
-                    xmlResponse = update.uploadFile(project.appId, file.absolutePath)
+                    xmlResponse = update.uploadFile(project.app_id, file.absolutePath)
                     project.delete file.absolutePath
                     println "Processed $file.name"
                 } catch (Exception e) {
