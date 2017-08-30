@@ -31,11 +31,11 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
 
     VeracodeBeginPreScanTask() {
         description = 'Start Veracode pre-scan for the application id passed in'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
-        writeXml('build/pre-scan.xml', uploadAPI().beginPreScan(project.appId))
+        writeXml('build/pre-scan.xml', uploadAPI().beginPreScan(project.app_id))
         println 'Check build/pre-scan.xml for response status.'
     }
 }

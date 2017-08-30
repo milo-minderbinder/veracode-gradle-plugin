@@ -36,16 +36,16 @@ import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
     final static def validArguments = [
-            'appId'            : '123',
-            'buildId'          : '123',
-            'buildName'        : 'xxx',
+            'app_id'           : '123',
+            'build_id'         : '123',
+            'build_version'    : 'xxx',
             'dir'              : 'xxx',
             'force'            : 'force',
-            'fileId'           : '123',
+            'file_id'          : '123',
             'mode'             : 'action|actionSummary|verbose',
             'maxUploadAttempts': '123',
-            'buildId1'         : '123',
-            'buildId2'         : '123'
+            'build_id1'        : '123',
+            'build_id2'        : '123'
     ]
 
     List<String> requiredArguments = []

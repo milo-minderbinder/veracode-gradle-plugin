@@ -31,10 +31,10 @@ class VeracodeRemoveFileTask extends VeracodeTask {
 
     VeracodeRemoveFileTask() {
         description = 'Remove file based on the file id for the application id passed in'
-        requiredArguments << 'appId' << 'fileId'
+        requiredArguments << 'app_id' << 'file_id'
     }
 
     void run() {
-        writeXml('build/remove-file.xml', uploadAPI().removeFile(project.appId, project.fileId))
+        writeXml('build/remove-file.xml', uploadAPI().removeFile(project.app_id, project.file_id))
     }
 }

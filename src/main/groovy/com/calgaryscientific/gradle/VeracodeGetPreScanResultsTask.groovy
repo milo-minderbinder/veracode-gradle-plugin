@@ -31,16 +31,16 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
 
     VeracodeGetPreScanResultsTask() {
         description = 'Gets the results for Veracode pre-scan for the application id passed in'
-        requiredArguments << 'appId'
-        optionalArguments << 'buildId'
+        requiredArguments << 'app_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {
         String xmlResponse
-        if (project.hasProperty('buildId')) {
-            xmlResponse = uploadAPI().getPreScanResults(project.appId, project.buildId)
+        if (project.hasProperty('build_id')) {
+            xmlResponse = uploadAPI().getPreScanResults(project.app_id, project.build_id)
         } else {
-            xmlResponse = uploadAPI().getPreScanResults(project.appId)
+            xmlResponse = uploadAPI().getPreScanResults(project.app_id)
         }
 
         Node result = writeXml('build/pre-scan-results.xml', xmlResponse)

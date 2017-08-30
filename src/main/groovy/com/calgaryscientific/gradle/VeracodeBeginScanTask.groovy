@@ -31,12 +31,12 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     VeracodeBeginScanTask() {
         description = 'Starts a Veracode scan for the application id passed in'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
         def moduleIds = []
-        def whiteList = readListFromFile(new File("src/apps/${project.appId}/modules-whitelist.txt"))
+        def whiteList = readListFromFile(new File("src/apps/${project.app_id}/modules-whitelist.txt"))
         readXml('build/pre-scan-results.xml').each() { module ->
             if (whiteList.contains(module.@name)) {
                 moduleIds << module.@id
@@ -48,6 +48,6 @@ class VeracodeBeginScanTask extends VeracodeTask {
             println 'WARNING: Not all the files in whitelist are being scanned. Some modules no longer exist? Manual whitelist maintenance should be performed.'
         }
 
-        writeXml('build/scan.xml', uploadAPI().beginScan(project.appId, moduleIds.join(","), 'false'))
+        writeXml('build/scan.xml', uploadAPI().beginScan(project.app_id, moduleIds.join(","), 'false'))
     }
 }

@@ -31,16 +31,16 @@ class VeracodeGetFileListTask extends VeracodeTask {
 
     VeracodeGetFileListTask() {
         description = "Lists all files under the latest build for the application id passed in. If a build id is provided, the files under that build will be listed instead"
-        requiredArguments << 'appId'
-        optionalArguments << 'buildId'
+        requiredArguments << 'app_id'
+        optionalArguments << 'build_id'
     }
 
     void run() {
         String xmlResponse
-        if (project.hasProperty('buildId')) {
-            xmlResponse = uploadAPI().getFileList(project.appId, project.buildId)
+        if (project.hasProperty('build_id')) {
+            xmlResponse = uploadAPI().getFileList(project.app_id, project.build_id)
         } else {
-            xmlResponse = uploadAPI().getFileList(project.appId)
+            xmlResponse = uploadAPI().getFileList(project.app_id)
         }
         Node filelist = writeXml('build/file-list.xml', xmlResponse)
         filelist.each() { file ->

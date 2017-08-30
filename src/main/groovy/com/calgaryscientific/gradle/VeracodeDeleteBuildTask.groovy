@@ -31,10 +31,10 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
 
     VeracodeDeleteBuildTask() {
         description = 'Deletes the most recent build, even those that have their scan completed!'
-        requiredArguments << 'appId'
+        requiredArguments << 'app_id'
     }
 
     void run() {
-        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.appId))
+        writeXml('build/delete-build.xml', uploadAPI().deleteBuild(project.app_id))
     }
 }
