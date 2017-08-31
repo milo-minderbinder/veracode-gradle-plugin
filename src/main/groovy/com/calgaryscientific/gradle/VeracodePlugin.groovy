@@ -31,7 +31,7 @@ import org.gradle.api.Project
 
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.extensions.create('veracodeCredentials', VeracodeCredentials)
+        project.extensions.create('veracodeSetup', VeracodeSetup)
 
         // App tasks
         project.task(VeracodeBeginPreScanTask.NAME, type: VeracodeBeginPreScanTask)

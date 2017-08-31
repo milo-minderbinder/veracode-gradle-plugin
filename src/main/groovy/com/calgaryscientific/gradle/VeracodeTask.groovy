@@ -88,7 +88,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     // === utility methods ===
     protected boolean useAPICredentials() {
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (vc.username != "" && vc.password != "") {
             return false
         }
@@ -97,7 +97,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (useAPICredentials()) {
             api.setUpApiCredentials(vc.id, vc.key)
         } else {
@@ -108,7 +108,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (useAPICredentials()) {
             api.setUpApiCredentials(vc.id, vc.key)
         } else {
