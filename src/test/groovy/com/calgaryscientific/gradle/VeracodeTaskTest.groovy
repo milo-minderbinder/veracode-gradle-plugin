@@ -45,7 +45,7 @@ class VeracodeTaskTest extends Specification {
         buildFile = testProjectDir.newFile('build.gradle')
     }
 
-    def GradleBuild(String... tasks) {
+    def executeTask(String... tasks) {
         GradleRunner.create()
                 .withDebug(debug)
                 .withProjectDir(testProjectDir.root)
@@ -108,7 +108,7 @@ class VeracodeTaskTest extends Specification {
         """
 
         when:
-        def result = GradleBuild('getBuildList')
+        def result = executeTask('getBuildList')
 
         then:
         def e = thrown(UnexpectedBuildFailure)
@@ -157,7 +157,7 @@ class VeracodeTaskTest extends Specification {
         """
 
         when:
-        def result = GradleBuild('verify')
+        def result = executeTask('verify')
 
         then:
         result.task(":verify").outcome == SUCCESS
