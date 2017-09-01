@@ -52,6 +52,8 @@ abstract class VeracodeTask extends DefaultTask {
 
     List<String> requiredArguments = []
     List<String> optionalArguments = []
+    File outputFile
+    protected File defaultOutputFile
 
     VeracodeTask() {
         group = 'Veracode'
@@ -87,6 +89,14 @@ abstract class VeracodeTask extends DefaultTask {
     final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
+    protected void setOutputFile(File file) {
+        defaultOutputFile = file
+    }
+
+    protected File getOutputFile() {
+        return defaultOutputFile
+    }
+
     protected boolean useAPICredentials() {
         VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (vc.username != "" && vc.password != "") {
@@ -117,9 +127,18 @@ abstract class VeracodeTask extends DefaultTask {
         return api
     }
 
+    protected Node writeXml(File file, String content) {
+        GFileUtils.writeFile(content, file)
+        Node xml = new XmlParser().parseText(content)
+        if (xml.name() == 'error') {
+            fail("ERROR: ${xml.text()}\nSee ${file} for details!")
+        }
+        xml
+    }
+
     protected Node writeXml(String filename, String content) {
-        GFileUtils.writeFile(content, new File(filename))
-        new XmlParser().parseText(content)
+        File file = new File("${project.buildDir}/veracode", filename)
+        writeXml(file, content)
     }
 
     protected def readXml(String filename) {
