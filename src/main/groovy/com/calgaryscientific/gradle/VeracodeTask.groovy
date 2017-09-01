@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -33,9 +34,10 @@ import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
+@CompileStatic
 abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
-    final static def validArguments = [
+    final static Map<String, String> validArguments = [
             'app_id'           : '123',
             'build_id'         : '123',
             'build_version'    : 'xxx',
@@ -50,6 +52,8 @@ abstract class VeracodeTask extends DefaultTask {
 
     List<String> requiredArguments = []
     List<String> optionalArguments = []
+    File outputFile
+    protected File defaultOutputFile
 
     VeracodeTask() {
         group = 'Veracode'
@@ -76,7 +80,7 @@ abstract class VeracodeTask extends DefaultTask {
             hasRequiredArguments &= getProject().hasProperty(arg)
         }
         if (!hasRequiredArguments) {
-            fail(correctUsage(name, requiredArguments, optionalArguments))
+            fail(correctUsage(this.name, this.requiredArguments, this.optionalArguments))
         }
         return hasRequiredArguments
     }
@@ -85,12 +89,16 @@ abstract class VeracodeTask extends DefaultTask {
     final def vExecute() { if (hasRequiredArguments()) run() }
 
     // === utility methods ===
-    protected boolean isArgumentOptional(String arg) {
-        arg.endsWith(OPTIONAL)
+    protected void setOutputFile(File file) {
+        defaultOutputFile = file
+    }
+
+    protected File getOutputFile() {
+        return defaultOutputFile
     }
 
     protected boolean useAPICredentials() {
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (vc.username != "" && vc.password != "") {
             return false
         }
@@ -99,7 +107,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected UploadAPIWrapper uploadAPI() {
         UploadAPIWrapper api = new UploadAPIWrapper()
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (useAPICredentials()) {
             api.setUpApiCredentials(vc.id, vc.key)
         } else {
@@ -110,7 +118,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
-        VeracodeCredentials vc = project.findProperty("veracodeCredentials") as VeracodeCredentials
+        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
         if (useAPICredentials()) {
             api.setUpApiCredentials(vc.id, vc.key)
         } else {
@@ -119,24 +127,33 @@ abstract class VeracodeTask extends DefaultTask {
         return api
     }
 
+    protected Node writeXml(File file, String content) {
+        GFileUtils.writeFile(content, file)
+        Node xml = new XmlParser().parseText(content)
+        if (xml.name() == 'error') {
+            fail("ERROR: ${xml.text()}\nSee ${file} for details!")
+        }
+        xml
+    }
+
     protected Node writeXml(String filename, String content) {
-        GFileUtils.writeFile(content, new File(filename))
-        new XmlParser().parseText(content)
+        File file = new File("${project.buildDir}/veracode", filename)
+        writeXml(file, content)
     }
 
     protected def readXml(String filename) {
         new XmlParser().parseText(GFileUtils.readFile(new File(filename)))
     }
 
-    protected List readListFromFile(File file) {
-        def set = new HashSet<Set>();
+    protected List<String> readListFromFile(File file) {
+        List<String> set = []
         file.eachLine { line ->
             if (set.contains(line)) {
                 println "ERROR: duplicate line: [$line]"
             }
             set.add(line)
         }
-        return new ArrayList<String>(set)
+        return set
     }
 
     protected fail(String msg) {

@@ -32,24 +32,69 @@ import org.gradle.testkit.runner.GradleRunner
 import static org.gradle.testkit.runner.TaskOutcome.*
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.gradle.testfixtures.ProjectBuilder
 
 class VeracodeTaskTest extends Specification {
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
     Boolean debug = true
+    PrintStream stdout = System.out
 
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
     }
 
-    def GradleBuild(String... tasks) {
+    def executeTask(String... tasks) {
         GradleRunner.create()
                 .withDebug(debug)
                 .withProjectDir(testProjectDir.root)
                 .withPluginClasspath()
                 .withArguments(tasks)
                 .build()
+    }
+
+    def mockSystemOut() {
+        def os = new ByteArrayOutputStream()
+        System.out = new PrintStream(os)
+        return os
+    }
+
+    def getSystemOut(def os) {
+        def array = os.toByteArray()
+        def is = new ByteArrayInputStream(array)
+        return is
+    }
+
+    def restoreStdout() {
+        System.out = stdout
+    }
+
+    def 'Test Task Existence'() {
+        when:
+        def project = new ProjectBuilder().build()
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        List<String> taskList = [
+                'veracodeBeginPreScan',
+                'veracodeBeginScan',
+                'veracodeCreateBuild',
+                'veracodeDeleteBuild',
+                'veracodeDetailedReportCSV',
+                'veracodeDetailedReport',
+                'veracodeGetAppInfo',
+                'veracodeGetAppList',
+                'veracodeGetBuildInfo',
+                'veracodeGetBuildList',
+                'veracodeGetFileList',
+                'veracodeGetPreScanResults',
+                'veracodeRemoveFile',
+                'veracodeUploadFile',
+        ]
+
+        then:
+        for(String taskName: taskList) {
+            assert project.tasks.getByName(taskName) != null
+        }
     }
 
     def 'Test build failure when arguments are missing'() {
@@ -63,7 +108,7 @@ class VeracodeTaskTest extends Specification {
         """
 
         when:
-        def result = GradleBuild('getBuildList')
+        def result = executeTask('getBuildList')
 
         then:
         def e = thrown(UnexpectedBuildFailure)
@@ -80,7 +125,7 @@ class VeracodeTaskTest extends Specification {
         correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -Papp_id=123 [-Pbuild_id=123]"
     }
 
-    def 'Test veracodeCredentials usage'() {
+    def 'Test veracodeSetup usage'() {
         given:
         buildFile << """
             plugins {
@@ -92,6 +137,7 @@ class VeracodeTaskTest extends Specification {
                 password = 'pass'
                 id = 'id'
                 key = 'key'
+                filesToUpload = fileTree(dir: ".", include: "*").getFiles()
             }
             task verify {
                 doLast {
@@ -101,14 +147,61 @@ class VeracodeTaskTest extends Specification {
                     assert project.veracodeSetup.key == 'key'
                     def vc = project.findProperty('veracodeSetup')
                     assert vc.key == 'key'
+                    assert vc.filesToUpload == [buildFile] as Set
+                    vc.filesToUpload.add(buildFile)
+                    assert vc.filesToUpload  == [buildFile, buildFile] as Set
+                    vc.filesToUpload.addAll(fileTree(dir: ".", include: "*").getFiles())
+                    assert vc.filesToUpload  == [buildFile, buildFile, buildFile] as Set
                 }
             }
         """
 
         when:
-        def result = GradleBuild('verify')
+        def result = executeTask('verify')
 
         then:
         result.task(":verify").outcome == SUCCESS
     }
+
+    def 'Test VeracodeUploadFile printFileUploadStatus'() {
+        given:
+        def os = mockSystemOut()
+        String xmlStr = '''
+<filelist xmlns="something" xmlns:xsi="something" filelist_version="1.1">
+    <file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>
+    <file file_id="2" file_md5="68a7d8468ca51bc46d5b72d485022" file_name="file2" file_status="Uploaded"/>
+    <file file_id="3" file_md5="2459464ff4bf78dd6f09695069b52" file_name="file3" file_status="Uploaded"/>
+</filelist>
+'''
+        when:
+        XmlParser xmlParser = new XmlParser()
+        Node xml = xmlParser.parseText(xmlStr)
+        VeracodeUploadFileTask.printFileUploadStatus(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLines() == ['file1=Uploaded', 'file2=Uploaded', 'file3=Uploaded']
+    }
+
+    def 'Test veracodeSetup filesToUpload are properly set'() {
+        given:
+        def project = new ProjectBuilder().build()
+        VeracodeSetup vs = new VeracodeSetup()
+        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+
+        when:
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        project.ext.veracodeSetup = vs
+
+        then:
+        VeracodeSetup vsRead = project.findProperty("veracodeSetup") as VeracodeSetup
+        Set<File> expected = [buildFile] as Set
+        assert vsRead.filesToUpload == expected
+        def task = project.tasks.getByName("veracodeUploadFile")
+        assert task.getFileSet() == expected
+        def _ = vsRead.filesToUpload.add(buildFile)
+        assert vsRead.filesToUpload == [buildFile, buildFile] as Set
+    }
+
 }

@@ -26,9 +26,10 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeCredentials {
+class VeracodeSetup {
     String username
     String password
     String id
     String key
+    Set<File> filesToUpload
 }
