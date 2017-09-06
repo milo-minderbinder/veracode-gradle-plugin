@@ -72,6 +72,11 @@ class VeracodeTaskTest extends Specification {
         System.out = stdout
     }
 
+    Node parseXMLString(String xml) {
+        XmlParser xmlParser = new XmlParser()
+        return xmlParser.parseText(xml)
+    }
+
     def 'Test Task Existence'() {
         when:
         def project = new ProjectBuilder().build()
