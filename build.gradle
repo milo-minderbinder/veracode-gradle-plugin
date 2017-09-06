@@ -36,6 +36,7 @@ dependencies {
     compile localGroovy()
     compile fileTree(dir: 'lib', include: '*.jar')
     testCompile gradleTestKit()
+    testCompile("cglib:cglib-nodep:3.2.5")
     testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
         exclude module: "groovy-all"
     }

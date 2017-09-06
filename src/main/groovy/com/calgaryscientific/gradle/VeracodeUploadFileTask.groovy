@@ -26,8 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.io.FileType
-import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import groovy.transform.CompileStatic
@@ -37,16 +35,16 @@ class VeracodeUploadFileTask extends VeracodeTask {
     static final String NAME = 'veracodeUploadFile'
     private String app_id
     String maxUploadAttempts
+    String waitTimeBetweenAttempts
 
     VeracodeUploadFileTask() {
         description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given app_id"
         requiredArguments << 'app_id'
-        optionalArguments << 'maxUploadAttempts'
-        if (project.hasProperty("app_id")) {
-            app_id = project.findProperty("app_id")
-            maxUploadAttempts = project.findProperty("maxUploadAttempts")
-            defaultOutputFile = new File("${project.buildDir}/veracode", "upload-file-latest.xml")
-        }
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
+        app_id = project.findProperty("app_id")
+        maxUploadAttempts = project.findProperty("maxUploadAttempts")
+        waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "upload-file-latest.xml")
     }
 
     @OutputFile
@@ -56,18 +54,9 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     @InputFiles
     Set<File> getFileSet() {
-        Set<File> fc
-        if (project.hasProperty("veracodeSetup")) {
-            VeracodeSetup veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-            fc = veracodeSetup.filesToUpload
-        }
+        Set<File> fc = this.veracodeSetup.filesToUpload
         return fc
     }
-
-    String uploadFile(UploadAPIWrapper api, String filePath) {
-        return api.uploadFile(app_id, filePath)
-    }
-
 
     static void printFileUploadStatus(Node xml) {
         NodeList fileList = xml.getAt("file") as NodeList
@@ -78,10 +67,10 @@ class VeracodeUploadFileTask extends VeracodeTask {
     }
 
     void run() {
-        UploadAPIWrapper update = uploadAPI()
         def error
         Integer tries = 1;
         Integer maxTries = Integer.parseInt((getMaxUploadAttempts() != null) ? getMaxUploadAttempts() : '10')
+        Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
 
         println ''
         if (tries > 1) {
@@ -96,7 +85,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
                 try {
                     println ''
                     println "Processing ${file.name}"
-                    String response = uploadFile(update, file.absolutePath)
+                    String response = veracodeAPI.uploadFile(app_id, file.absolutePath)
                     Node xml = writeXml(getOutputFile(), response)
                     printFileUploadStatus(xml)
                     success = true
@@ -108,9 +97,8 @@ class VeracodeUploadFileTask extends VeracodeTask {
                         println "Upload failing after ${tries} total attempts"
                     }
                     error = e
-                    sleep(5000)
+                    sleep(waitTime)
                     tries++
-                    break
                 }
             }
         }
