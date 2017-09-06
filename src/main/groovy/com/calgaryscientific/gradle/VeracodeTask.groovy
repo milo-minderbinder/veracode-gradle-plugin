@@ -37,6 +37,12 @@ import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 @CompileStatic
 abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
+    VeracodeAPI veracodeAPI
+    VeracodeSetup veracodeSetup
+    File outputFile
+    protected File defaultOutputFile
+    List<String> requiredArguments = []
+    List<String> optionalArguments = []
     final static Map<String, String> validArguments = [
             'app_id'           : '123',
             'build_id'         : '123',
@@ -50,13 +56,10 @@ abstract class VeracodeTask extends DefaultTask {
             'build_id2'        : '123'
     ]
 
-    List<String> requiredArguments = []
-    List<String> optionalArguments = []
-    File outputFile
-    protected File defaultOutputFile
-
     VeracodeTask() {
         group = 'Veracode'
+        this.veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        this.veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
     }
 
     abstract void run()
@@ -97,34 +100,14 @@ abstract class VeracodeTask extends DefaultTask {
         return defaultOutputFile
     }
 
-    protected boolean useAPICredentials() {
-        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
-        if (vc.username != "" && vc.password != "") {
-            return false
-        }
-        return true
-    }
-
+    // TODO: Remove this wrapper when all code has been refactored.
     protected UploadAPIWrapper uploadAPI() {
-        UploadAPIWrapper api = new UploadAPIWrapper()
-        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
-        if (useAPICredentials()) {
-            api.setUpApiCredentials(vc.id, vc.key)
-        } else {
-            api.setUpCredentials(vc.username, vc.password)
-        }
-        return api
+        return this.veracodeAPI.uploadAPI()
     }
 
+    // TODO: Remove this wrapper when all code has been refactored.
     protected ResultsAPIWrapper resultsAPI() {
-        ResultsAPIWrapper api = new ResultsAPIWrapper()
-        VeracodeSetup vc = project.findProperty("veracodeSetup") as VeracodeSetup
-        if (useAPICredentials()) {
-            api.setUpApiCredentials(vc.id, vc.key)
-        } else {
-            api.setUpCredentials(vc.username, vc.password)
-        }
-        return api
+        return this.veracodeAPI.resultsAPI()
     }
 
     protected Node writeXml(File file, String content) {
