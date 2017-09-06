@@ -44,6 +44,16 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String getPreScanResults(String app_id) {
+        UploadAPIWrapper api = uploadAPI()
+        return uploadAPI().getPreScanResults(app_id)
+    }
+
+    String getPreScanResults(String app_id, String build_id) {
+        UploadAPIWrapper api = uploadAPI()
+        return uploadAPI().getPreScanResults(app_id, build_id)
+    }
+
     String uploadFile(String app_id, String filePath) {
         UploadAPIWrapper api = uploadAPI()
         return api.uploadFile(app_id, filePath)

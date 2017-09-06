@@ -26,24 +26,50 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeGetPreScanResultsTask extends VeracodeTask {
     static final String NAME = 'veracodeGetPreScanResults'
+    private String app_id
+    private String build_id
 
     VeracodeGetPreScanResultsTask() {
-        description = 'Gets the results for Veracode pre-scan for the application id passed in'
+        description = 'Gets the pre-scan results for the given application ID'
         requiredArguments << 'app_id'
         optionalArguments << 'build_id'
+        app_id = project.findProperty('app_id')
+        if (project.hasProperty('build_id')) {
+            build_id = project.findProperty('build_id')
+        }
+        defaultOutputFile = new File("${project.buildDir}/veracode", 'pre-scan-results-latest.xml')
+    }
+
+    static void printModuleStatus(Node xml) {
+        String app_id = xml.attribute('app_id')
+        String build_id = xml.attribute('build_id')
+        NodeList moduleList = xml.getAt("module") as NodeList
+        for (int i = 0; i < moduleList.size(); i++) {
+            Node moduleEntry = moduleList.get(i) as Node
+            String id = moduleEntry.attribute('id')
+            String name = moduleEntry.attribute('name')
+            String status = moduleEntry.attribute('status')
+            printf "app_id=%s build_id=%s id=%s name=\"%s\" status=\"%s\"\n",
+                    app_id, build_id, id, name, status
+        }
     }
 
     void run() {
-        String xmlResponse
+        String response
+        String file
         if (project.hasProperty('build_id')) {
-            xmlResponse = uploadAPI().getPreScanResults(project.app_id, project.build_id)
+            response = veracodeAPI.getPreScanResults(app_id, build_id)
+            file = "pre-scan-results-${build_id}.xml"
         } else {
-            xmlResponse = uploadAPI().getPreScanResults(project.app_id)
+            response = veracodeAPI.getPreScanResults(app_id)
+            file = getOutputFile()
         }
-
-        Node result = writeXml('build/pre-scan-results.xml', xmlResponse)
-        println((result.name().equals('error')) ? result.text() : 'Pre-scan completed')
+        Node xml = writeXml(file, response)
+        printModuleStatus(xml)
     }
 }
