@@ -207,54 +207,57 @@ class VeracodeTaskTest extends Specification {
         assert vsRead.filesToUpload == [buildFile, buildFile] as Set
     }
 
+    VeracodeUploadFileTask UploadFileTaskSetup() {
+        // Setup project with plugin
+        Project project = new ProjectBuilder().build()
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        // Setup dummy files to upload
+        VeracodeSetup vs = new VeracodeSetup()
+        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        project.veracodeSetup.filesToUpload = vs.filesToUpload
+        // Get task from project
+        VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        // Mock VeracodeAPI calls
+        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
+        task.veracodeAPI = veracodeAPIMock
+        return task
+    }
+
     def 'Test VeracodeUploadFile Task'() {
         given:
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        String xmlStr = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        VeracodeUploadFileTask task = UploadFileTaskSetup()
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.uploadFile(_, _) >> {
+            // Return success response
+            return '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <filelist xmlns="something" xmlns:xsi="something" filelist_version="1.1">
     <file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>
     <file file_id="2" file_md5="68a7d8468ca51bc46d5b72d485022" file_name="file2" file_status="Uploaded"/>
     <file file_id="3" file_md5="2459464ff4bf78dd6f09695069b52" file_name="file3" file_status="Uploaded"/>
 </filelist>
 '''
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        VeracodeSetup vs = new VeracodeSetup()
-        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        project.veracodeSetup.filesToUpload = vs.filesToUpload
-        VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
-        task.veracodeAPI = veracodeAPIMock
-
-        when:
-        task.run()
-
-        then:
-        1 * veracodeAPIMock.uploadFile(_, _) >> {
-            return xmlStr
         }
     }
 
     def 'Test VeracodeUploadFile Task failure'() {
         given:
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        String xmlStr = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<error>Could not upload file</error>
-'''
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        VeracodeSetup vs = new VeracodeSetup()
-        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        project.veracodeSetup.filesToUpload = vs.filesToUpload
-        VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
-        task.veracodeAPI = veracodeAPIMock
-        task.waitTimeBetweenAttempts = "0"
+        VeracodeUploadFileTask task = UploadFileTaskSetup()
 
         when:
         task.run()
 
         then:
-        10 * veracodeAPIMock.uploadFile(_, _) >> {
-            return xmlStr
+        10 * task.veracodeAPI.uploadFile(_, _) >> {
+            // Return error response
+            return '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<error>Could not upload file</error>
+'''
         }
         def e = thrown(GradleException)
         e.toString().contains("ERROR: Could not upload file")

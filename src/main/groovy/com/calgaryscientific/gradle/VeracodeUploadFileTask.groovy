@@ -66,44 +66,44 @@ class VeracodeUploadFileTask extends VeracodeTask {
         }
     }
 
-    void run() {
-        def error
+    void uploadFile(File file, Integer maxTries, Integer waitTime) {
+        Exception error
         Integer tries = 1;
-        Integer maxTries = Integer.parseInt((getMaxUploadAttempts() != null) ? getMaxUploadAttempts() : '10')
-        Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
+        println "Processing ${file.name}"
 
-        println ''
-        if (tries > 1) {
-            println "Attempt ${tries}"
-        }
-        println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
-        println "results file: ${getOutputFile()}"
-        println ''
-        for (File file : getFileSet()) {
-            boolean success = false
-            while (!success && (tries <= maxTries || maxTries == 0)) {
-                try {
-                    println ''
-                    println "Processing ${file.name}"
-                    String response = veracodeAPI.uploadFile(app_id, file.absolutePath)
-                    Node xml = writeXml(getOutputFile(), response)
-                    printFileUploadStatus(xml)
-                    success = true
-                } catch (Exception e) {
-                    println ''
-                    println e
-                    println ''
-                    if (tries > 1) {
-                        println "Upload failing after ${tries} total attempts"
-                    }
-                    error = e
-                    sleep(waitTime)
-                    tries++
-                }
+        boolean success = false
+        while (!success && (tries <= maxTries || maxTries == 0)) {
+            if (tries > 1) {
+                println "Attempt ${tries}"
+                println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
+            }
+            try {
+                String response = veracodeAPI.uploadFile(app_id, file.absolutePath)
+                Node xml = writeXml(getOutputFile(), response)
+                printFileUploadStatus(xml)
+                success = true
+            } catch (Exception e) {
+                println ''
+                println e
+                println ''
+                error = e
+                sleep(waitTime)
+                tries++
             }
         }
         if (tries > maxTries) {
             throw error
+        }
+    }
+
+
+    void run() {
+        Integer maxTries = Integer.parseInt((this.maxUploadAttempts != null) ? this.maxUploadAttempts : '10')
+        Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
+        println "results file: ${getOutputFile()}"
+        println ''
+        for (File file : getFileSet()) {
+            uploadFile(file, maxTries, waitTime)
         }
     }
 }
