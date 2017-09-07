@@ -54,7 +54,8 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     @InputFiles
     Set<File> getFileSet() {
-        Set<File> fc = this.veracodeSetup.filesToUpload
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        Set<File> fc = veracodeSetup.filesToUpload
         return fc
     }
 
