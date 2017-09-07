@@ -29,6 +29,7 @@ package com.calgaryscientific.gradle
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
 
 @CompileStatic
 class VeracodeAPI {
@@ -60,8 +61,12 @@ class VeracodeAPI {
     }
 
     private boolean useAPICredentials() {
-        if (this.username != "" && this.password != "") {
+        if (this.username != null && this.password != null &&
+                this.username != "" && this.password != "") {
             return false
+        }
+        if (this.key == null && this.id == null) {
+            throw new GradleException("Missing Veracode Credentials!")
         }
         return true
     }

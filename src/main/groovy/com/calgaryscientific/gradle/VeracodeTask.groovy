@@ -58,8 +58,6 @@ abstract class VeracodeTask extends DefaultTask {
 
     VeracodeTask() {
         group = 'Veracode'
-        this.veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-        this.veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
     }
 
     abstract void run()
@@ -88,8 +86,18 @@ abstract class VeracodeTask extends DefaultTask {
         return hasRequiredArguments
     }
 
+    protected void loadVeracodeAPI() {
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
+    }
+
     @TaskAction
-    final def vExecute() { if (hasRequiredArguments()) run() }
+    final def vExecute() {
+        if (hasRequiredArguments()) {
+            loadVeracodeAPI()
+            run()
+        }
+    }
 
     // === utility methods ===
     protected void setOutputFile(File file) {
