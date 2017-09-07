@@ -27,7 +27,7 @@
 package com.calgaryscientific.gradle
 
 class VeracodeGetPreScanResultsTest extends VeracodeTaskTest {
-    String successXMLResponse = '''
+    static String successXMLResponse = '''
 <prescanresults xmlns="something" xmlns:xsi="somthing" app_id="1" build_id="2" prescanresults_version="1.4">
   <module app_file_id="3" has_fatal_errors="false" id="4" is_dependency="false" name="goodLib.jar"
    status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files">
@@ -35,11 +35,14 @@ class VeracodeGetPreScanResultsTest extends VeracodeTaskTest {
       <file_issue details="Found (Optional)" filename="good.pdb"/>
       <file_issue details="Not Found (Optional)" filename="notFound.pdb"/>
    </module>
-   <module has_fatal_errors="false" id="5" name="goodLib.dll" status="OK">
+   <module has_fatal_errors="false" id="5" name="class1.jar" status="OK">
       <file_issue details="Found (Optional)" filename="path.pdb"/>
    </module>
    <module has_fatal_errors="true" id="6" name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File">
       <file_issue details="Not Found (Required)" filename="notFound.pdb"/>
+   </module>
+   <module has_fatal_errors="false" id="7" name="class2.jar" status="OK">
+      <file_issue details="Found (Optional)" filename="path.pdb"/>
    </module>
 </prescanresults>
 '''
@@ -57,7 +60,9 @@ class VeracodeGetPreScanResultsTest extends VeracodeTaskTest {
         then:
         assert is.readLines() == [
                 'app_id=1 build_id=2 id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"',
-                'app_id=1 build_id=2 id=5 name="goodLib.dll" status="OK"',
-                'app_id=1 build_id=2 id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"']
+                'app_id=1 build_id=2 id=5 name="class1.jar" status="OK"',
+                'app_id=1 build_id=2 id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"',
+                'app_id=1 build_id=2 id=7 name="class2.jar" status="OK"',
+        ]
     }
 }

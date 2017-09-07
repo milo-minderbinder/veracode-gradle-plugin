@@ -1,0 +1,80 @@
+/*******************************************************************************
+ * MIT License
+ *
+ * Copyright (c) 2017 Calgary Scientific Incorporated
+ *
+ * Copyright (c) 2013-2014 kctang
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
+
+package com.calgaryscientific.gradle
+
+class VeracodeBeginScanTest extends VeracodeTaskTest {
+
+    String successPreScanResultsXMLResponse = VeracodeGetPreScanResultsTest.successXMLResponse
+
+    String successXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<buildinfo xmlns="something" xmlns:xsi="something" app_id="1" build_id="2" buildinfo_version="1.4">
+    <build build_id="2" grace_period_expired="false" legacy_scan_engine="false"
+       scan_overdue="false" submitter="CalgaryScientific" version="CSI-001">
+        <analysis_unit analysis_type="Static" engine_version="115614" status="Submitted to Engine"/>
+    </build>
+</buildinfo>
+'''
+
+
+    def 'Test VeracodeBeginScan extractModuleIds'() {
+        given:
+        Node xml = parseXMLString(successPreScanResultsXMLResponse)
+        Set<String> whitelist = ['class1.jar', 'class2.jar']
+
+        when:
+        Set<String> moduleIds = VeracodeBeginScanTask.extractWhitelistModuleIds(xml, whitelist)
+
+        then:
+        assert moduleIds == ['5', '7'] as Set<String>
+    }
+
+    def 'Test VeracodeBeginScan extractModuleIds with missing classes'() {
+        given:
+        Node xml = parseXMLString(successPreScanResultsXMLResponse)
+        Set<String> whitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+
+        when:
+        Set<String> moduleIds = VeracodeBeginScanTask.extractWhitelistModuleIds(xml, whitelist)
+
+        then:
+        assert moduleIds == ['5', '7'] as Set<String>
+    }
+
+    def 'Test printBeginScanStatus'() {
+        given:
+        def os = mockSystemOut()
+        Node xml = parseXMLString(successXMLResponse)
+
+        when:
+        VeracodeBeginScanTask.printBeginScanStatus(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLines() == ['app_id=1 build_id=2 version=CSI-001 analysis_type=Static status=Submitted to Engine']
+    }
+}

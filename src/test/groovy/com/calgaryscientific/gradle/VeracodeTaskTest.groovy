@@ -145,6 +145,7 @@ class VeracodeTaskTest extends Specification {
                 id = 'id'
                 key = 'key'
                 filesToUpload = fileTree(dir: ".", include: "*").getFiles()
+                moduleWhitelist = ['class1.jar', 'class2.jar']
             }
             task verify {
                 doLast {
@@ -159,6 +160,7 @@ class VeracodeTaskTest extends Specification {
                     assert vc.filesToUpload  == [buildFile, buildFile] as Set
                     vc.filesToUpload.addAll(fileTree(dir: ".", include: "*").getFiles())
                     assert vc.filesToUpload  == [buildFile, buildFile, buildFile] as Set
+                    assert vc.moduleWhitelist  == ['class1.jar', 'class2.jar'] as Set
                 }
             }
         """

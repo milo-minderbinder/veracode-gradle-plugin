@@ -60,6 +60,7 @@ veracodeSetup {
     id = "$veracodeID" <1>
     key = "$veracodeKey"
     filesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
+    moduleWhitelist = ['class1.jar', 'class2.jar']
 }
 ----
 <1> You are only required to use either username and password combination or API id and key.

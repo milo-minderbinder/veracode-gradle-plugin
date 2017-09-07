@@ -124,8 +124,12 @@ abstract class VeracodeTask extends DefaultTask {
         writeXml(file, content)
     }
 
-    protected def readXml(String filename) {
-        new XmlParser().parseText(GFileUtils.readFile(new File(filename)))
+    protected Node readXml(File file) {
+        new XmlParser().parseText(GFileUtils.readFile(file))
+    }
+
+    protected Node readXml(String filename) {
+        readXml(new File(filename))
     }
 
     protected List<String> readListFromFile(File file) {

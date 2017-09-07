@@ -32,4 +32,5 @@ class VeracodeSetup {
     String id
     String key
     Set<File> filesToUpload
+    Set<String> moduleWhitelist
 }

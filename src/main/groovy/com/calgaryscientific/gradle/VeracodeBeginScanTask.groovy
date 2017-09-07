@@ -26,28 +26,78 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeBeginScanTask extends VeracodeTask {
     static final String NAME = 'veracodeBeginScan'
+    private String app_id
+    private Set<String> moduleWhitelist
 
     VeracodeBeginScanTask() {
-        description = 'Starts a Veracode scan for the application id passed in'
+        description = 'Starts a Veracode scan for given application ID'
         requiredArguments << 'app_id'
+        dependsOn "veracodeGetPreScanResults"
+        app_id = project.findProperty("app_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", 'begin-scan.xml')
+    }
+
+    VeracodeGetPreScanResultsTask preScan = new VeracodeGetPreScanResultsTask()
+    File preScanResultsOutputFile = preScan.getOutputFile()
+
+    static Set<String> extractWhitelistModuleIds(Node xml, Set<String> whitelist) {
+        Set<String> moduleIds = []
+        Set<String> moduleNames = []
+        NodeList moduleList = xml.getAt("module") as NodeList
+        for (int i = 0; i < moduleList.size(); i++) {
+            Node moduleEntry = moduleList.get(i) as Node
+            String id = moduleEntry.attribute('id')
+            String name = moduleEntry.attribute('name')
+            String status = moduleEntry.attribute('status')
+            if (!status.startsWith('(Fatal)') && whitelist.contains(name)) {
+                moduleIds << id
+                moduleNames << name
+                printf "Selecting module: %s - %s\n", name, status
+            }
+        }
+        if (whitelist.size() != moduleNames.size()) {
+            Set<String> missingWhitelistModules = whitelist - moduleNames
+            if (missingWhitelistModules.size() > 0) {
+                // TODO: Look into logging levels. The whole plugin is using print statements.
+                printf "WARNING: Missing whitelist modules: ${missingWhitelistModules}"
+            }
+        } else {
+            printf "INFO: All whitelist modules found"
+        }
+        return moduleIds
+    }
+
+    static void printBeginScanStatus(Node xml) {
+        String app_id = xml.attribute('app_id')
+        String build_id = xml.attribute('build_id')
+        NodeList buildList = xml.getAt("build") as NodeList
+        Node build = buildList.get(0) as Node
+        String version = build.attribute('version')
+        NodeList analysis_unitList = build.getAt('analysis_unit') as NodeList
+        Node analysis_unit = analysis_unitList.get(0) as Node
+        String analysis_type = analysis_unit.attribute('analysis_type')
+        String status = analysis_unit.attribute('status')
+        printf "app_id=%s build_id=%s version=%s analysis_type=%s status=%s\n",
+                app_id, build_id, version, analysis_type, status
     }
 
     void run() {
-        def moduleIds = []
-        def whiteList = readListFromFile(new File("src/apps/${project.app_id}/modules-whitelist.txt"))
-        readXml('build/pre-scan-results.xml').each() { module ->
-            if (whiteList.contains(module.@name)) {
-                moduleIds << module.@id
-            }
-        }
-        println "Modules in whitelist: ${whiteList.size()}"
-        println "Modules selected: ${moduleIds.size()}"
-        if (whiteList.size() != moduleIds.size()) {
-            println 'WARNING: Not all the files in whitelist are being scanned. Some modules no longer exist? Manual whitelist maintenance should be performed.'
-        }
-
-        writeXml('build/scan.xml', uploadAPI().beginScan(project.app_id, moduleIds.join(","), 'false'))
+        this.moduleWhitelist = veracodeSetup.moduleWhitelist
+        Set<String> moduleIds = extractWhitelistModuleIds(readXml(preScanResultsOutputFile), moduleWhitelist)
+        Node xml = writeXml(
+                outputFile,
+                uploadAPI().beginScan(
+                        app_id,
+                        moduleIds.join(","),
+                        "", // scan_all_top_level_modules
+                        "scan_selected_modules",
+                        "") // scan_previously_selected_modules
+        )
+        printBeginScanStatus(xml)
     }
 }
