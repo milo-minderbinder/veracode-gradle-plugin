@@ -45,32 +45,90 @@ class VeracodeBeginScanTask extends VeracodeTask {
     VeracodeGetPreScanResultsTask preScan = new VeracodeGetPreScanResultsTask()
     File preScanResultsOutputFile = preScan.getOutputFile()
 
+    /**
+     * Given Veracode's GetPreScanResults xml and a whitelist list of modules,
+     * it will return the module IDs for the non fatal whitelisted modules.
+     *
+     * @param xml
+     * @param whitelist
+     * @return
+     */
     static Set<String> extractWhitelistModuleIds(Node xml, Set<String> whitelist) {
-        Set<String> moduleIds = []
-        Set<String> moduleNames = []
         NodeList moduleList = xml.getAt("module") as NodeList
+        HashMap<String, List<String>> nonFatalModules = filterOutFatalModules(moduleList)
+        HashMap<String, List<String>> whitelistModules = getWhitelistModules(nonFatalModules, whitelist)
+        Set<String> missingWhitelistModules = getMissingWhitelistModules(whitelist, whitelistModules)
+        if (missingWhitelistModules.size() > 0) {
+            // TODO: Look into logging levels. The whole plugin is using print statements.
+            printf "WARNING: Missing whitelist modules: ${missingWhitelistModules}\n"
+        }
+        Set<String> moduleIds = []
+        for (List<String> data : whitelistModules.values()) {
+            moduleIds << data.get(0)
+        }
+        return moduleIds
+    }
+
+    /**
+     * Given a Veracode moduleList NodeList (xml), it will return a Map of names to [id, status] of modules that are
+     * not fatal.
+     *
+     * @param moduleList
+     * @return Map{ name: [id, status] }
+     */
+    private static HashMap<String, List<String>> filterOutFatalModules(NodeList moduleList) {
+        HashMap<String, List<String>> nonFatalModules = new HashMap()
         for (int i = 0; i < moduleList.size(); i++) {
             Node moduleEntry = moduleList.get(i) as Node
             String id = moduleEntry.attribute('id')
             String name = moduleEntry.attribute('name')
             String status = moduleEntry.attribute('status')
-            if (!status.startsWith('(Fatal)') && whitelist.contains(name)) {
-                moduleIds << id
-                moduleNames << name
-                printf "Selecting module: %s - %s\n", name, status
+            if (!status.startsWith('(Fatal)')) {
+                List<String> data = [id, status]
+                nonFatalModules.put(name, data)
             }
         }
-        if (whitelist.size() != moduleNames.size()) {
-            Set<String> missingWhitelistModules = whitelist - moduleNames
-            if (missingWhitelistModules.size() > 0) {
-                // TODO: Look into logging levels. The whole plugin is using print statements.
-                printf "WARNING: Missing whitelist modules: ${missingWhitelistModules}"
-            }
-        } else {
-            printf "INFO: All whitelist modules found"
-        }
-        return moduleIds
+        return nonFatalModules
     }
+
+    /**
+     * Given a list of modules, it will return the subset of modules that are found in the whitelist.
+     * @param modules
+     * @param whitelist
+     * @return Map{ name: [id, status] }
+     */
+    private
+    static HashMap<String, List<String>> getWhitelistModules(HashMap<String, List<String>> modules, Set<String> whitelist) {
+        HashMap<String, List<String>> whitelistedModules = new HashMap()
+        for (Map.Entry<String, List<String>> module : modules.entrySet()) {
+            String name = module.getKey()
+            List<String> data = module.getValue()
+            String id = data.get(0)
+            String status = data.get(1)
+            if (whitelist.contains(name)) {
+                whitelistedModules.put(id, data)
+                printf "Selecting module: %s: %s - %s\n", id, name, status
+            }
+        }
+        whitelistedModules
+    }
+
+    /**
+     * Given a whitelist and a list of whitelistModules,
+     * it will return the whitelist entries that aren't part of the whitelist modules.
+     * @param whitelist
+     * @param whitelistModules
+     * @return
+     */
+    private
+    static Set<String> getMissingWhitelistModules(Set<String> whitelist, HashMap<String, List<String>> whitelistModules) {
+        Set<String> missingWhitelistModules = []
+        if (whitelist.size() != whitelistModules.size()) {
+            missingWhitelistModules = whitelist - whitelistModules.keySet()
+        }
+        missingWhitelistModules
+    }
+
 
     static void printBeginScanStatus(Node xml) {
         String app_id = xml.attribute('app_id')
