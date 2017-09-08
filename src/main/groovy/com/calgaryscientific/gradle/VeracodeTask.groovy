@@ -133,7 +133,7 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected Node readXml(File file) {
-        new XmlParser().parseText(GFileUtils.readFile(file))
+        new XmlParser().parse(file)
     }
 
     protected Node readXml(String filename) {
