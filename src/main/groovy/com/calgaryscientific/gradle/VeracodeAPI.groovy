@@ -30,6 +30,8 @@ import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @CompileStatic
 class VeracodeAPI {
@@ -37,6 +39,7 @@ class VeracodeAPI {
     private String password
     private String key
     private String id
+    private static Logger log = LoggerFactory.getLogger(VeracodeAPI.class);
 
     VeracodeAPI(String username, String password, String key, String id) {
         this.username = username
@@ -61,13 +64,14 @@ class VeracodeAPI {
     }
 
     private boolean useAPICredentials() {
-        if (this.username != null && this.password != null &&
-                this.username != "" && this.password != "") {
+        if (username && password) {
+            log.debug('Using username and password authentication')
             return false
         }
-        if (this.key == null && this.id == null) {
+        if (!key && !id) {
             throw new GradleException("Missing Veracode Credentials!")
         }
+        log.debug('Using key and ID authentication')
         return true
     }
 
