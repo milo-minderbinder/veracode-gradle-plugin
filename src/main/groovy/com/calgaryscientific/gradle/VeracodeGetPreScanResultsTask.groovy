@@ -41,8 +41,10 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
         app_id = project.findProperty('app_id')
         if (project.hasProperty('build_id')) {
             build_id = project.findProperty('build_id')
+            defaultOutputFile = new File("${project.buildDir}/veracode", "pre-scan-results-${build_id}.xml")
+        } else {
+            defaultOutputFile = new File("${project.buildDir}/veracode", 'pre-scan-results-latest.xml')
         }
-        defaultOutputFile = new File("${project.buildDir}/veracode", 'pre-scan-results-latest.xml')
     }
 
     static void printModuleStatus(Node xml) {
@@ -64,12 +66,12 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
         String file
         if (project.hasProperty('build_id')) {
             response = veracodeAPI.getPreScanResults(app_id, build_id)
-            file = "pre-scan-results-${build_id}.xml"
         } else {
             response = veracodeAPI.getPreScanResults(app_id)
-            file = getOutputFile()
         }
+        file = getOutputFile()
         Node xml = writeXml(file, response)
         printModuleStatus(xml)
+        println file
     }
 }

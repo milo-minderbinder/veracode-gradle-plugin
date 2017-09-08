@@ -187,7 +187,6 @@ class VeracodeTaskTest extends Specification {
         Set<File> expected = [buildFile] as Set
         assert vsRead.filesToUpload == expected
         VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
-        assert task.veracodeSetup.filesToUpload == vsRead.filesToUpload
         assert task.getFileSet() == expected
         def _ = vsRead.filesToUpload.add(buildFile)
         assert vsRead.filesToUpload == [buildFile, buildFile] as Set

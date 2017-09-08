@@ -36,7 +36,7 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     VeracodeBeginScanTask() {
         description = 'Starts a Veracode scan for given application ID'
-        requiredArguments << 'app_id'
+        requiredArguments << 'app_id' << 'build_id'
         dependsOn "veracodeGetPreScanResults"
         app_id = project.findProperty("app_id")
         defaultOutputFile = new File("${project.buildDir}/veracode", 'begin-scan.xml')
@@ -87,8 +87,9 @@ class VeracodeBeginScanTask extends VeracodeTask {
     }
 
     void run() {
-        this.moduleWhitelist = veracodeSetup.moduleWhitelist
+        moduleWhitelist = veracodeSetup.moduleWhitelist
         Set<String> moduleIds = extractWhitelistModuleIds(readXml(preScanResultsOutputFile), moduleWhitelist)
+        println "Module IDs: " + moduleIds.join(",")
         Node xml = writeXml(
                 outputFile,
                 uploadAPI().beginScan(
