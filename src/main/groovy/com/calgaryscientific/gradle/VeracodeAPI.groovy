@@ -48,19 +48,25 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String beginScan(String app_id, Set<String> moduleIds) {
+        return uploadAPI().beginScan(
+                app_id,
+                moduleIds.join(","),
+                "", // scan_all_top_level_modules
+                "scan_selected_modules",
+                "") // scan_previously_selected_modules
+    }
+
     String getPreScanResults(String app_id) {
-        UploadAPIWrapper api = uploadAPI()
         return uploadAPI().getPreScanResults(app_id)
     }
 
     String getPreScanResults(String app_id, String build_id) {
-        UploadAPIWrapper api = uploadAPI()
         return uploadAPI().getPreScanResults(app_id, build_id)
     }
 
     String uploadFile(String app_id, String filePath) {
-        UploadAPIWrapper api = uploadAPI()
-        return api.uploadFile(app_id, filePath)
+        return uploadAPI().uploadFile(app_id, filePath)
     }
 
     private boolean useAPICredentials() {
