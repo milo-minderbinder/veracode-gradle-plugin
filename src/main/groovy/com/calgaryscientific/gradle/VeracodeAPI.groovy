@@ -29,6 +29,9 @@ package com.calgaryscientific.gradle
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @CompileStatic
 class VeracodeAPI {
@@ -36,6 +39,7 @@ class VeracodeAPI {
     private String password
     private String key
     private String id
+    private static Logger log = LoggerFactory.getLogger(VeracodeAPI.class);
 
     VeracodeAPI(String username, String password, String key, String id) {
         this.username = username
@@ -44,15 +48,36 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String beginScan(String app_id, Set<String> moduleIds) {
+        return uploadAPI().beginScan(
+                app_id,
+                moduleIds.join(","),
+                "", // scan_all_top_level_modules
+                "scan_selected_modules",
+                "") // scan_previously_selected_modules
+    }
+
+    String getPreScanResults(String app_id) {
+        return uploadAPI().getPreScanResults(app_id)
+    }
+
+    String getPreScanResults(String app_id, String build_id) {
+        return uploadAPI().getPreScanResults(app_id, build_id)
+    }
+
     String uploadFile(String app_id, String filePath) {
-        UploadAPIWrapper api = uploadAPI()
-        return api.uploadFile(app_id, filePath)
+        return uploadAPI().uploadFile(app_id, filePath)
     }
 
     private boolean useAPICredentials() {
-        if (this.username != "" && this.password != "") {
+        if (username && password) {
+            log.debug('Using username and password authentication')
             return false
         }
+        if (!key && !id) {
+            throw new GradleException("Missing Veracode Credentials!")
+        }
+        log.debug('Using key and ID authentication')
         return true
     }
 

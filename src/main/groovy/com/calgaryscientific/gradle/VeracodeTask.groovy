@@ -58,8 +58,6 @@ abstract class VeracodeTask extends DefaultTask {
 
     VeracodeTask() {
         group = 'Veracode'
-        this.veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-        this.veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
     }
 
     abstract void run()
@@ -88,8 +86,18 @@ abstract class VeracodeTask extends DefaultTask {
         return hasRequiredArguments
     }
 
+    protected void loadVeracodeAPI() {
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
+    }
+
     @TaskAction
-    final def vExecute() { if (hasRequiredArguments()) run() }
+    final def vExecute() {
+        if (hasRequiredArguments()) {
+            loadVeracodeAPI()
+            run()
+        }
+    }
 
     // === utility methods ===
     protected void setOutputFile(File file) {
@@ -124,8 +132,12 @@ abstract class VeracodeTask extends DefaultTask {
         writeXml(file, content)
     }
 
-    protected def readXml(String filename) {
-        new XmlParser().parseText(GFileUtils.readFile(new File(filename)))
+    protected Node readXml(File file) {
+        new XmlParser().parse(file)
+    }
+
+    protected Node readXml(String filename) {
+        readXml(new File(filename))
     }
 
     protected List<String> readListFromFile(File file) {
