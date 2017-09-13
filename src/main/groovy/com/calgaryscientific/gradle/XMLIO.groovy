@@ -98,6 +98,29 @@ class XMLIO {
         return null
     }
 
+    /**
+     * getNodeList - For a list of nodes names it will iterate over the first node
+     * matching the name until the last member in which case it will return the entire nodeList
+     */
+    static NodeList getNodeList(Node node, String... name) {
+        return getNodeList(node, name.toList())
+    }
+
+    static NodeList getNodeList(Node node, List<String> name) {
+        if (name.size() == 1) {
+            return node.get(name[0]) as NodeList
+        } else if (name.size() > 1) {
+            NodeList nodeList = node.get(name[0]) as NodeList
+            if (nodeList.size() >= 1) {
+                Node subNode = nodeList.get(0) as Node
+                return getNodeList(subNode, name[1..-1])
+            } else {
+                return null
+            }
+        }
+        return null
+    }
+
     static fail(String msg) {
         throw new GradleException(msg)
     }

@@ -27,7 +27,7 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 * Build and publish to mavenLocal by running:
 +
-`gradle uploadArchives`
+`gradle publish`
 
 === Apply the plugin into your project
 
@@ -44,7 +44,10 @@ apply plugin: 'groovy'
 buildscript {
     apply plugin: 'groovy'
     repositories {
+        // For locally published plugin
         mavenLocal()
+        // For transitive dependencies
+        mavenCentral()
     }
     dependencies {
         classpath files('./lib/VeracodeJavaAPI.jar')

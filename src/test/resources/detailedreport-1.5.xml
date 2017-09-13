@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<detailedreport xmlns="https://www.veracode.com/schema/reports/export/1.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="https://www.veracode.com/schema/reports/export/1.0 https://analysiscenter.veracode.com/resource/detailedreport.xsd"
+                report_format_version="1.5"
+                any_type_scan_due="2018-09-11 11:21:04 UTC"
+                app_id="123" app_name="myApp" assurance_level="4" build_id="456"
+                business_criticality="4" business_owner="User Name" business_unit="Not Specified"
+                first_build_submitted_date="2014-04-15 20:27:53 UTC" flaws_not_mitigated="1"
+                generation_date="2017-09-13 21:42:30 UTC" grace_period_expired="true" is_latest_build="true"
+                last_update_time="2017-09-11 13:21:07 UTC" legacy_scan_engine="false"
+                life_cycle_stage="Internal or Alpha Testing" planned_deployment_date="2016-11-28 21:08:53 UTC"
+                platform="Not Specified" policy_compliance_status="Did Not Pass" policy_name="policy"
+                policy_rules_status="Did Not Pass" policy_version="1"
+                scan_overdue="false" submitter="User Name" tags="" teams="team" total_flaws="1" veracode_level="VL1"
+                version="build-version"
+                >
+  <static-analysis analysis_size_bytes="123" engine_version="123" published_date="2017-09-10 16:21:04 UTC" rating="D" score="97" submitted_date="2017-09-06 23:14:12 UTC" version="build-version">
+    <modules>
+      <module architecture="JVM" compiler="JAVAC_7" loc="87263" name="module1.jar" numflawssev0="0" numflawssev1="0" numflawssev2="8" numflawssev3="113" numflawssev4="0" numflawssev5="1" os="Java J2SE 7" score="70"/>
+      <module architecture="JVM" compiler="JAVAC_7" loc="108552" name="module.jar" numflawssev0="0" numflawssev1="0" numflawssev2="10" numflawssev3="68" numflawssev4="0" numflawssev5="0" os="Java J2SE 7" score="80"/>
+    </modules>
+  </static-analysis>
+  <severity level="5">
+    <category categoryid="3" categoryname="Buffer Overflow" pcirelated="false">
+      <desc>
+        <para text="Buffer overflows..."/>
+      </desc>
+      <recommendations>
+        <para text="There are a number of mitigations that...">
+          <bulletitem text="Always use bounded rather than unbounded string manipulation functions..."/>
+        </para>
+      </recommendations>
+      <cwe cweid="121" cwename="Stack-based Buffer Overflow" pcirelated="false" sans="120">
+        <description>
+          <text text="There is a potential buffer overflow with these functions..."/>
+        </description>
+        <staticflaws>
+          <flaw affects_policy_compliance="false"
+                categoryid="3"
+                categoryname="Stack-based Buffer Overflow"
+                cia_impact="ccc"
+                count="6"
+                cweid="121"
+                date_first_occurrence="2017-06-18 16:22:39 UTC"
+                description="This call to vsprintf() contains a buffer overflow..."
+                exploitLevel="0"
+                functionprototype="void fun(...)"
+                functionrelativelocation="57"
+                grace_period_expires=""
+                issueid="123"
+                line="305"
+                mitigation_status="proposed"
+                mitigation_status_desc="Mitigation Proposed"
+                module="lib1.dll"
+                note=""
+                pcirelated="false"
+                remediation_status="Fixed"
+                remediationeffort="2"
+                scope="UNKNOWN"
+                severity="5"
+                sourcefile="chunk.c"
+                sourcefilepath="path1"
+                type="vsprintf"/>
+        </staticflaws>
+      </cwe>
+    </category>
+    <category categoryid="18" categoryname="OS Command Injection" pcirelated="false">
+      <desc>
+        <para text="OS command injection vulnerabilities occur when..."/>
+      </desc>
+      <recommendations>
+        <para text="Careful handling of all untrusted data...">
+          <bulletitem text="If possible..."/>
+        </para>
+      </recommendations>
+      <cwe certc="741" certcpp="875" certjava="845" cweid="78" cwename="Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')" owasp="929" pcirelated="false" sans="864">
+        <description>
+          <text text="This call contains a command injection flaw..."/>
+        </description>
+        <staticflaws>
+          <flaw affects_policy_compliance="true"
+                categoryid="18"
+                categoryname="Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+                cia_impact="ccp"
+                count="1"
+                cweid="78"
+                date_first_occurrence="2017-04-15 20:08:51 UTC"
+                description="This call to java.lang.ProcessBuilder.start() contains a command injection flaw..."
+                exploitLevel="0"
+                functionprototype="void run()"
+                functionrelativelocation="49"
+                grace_period_expires="2016-11-30 16:47:31 UTC"
+                issueid="181"
+                line="115"
+                mitigation_status="proposed"
+                mitigation_status_desc="Mitigation Proposed"
+                module="moudle$something"
+                note=""
+                pcirelated="true"
+                remediation_status="Open"
+                remediationeffort="3"
+                scope="module$something"
+                severity="5"
+                sourcefile="module.java"
+                sourcefilepath="path"
+                type="java.lang...">
+            <mitigations>
+              <mitigation action="Mitigate by Design" date="2017-11-10 18:23:22 UTC" description="..." user="User Name"/>
+              <mitigation action="Potential False Positive" date="2017-11-10 20:59:28 UTC" description="..." user="User Name"/>
+            </mitigations>
+            <annotations>
+              <annotation action="Mitigate by Design" date="2017-11-10 18:23:22 UTC" description="..." user="User Name"/>
+              <annotation action="Potential False Positive" date="2017-11-10 20:59:28 UTC" description="..." user="User Name"/>
+            </annotations>
+          </flaw>
+        </staticflaws>
+      </cwe>
+    </category>
+  </severity>
+  <software_composition_analysis components_violated_policy="0" third_party_components="117" violate_policy="false">
+    <vulnerable_components>
+      <component description="description1" file_name="filename1" library="lib1" max_cvss_score="5" sha1="123" vendor="vendor1" version="1" vulnerabilities="2">
+        <file_paths>
+          <file_path value="path1"/>
+        </file_paths>
+        <vulnerabilities>
+          <vulnerability cve_id="CVE-2017-123" cve_summary="cve_summary_1" cvss_score="5" cwe_id="CWE-1" severity="3"/>
+          <vulnerability cve_id="CVE-2017-456" cve_summary="cve_summary_2" cvss_score="4" cwe_id="CWE-2" severity="3"/>
+        </vulnerabilities>
+        <violated_policy_rules/>
+      </component>
+      <component description="description2" file_name="filename2" library="lib2" max_cvss_score="" sha1="123" vendor="vendor2" version="2" vulnerabilities="0">
+        <file_paths>
+          <file_path value="path2"/>
+        </file_paths>
+        <vulnerabilities/>
+        <violated_policy_rules/>
+      </component>
+    </vulnerable_components>
+  </software_composition_analysis>
+</detailedreport>

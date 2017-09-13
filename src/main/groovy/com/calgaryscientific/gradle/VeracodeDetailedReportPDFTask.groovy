@@ -23,37 +23,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'java-gradle-plugin'
 
-group = 'com.calgaryscientific.gradle'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = 1.7
+package com.calgaryscientific.gradle
 
-dependencies {
-    compile localGroovy()
-    compile fileTree(dir: 'lib', include: '*.jar')
-    compile("org.apache.commons:commons-csv:1.5")
-    testCompile gradleTestKit()
-    testCompile("cglib:cglib-nodep:3.2.5")
-    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
-        exclude module: "groovy-all"
+import org.gradle.api.tasks.OutputFile
+import groovy.transform.CompileStatic
+
+@CompileStatic
+class VeracodeDetailedReportPDFTask extends VeracodeTask {
+    static final String NAME = 'veracodeDetailedReportPDF'
+    private String build_id
+
+    VeracodeDetailedReportPDFTask() {
+        description = 'Gets the Veracode Scan Detailed Report PDF based on the given build_id'
+        requiredArguments << 'build_id'
+        build_id = project.findProperty("build_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
     }
-}
 
-repositories {
-    mavenCentral()
-}
-
-publishing {
-    repositories {
-        mavenLocal()
+    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
+    @OutputFile
+    File getOutputFile() {
+        return defaultOutputFile
     }
-    publications {
-        // Ensure transitive dependencies are added to POM file
-        mavenJava(MavenPublication) {
-            from project.components.java
-        }
+
+    void run() {
+        File file = getOutputFile()
+        file.bytes = veracodeAPI.detailedReportPdf(build_id)
+        printf "report file: %s\n", file
     }
 }
