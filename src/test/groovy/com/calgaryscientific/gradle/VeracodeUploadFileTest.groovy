@@ -32,13 +32,7 @@ import org.gradle.testfixtures.ProjectBuilder
 
 class VeracodeUploadFileTest extends VeracodeTaskTest {
 
-    String successXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<filelist xmlns="something" xmlns:xsi="something" filelist_version="1.1">
-    <file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>
-    <file file_id="2" file_md5="68a7d8468ca51bc46d5b72d485022" file_name="file2" file_status="Uploaded"/>
-    <file file_id="3" file_md5="2459464ff4bf78dd6f09695069b52" file_name="file3" file_status="Uploaded"/>
-</filelist>
-'''
+    File filelistFile = getResource('filelist-1.1.xml')
 
     String errorXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <error>Could not upload file</error>
@@ -71,7 +65,7 @@ class VeracodeUploadFileTest extends VeracodeTaskTest {
 
         then:
         1 * task.veracodeAPI.uploadFile(_, _) >> {
-            return successXMLResponse
+            return new String(filelistFile.readBytes())
         }
     }
 
@@ -93,7 +87,7 @@ class VeracodeUploadFileTest extends VeracodeTaskTest {
     def 'Test VeracodeUploadFile printFileUploadStatus'() {
         given:
         def os = mockSystemOut()
-        Node xml = parseXMLString(successXMLResponse)
+        Node xml = XMLIO.parse(filelistFile)
 
         when:
         VeracodeUploadFileTask.printFileUploadStatus(xml)

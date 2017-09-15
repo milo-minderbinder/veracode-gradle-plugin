@@ -35,7 +35,7 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/pre-scan.xml', uploadAPI().beginPreScan(project.app_id))
+        xmlio.writeXml('pre-scan.xml', uploadAPI().beginPreScan(project.app_id))
         println 'Check build/pre-scan.xml for response status.'
     }
 }

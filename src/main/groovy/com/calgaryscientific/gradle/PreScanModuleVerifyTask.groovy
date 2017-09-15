@@ -55,7 +55,7 @@ class PreScanModuleVerifyTask extends VeracodeTask {
 
         def notFoundList = new ArrayList<String>()
         def fatalErrorList = new ArrayList<String>()
-        readXml('build/pre-scan-results.xml').each() { module ->
+        XMLIO.readXml('build/pre-scan-results.xml').each() { module ->
             if (!allList.contains(module.@name)) {
                 notFoundList << module.@name
             }

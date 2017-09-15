@@ -63,14 +63,13 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
 
     void run() {
         String response
-        String file
+        File file = getOutputFile()
         if (project.hasProperty('build_id')) {
             response = veracodeAPI.getPreScanResults(app_id, build_id)
         } else {
             response = veracodeAPI.getPreScanResults(app_id)
         }
-        file = getOutputFile()
-        Node xml = writeXml(file, response)
+        Node xml = XMLIO.writeXml(file, response)
         printModuleStatus(xml)
         println file
     }

@@ -42,7 +42,7 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
         } else {
             xmlResponse = uploadAPI().getBuildInfo(project.app_id)
         }
-        Node buildInfo = writeXml('build/build-info.xml', xmlResponse) // need to print twice, so assign var
+        Node buildInfo = xmlio.writeXml('build-info.xml', xmlResponse) // need to print twice, so assign var
         println '[Build]'
         buildInfo.build[0].attributes().each() { k, v ->
             println "\t$k=$v"
