@@ -36,6 +36,6 @@ class VeracodeDetailedReportTask extends VeracodeTask {
 
     void run() {
         String xmlResponse = resultsAPI().detailedReport(project.build_id)
-        writeXml('build/scan-results.xml', xmlResponse)
+        xmlio.writeXml('scan-results.xml', xmlResponse)
     }
 }

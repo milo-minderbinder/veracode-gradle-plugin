@@ -146,9 +146,9 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     void run() {
         moduleWhitelist = veracodeSetup.moduleWhitelist
-        Set<String> moduleIds = extractWhitelistModuleIds(readXml(preScanResultsOutputFile), moduleWhitelist)
+        Set<String> moduleIds = extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), moduleWhitelist)
         println "Module IDs: " + moduleIds.join(",")
-        Node xml = writeXml(outputFile, veracodeAPI.beginScan(app_id, moduleIds))
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(app_id, moduleIds))
         printBeginScanStatus(xml)
     }
 }

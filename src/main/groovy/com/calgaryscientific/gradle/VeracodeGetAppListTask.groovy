@@ -34,7 +34,7 @@ class VeracodeGetAppListTask extends VeracodeTask {
     }
 
     void run() {
-        writeXml('build/app-list.xml', uploadAPI().getAppList())
+        xmlio.writeXml('app-list.xml', uploadAPI().getAppList())
                 .each() { app ->
             println app.@app_id + '=' + app.@app_name
         }

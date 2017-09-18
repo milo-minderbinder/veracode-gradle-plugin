@@ -72,9 +72,8 @@ class VeracodeTaskTest extends Specification {
         System.out = stdout
     }
 
-    Node parseXMLString(String xml) {
-        XmlParser xmlParser = new XmlParser()
-        return xmlParser.parseText(xml)
+    File getResource(String filename) {
+        new File(getClass().classLoader.getResource(filename).toURI())
     }
 
     def 'Test Task Existence'() {

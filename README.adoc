@@ -70,6 +70,16 @@ Optionally, the Veracode credentials properties can be placed in the `~/.gradle/
 
 * Execute `gradle tasks` to see available tasks.
 
+== Compatibility
+
+Tested with the Java API version: `VeracodeJavaAPI v17.6.4.4 c201706231537`
+
+Tested with the following XML file versions:
+
+* buildinfo: buildinfo_version="1.4"
+* detailedreport: report_format_version="1.5"
+* filelist: filelist_version="1.1"
+
 == LICENSE
 
 MIT License

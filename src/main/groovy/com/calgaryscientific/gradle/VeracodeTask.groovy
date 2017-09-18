@@ -30,7 +30,6 @@ import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
-import org.gradle.util.GFileUtils
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
@@ -39,6 +38,7 @@ abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
     VeracodeAPI veracodeAPI
     VeracodeSetup veracodeSetup
+    XMLIO xmlio
     File outputFile
     protected File defaultOutputFile
     List<String> requiredArguments = []
@@ -86,15 +86,16 @@ abstract class VeracodeTask extends DefaultTask {
         return hasRequiredArguments
     }
 
-    protected void loadVeracodeAPI() {
+    protected void setupTask() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
+        xmlio = new XMLIO("${project.buildDir}/veracode")
     }
 
     @TaskAction
     final def vExecute() {
         if (hasRequiredArguments()) {
-            loadVeracodeAPI()
+            setupTask()
             run()
         }
     }
@@ -116,28 +117,6 @@ abstract class VeracodeTask extends DefaultTask {
     // TODO: Remove this wrapper when all code has been refactored.
     protected ResultsAPIWrapper resultsAPI() {
         return this.veracodeAPI.resultsAPI()
-    }
-
-    protected Node writeXml(File file, String content) {
-        GFileUtils.writeFile(content, file)
-        Node xml = new XmlParser().parseText(content)
-        if (xml.name() == 'error') {
-            fail("ERROR: ${xml.text()}\nSee ${file} for details!")
-        }
-        xml
-    }
-
-    protected Node writeXml(String filename, String content) {
-        File file = new File("${project.buildDir}/veracode", filename)
-        writeXml(file, content)
-    }
-
-    protected Node readXml(File file) {
-        new XmlParser().parse(file)
-    }
-
-    protected Node readXml(String filename) {
-        readXml(new File(filename))
     }
 
     protected List<String> readListFromFile(File file) {

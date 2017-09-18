@@ -80,7 +80,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
             }
             try {
                 String response = veracodeAPI.uploadFile(app_id, file.absolutePath)
-                Node xml = writeXml(getOutputFile(), response)
+                Node xml = XMLIO.writeXml(getOutputFile(), response)
                 printFileUploadStatus(xml)
                 success = true
             } catch (Exception e) {

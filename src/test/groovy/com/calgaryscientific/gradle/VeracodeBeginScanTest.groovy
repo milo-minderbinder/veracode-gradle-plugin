@@ -28,21 +28,12 @@ package com.calgaryscientific.gradle
 
 class VeracodeBeginScanTest extends VeracodeTaskTest {
 
-    String successPreScanResultsXMLResponse = VeracodeGetPreScanResultsTest.successXMLResponse
-
-    String successXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<buildinfo xmlns="something" xmlns:xsi="something" app_id="1" build_id="2" buildinfo_version="1.4">
-    <build build_id="2" grace_period_expired="false" legacy_scan_engine="false"
-       scan_overdue="false" submitter="CalgaryScientific" version="CSI-001">
-        <analysis_unit analysis_type="Static" engine_version="115614" status="Submitted to Engine"/>
-    </build>
-</buildinfo>
-'''
-
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
+    File buildInfoFile = getResource('buildinfo-1.4.xml')
 
     def 'Test VeracodeBeginScan extractModuleIds'() {
         given:
-        Node xml = parseXMLString(successPreScanResultsXMLResponse)
+        Node xml = XMLIO.parse(preScanResultsFile)
         Set<String> whitelist = ['class1.jar', 'class2.jar']
 
         when:
@@ -54,7 +45,7 @@ class VeracodeBeginScanTest extends VeracodeTaskTest {
 
     def 'Test VeracodeBeginScan extractModuleIds with missing classes'() {
         given:
-        Node xml = parseXMLString(successPreScanResultsXMLResponse)
+        Node xml = XMLIO.parse(preScanResultsFile)
         Set<String> whitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
@@ -67,7 +58,7 @@ class VeracodeBeginScanTest extends VeracodeTaskTest {
     def 'Test printBeginScanStatus'() {
         given:
         def os = mockSystemOut()
-        Node xml = parseXMLString(successXMLResponse)
+        Node xml = XMLIO.parse(buildInfoFile)
 
         when:
         VeracodeBeginScanTask.printBeginScanStatus(xml)

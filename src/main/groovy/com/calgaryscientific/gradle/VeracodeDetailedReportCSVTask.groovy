@@ -53,7 +53,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                     "Mitigation Description",
                     "Mitigation Date"].join(",") + "\n"
 
-        readXml('build/scan-results.xml').severity.each() { severity ->
+        XMLIO.readXml('build/scan-results.xml').severity.each() { severity ->
             severity.category.each() { category ->
                 category.cwe.each() { cwe ->
                     cwe.staticflaws.flaw.each() { flaw ->
