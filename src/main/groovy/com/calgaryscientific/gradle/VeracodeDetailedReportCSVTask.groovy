@@ -136,7 +136,9 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                 'Severity',
                 'Source File',
                 'Source File Path',
-                'Type'
+                'Type',
+                'Mitigations',
+                'Annotations'
         ]
         rows.add(headerRow)
         NodeList severityList = XMLIO.getNodeList(xml, 'severity')
@@ -208,6 +210,31 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                         String flawSourceFile = flaw.attribute('sourcefile')
                         String flawSourceFilePath = flaw.attribute('sourcefilepath')
                         String flawType = flaw.attribute('type')
+                        NodeList mitigationList = XMLIO.getNodeList(flaw, 'mitigations', 'mitigation')
+                        List<String> mitigationEntries = []
+                        for (int m = 0; m < mitigationList.size(); m++) {
+                            Node mitigation = mitigationList.get(m) as Node
+                            String mitigationAction = mitigation.attribute('action')
+                            String mitigationDate = mitigation.attribute('date')
+                            String mitigationDescription = mitigation.attribute('description')
+                            String mitigationUser = mitigation.attribute('user')
+                            String mitigationEntry = sprintf "action: %s, date: %s, user: %s\ndescription: %s\n",
+                                    mitigationAction, mitigationDate, mitigationUser, mitigationDescription
+                            mitigationEntries.add(mitigationEntry)
+                        }
+                        NodeList annotationList = XMLIO.getNodeList(flaw, 'annotations', 'annotation')
+                        List<String> annotationEntries = []
+                        for (int m = 0; m < annotationList.size(); m++) {
+                            Node annotation = annotationList.get(m) as Node
+                            String annotationAction = annotation.attribute('action')
+                            String annotationDate = annotation.attribute('date')
+                            String annotationDescription = annotation.attribute('description')
+                            String annotationUser = annotation.attribute('user')
+                            String annotationEntry = sprintf "action: %s, date: %s, user: %s\ndescription: %s\n",
+                                    annotationAction, annotationDate, annotationUser, annotationDescription
+                            annotationEntries.add(annotationEntry)
+                        }
+
                         List<String> row = [
                                 flawCategoryID,
                                 flawCategoryName,
@@ -227,7 +254,9 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                                 flawSeverity,
                                 flawSourceFile,
                                 flawSourceFilePath,
-                                flawType
+                                flawType,
+                                mitigationEntries.join("\n"),
+                                annotationEntries.join("\n")
                         ]
                         rows.add(row)
                     }
