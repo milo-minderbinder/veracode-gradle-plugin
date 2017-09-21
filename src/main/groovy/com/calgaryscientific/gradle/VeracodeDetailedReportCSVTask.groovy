@@ -66,15 +66,14 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
     }
 
     /**
-     * Extracts the software_composition_analysis section of the detailed XML report and prints it as a separate csv file.
+     * Extracts the software_composition_analysis information of the detailed XML report and return a list of rows with it
      * @param xml - detailed report.
      * @param file - file to write the report to.
      */
-    static void softwareCompositionAnalysisCSV(Node xml, File file) {
-        BufferedWriter writer = new BufferedWriter(file.newWriter())
-        CSVPrinter csv = new CSVPrinter(writer, CSVFormat.DEFAULT)
+    static List<List<String>> softwareCompositionAnalysisRows(Node xml) {
+        List<List<String>> rows = []
         List<String> headerRow = ['library', 'file_name', 'vendor', 'description', 'cve_id', 'cwe_id', 'cvss_score', 'severity', 'cve_summary']
-        csv.printRecord(headerRow)
+        rows.add(headerRow)
         NodeList componentList = XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component')
         /**
          * Component tree:
@@ -103,20 +102,21 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                     String cwe_id = vulnerability.attribute('cwe_id')
                     String severity = vulnerability.attribute('severity')
                     List<String> row = [library, file_name, vendor, description, cve_id, cwe_id, cvss_score, severity, cve_summary]
-                    csv.printRecord(row)
+                    rows.add(row)
                 }
             }
         }
-        writer.flush()
-        writer.close()
-        csv.close()
+        return rows
     }
 
-    static void flawReportCSV(Node xml, File flawsDetailedReportCSVFile, File openFlawsDetailedReportCSVFile) {
-        BufferedWriter flawsDetailedReportCSVWriter = new BufferedWriter(flawsDetailedReportCSVFile.newWriter())
-        BufferedWriter openFlawsDetailedReportCSVWriter = new BufferedWriter(openFlawsDetailedReportCSVFile.newWriter())
-        CSVPrinter csvFlawsReport = new CSVPrinter(flawsDetailedReportCSVWriter, CSVFormat.DEFAULT)
-        CSVPrinter csvOpenFlawsReport = new CSVPrinter(openFlawsDetailedReportCSVWriter, CSVFormat.DEFAULT)
+    /**
+     * Extracts the flaws information of the detailed XML report and return a list of rows with it
+     *
+     * @param xml
+     * @return flawRows
+     */
+    static List<List<String>> extractFlawsFromDetailedReport(Node xml) {
+        List<List<String>> rows = []
         List<String> headerRow = [
                 'Category ID',
                 'Category Name',
@@ -138,8 +138,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                 'Source File Path',
                 'Type'
         ]
-        csvFlawsReport.printRecord(headerRow)
-        csvOpenFlawsReport.printRecord(headerRow)
+        rows.add(headerRow)
         NodeList severityList = XMLIO.getNodeList(xml, 'severity')
         for (int i = 0; i < severityList.size(); i++) {
             Node severity = severityList.get(i) as Node
@@ -230,26 +229,65 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                                 flawSourceFilePath,
                                 flawType
                         ]
-                        csvFlawsReport.printRecord(row)
-                        if (flawRemediationStatus == "Open") {
-                            csvOpenFlawsReport.printRecord(row)
-                        }
+                        rows.add(row)
                     }
                 }
             }
         }
-        flawsDetailedReportCSVWriter.flush()
-        flawsDetailedReportCSVWriter.close()
-        openFlawsDetailedReportCSVWriter.flush()
-        openFlawsDetailedReportCSVWriter.close()
-        csvFlawsReport.close()
-        csvOpenFlawsReport.close()
+        return rows
+    }
+
+    /**
+     * Write a list of rows to a CSV file
+     * @param csvFile
+     * @param rows
+     */
+    static void writeCSV(File csvFile, List<List<String>> rows) {
+        BufferedWriter csvFileWriter = new BufferedWriter(csvFile.newWriter())
+        CSVPrinter csvPrinter = new CSVPrinter(csvFileWriter, CSVFormat.DEFAULT)
+        for (List<String> row : rows) {
+            csvPrinter.printRecord(row)
+        }
+        csvFileWriter.flush()
+        csvFileWriter.close()
+        csvPrinter.close()
+    }
+
+    /**
+     * Given a list of flaw rows, it extracts the open flaws into another row list.
+     * It assumes remediation status is column 13
+     * @param flawRows
+     * @return
+     */
+    static List<List<String>> extractOpenFlawsFromFlawRows(List<List<String>> flawRows) {
+        List<List<String>> rows = []
+        int remediationStatusColumn = 13
+        if (flawRows.size() < 1) {
+            return rows
+        }
+        if (flawRows[0].size() < remediationStatusColumn) {
+            println "ERROR: Wrong column size"
+            return rows
+        }
+        // header row
+        rows.add(flawRows[0])
+        for (int i = 1; i < flawRows.size(); i++) {
+            List<String> row = flawRows[i]
+            if (row[remediationStatusColumn] == "Open") {
+                rows.add(row)
+            }
+        }
+        return rows
     }
 
     void run() {
         Node xml = XMLIO.readXml(inputFile)
-        flawReportCSV(xml, flawsDetailedReportCSVFile, openFlawsDetailedReportCSVFile)
-        softwareCompositionAnalysisCSV(xml, softwareCompositionAnalysisFile)
+        List<List<String>> flaws = extractFlawsFromDetailedReport(xml)
+        writeCSV(flawsDetailedReportCSVFile, flaws)
+        List<List<String>> openFlaws = extractOpenFlawsFromFlawRows(flaws)
+        writeCSV(openFlawsDetailedReportCSVFile, openFlaws)
+        List<List<String>> scaRows = softwareCompositionAnalysisRows(xml)
+        writeCSV(softwareCompositionAnalysisFile, scaRows)
         printf "Flaws Detailed Report CSV File: %s\n", flawsDetailedReportCSVFile
         printf "Open Flaws Detailed Report CSV File: %s\n", openFlawsDetailedReportCSVFile
         printf "Software Composition Analysis CSV File: %s\n", softwareCompositionAnalysisFile

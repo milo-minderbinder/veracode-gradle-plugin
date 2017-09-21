@@ -35,7 +35,8 @@ class VeracodeDetailedReportCSVTest extends VeracodeTaskTest {
         File softwareCompositionAnalysisFile = testProjectDir.newFile('software-composition-analysis.csv')
 
         when:
-        VeracodeDetailedReportCSVTask.softwareCompositionAnalysisCSV(xml, softwareCompositionAnalysisFile)
+        List<List<String>> rows = VeracodeDetailedReportCSVTask.softwareCompositionAnalysisRows(xml)
+        VeracodeDetailedReportCSVTask.writeCSV(softwareCompositionAnalysisFile, rows)
         List<String> output = softwareCompositionAnalysisFile.readLines()
 
         then:
@@ -50,7 +51,10 @@ class VeracodeDetailedReportCSVTest extends VeracodeTaskTest {
         File openFlawsFile = testProjectDir.newFile('buildinfo-open-flaws.csv')
 
         when:
-        VeracodeDetailedReportCSVTask.flawReportCSV(xml, flawsFile, openFlawsFile)
+        List<List<String>> flawRows = VeracodeDetailedReportCSVTask.extractFlawsFromDetailedReport(xml)
+        VeracodeDetailedReportCSVTask.writeCSV(flawsFile, flawRows)
+        List<List<String>> openFlawRows = VeracodeDetailedReportCSVTask.extractOpenFlawsFromFlawRows(flawRows)
+        VeracodeDetailedReportCSVTask.writeCSV(openFlawsFile, openFlawRows)
         List<String> flawsOutput = flawsFile.readLines()
         List<String> openFlawsOutput = openFlawsFile.readLines()
 
