@@ -62,6 +62,32 @@
                 sourcefile="chunk.c"
                 sourcefilepath="path1"
                 type="vsprintf"/>
+          <flaw affects_policy_compliance="false"
+                categoryid="3"
+                categoryname="Stack-based Buffer Overflow"
+                cia_impact="ccc"
+                count="6"
+                cweid="121"
+                date_first_occurrence="2017-06-18 16:22:39 UTC"
+                description="This call to vsprintf() contains a buffer overflow..."
+                exploitLevel="0"
+                functionprototype="void fun(...)"
+                functionrelativelocation="57"
+                grace_period_expires=""
+                issueid="123"
+                line="305"
+                mitigation_status="proposed"
+                mitigation_status_desc="Mitigation Proposed"
+                module="lib1.dll"
+                note=""
+                pcirelated="false"
+                remediation_status="New"
+                remediationeffort="2"
+                scope="UNKNOWN"
+                severity="5"
+                sourcefile="chunk.c"
+                sourcefilepath="path1"
+                type="vsprintf"/>
         </staticflaws>
       </cwe>
     </category>

@@ -302,7 +302,9 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
         rows.add(flawRows[0])
         for (int i = 1; i < flawRows.size(); i++) {
             List<String> row = flawRows[i]
-            if (row[remediationStatusColumn] == "Open") {
+            if (row[remediationStatusColumn] == "Open" ||
+                    row[remediationStatusColumn] == "New" ||
+                    row[remediationStatusColumn] != "Fixed") {
                 rows.add(row)
             }
         }
