@@ -26,7 +26,7 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeDetailedReportCSVTest extends VeracodeTaskTest {
+class VeracodeDetailedReportCSVTest extends TestCommonSetup {
     File detailedReportFile = getResource('detailedreport-1.5.xml')
 
     def 'Test softwareCompositionAnalysisCSV'() {
