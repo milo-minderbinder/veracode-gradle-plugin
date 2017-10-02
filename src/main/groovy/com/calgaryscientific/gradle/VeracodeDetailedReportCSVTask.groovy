@@ -138,7 +138,9 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                 'Source File Path',
                 'Type',
                 'Mitigations',
-                'Annotations'
+                'Annotations',
+                'Mitigations XML',
+                'Annotations XML'
         ]
         rows.add(headerRow)
         NodeList severityList = XMLIO.getNodeList(xml, 'severity')
@@ -234,6 +236,8 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                                     annotationAction, annotationDate, annotationUser, annotationDescription
                             annotationEntries.add(annotationEntry)
                         }
+                        Node mitigations = XMLIO.getNode(flaw, 'mitigations')
+                        Node annotations = XMLIO.getNode(flaw, 'annotations')
 
                         List<String> row = [
                                 flawCategoryID,
@@ -256,7 +260,9 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
                                 flawSourceFilePath,
                                 flawType,
                                 mitigationEntries.join("\n"),
-                                annotationEntries.join("\n")
+                                annotationEntries.join("\n"),
+                                XMLIO.getNodeAsString(mitigations, false),
+                                XMLIO.getNodeAsString(annotations, false)
                         ]
                         rows.add(row)
                     }
