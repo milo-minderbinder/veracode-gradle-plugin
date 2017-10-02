@@ -84,7 +84,7 @@ class XMLIO {
             if (nodeList.size() >= 1) {
                 return nodeList.get(0) as Node
             } else {
-                return null
+                return new Node(null, '')
             }
         } else if (name.size() > 1) {
             NodeList nodeList = node.get(name[0]) as NodeList
@@ -92,10 +92,10 @@ class XMLIO {
                 Node subNode = nodeList.get(0) as Node
                 return getNode(subNode, name[1..-1])
             } else {
-                return null
+                return new Node(null, '')
             }
         }
-        return null
+        return new Node(null, '')
     }
 
     /**
@@ -115,13 +115,23 @@ class XMLIO {
                 Node subNode = nodeList.get(0) as Node
                 return getNodeList(subNode, name[1..-1])
             } else {
-                return null
+                return new NodeList()
             }
         }
-        return null
+        return new NodeList()
     }
 
     static fail(String msg) {
         throw new GradleException(msg)
+    }
+
+    static String getNodeAsString(Node node, boolean namespaceAware) {
+        StringWriter str = new StringWriter();
+        PrintWriter pw = new PrintWriter(str)
+        XmlNodePrinter np = new groovy.util.XmlNodePrinter(pw)
+        np.setNamespaceAware(namespaceAware)
+        np.setPreserveWhitespace(false)
+        np.print(node)
+        return str.toString().trim()
     }
 }
