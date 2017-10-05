@@ -141,24 +141,24 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
     static List<List<String>> extractFlawsFromDetailedReport(Node xml) {
         List<List<String>> rows = []
         List<String> flawFields = [
-                'categoryid',
-                'categoryname',
-                'cweid',
-                'date_first_occurrence',
-                'description',
-                'exploitLevel',
-                'functionprototype',
-                'functionrelativelocation',
                 'issueid',
-                'line',
-                'mitigation_status',
-                'mitigation_status_desc',
-                'module',
+                'severity',
+                'exploitLevel',
+                'categoryid',
+                'cweid',
+                'categoryname',
+                'date_first_occurrence',
                 'remediation_status',
                 'remediationeffort',
-                'severity',
-                'sourcefile',
+                'mitigation_status',
+                'mitigation_status_desc',
+                'description',
+                'module',
                 'sourcefilepath',
+                'sourcefile',
+                'line',
+                'functionprototype',
+                'functionrelativelocation',
                 'type',
         ]
         List<String> extraFields = [
@@ -224,7 +224,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
      */
     static List<List<String>> extractOpenFlawsFromFlawRows(List<List<String>> flawRows) {
         List<List<String>> rows = []
-        int remediationStatusColumn = 13
+        int remediationStatusColumn = 7
         if (flawRows.size() < 1) {
             return rows
         }

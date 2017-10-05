@@ -56,12 +56,11 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         List<String> flawsOutput = flawsFile.readLines()
 
         then:
-        assert flawsOutput[0] == 'categoryid,categoryname,cweid,date_first_occurrence,description,exploitLevel,functionprototype,functionrelativelocation,issueid,line,mitigation_status,mitigation_status_desc,module,remediation_status,remediationeffort,severity,sourcefile,sourcefilepath,type,mitigations,annotations,mitigations_xml,annotations_xml'
-        assert flawsOutput[1] == "3,Stack-based Buffer Overflow,121,2017-06-18 16:22:39 UTC,This call to vsprintf() contains a buffer overflow...,0,void fun(...),57,123,305,proposed,Mitigation Proposed,lib1.dll,Fixed,2,5,chunk.c,path1,vsprintf,,,</>,</>"
-        assert flawsOutput[2] == "3,Stack-based Buffer Overflow,121,2017-06-18 16:22:39 UTC,This call to vsprintf() contains a buffer overflow...,0,void fun(...),57,123,305,proposed,Mitigation Proposed,lib1.dll,New,2,5,chunk.c,path1,vsprintf,,,</>,</>"
+        assert flawsOutput[0] == 'issueid,severity,exploitLevel,categoryid,cweid,categoryname,date_first_occurrence,remediation_status,remediationeffort,mitigation_status,mitigation_status_desc,description,module,sourcefilepath,sourcefile,line,functionprototype,functionrelativelocation,type,mitigations,annotations,mitigations_xml,annotations_xml'
+        assert flawsOutput[1] == "123,5,0,3,121,Stack-based Buffer Overflow,2017-06-18 16:22:39 UTC,Fixed,2,proposed,Mitigation Proposed,This call to vsprintf() contains a buffer overflow...,lib1.dll,path1,chunk.c,305,void fun(...),57,vsprintf,,,</>,</>"
+        assert flawsOutput[2] == "123,5,0,3,121,Stack-based Buffer Overflow,2017-06-18 16:22:39 UTC,New,2,proposed,Mitigation Proposed,This call to vsprintf() contains a buffer overflow...,lib1.dll,path1,chunk.c,305,void fun(...),57,vsprintf,,,</>,</>"
         // TODO: Gradle isn't properly asserting flawsOutput[3]. Seems related to the \n char
-        // assert flawsOutput[3] == "18,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),78,2017-04-15 20:08:51 UTC,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,0,void run(),49,181,115,proposed,Mitigation Proposed,moudle\$something,Open,3,5,module.java,path,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name\ndescription: ...\n\naction: Potential False Positive, date: 2017-11-10 20:59:28, user: User Name\ndescription: ...\n\""
-        assert flawsOutput[3] == "18,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),78,2017-04-15 20:08:51 UTC,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,0,void run(),49,181,115,proposed,Mitigation Proposed,moudle\$something,Open,3,5,module.java,path,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name"
+        assert flawsOutput[3] == "181,5,0,18,78,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),2017-04-15 20:08:51 UTC,Open,3,proposed,Mitigation Proposed,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,moudle\$something,path,module.java,115,void run(),49,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name"
     }
 
     def 'Test getting CSV report for open flaws'() {
@@ -76,9 +75,9 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         List<String> openFlawsOutput = openFlawsFile.readLines()
 
         then:
-        assert openFlawsOutput[0] == 'categoryid,categoryname,cweid,date_first_occurrence,description,exploitLevel,functionprototype,functionrelativelocation,issueid,line,mitigation_status,mitigation_status_desc,module,remediation_status,remediationeffort,severity,sourcefile,sourcefilepath,type,mitigations,annotations,mitigations_xml,annotations_xml'
-        assert openFlawsOutput[1] == "3,Stack-based Buffer Overflow,121,2017-06-18 16:22:39 UTC,This call to vsprintf() contains a buffer overflow...,0,void fun(...),57,123,305,proposed,Mitigation Proposed,lib1.dll,New,2,5,chunk.c,path1,vsprintf,,,</>,</>"
+        assert openFlawsOutput[0] == 'issueid,severity,exploitLevel,categoryid,cweid,categoryname,date_first_occurrence,remediation_status,remediationeffort,mitigation_status,mitigation_status_desc,description,module,sourcefilepath,sourcefile,line,functionprototype,functionrelativelocation,type,mitigations,annotations,mitigations_xml,annotations_xml'
+        assert openFlawsOutput[1] == "123,5,0,3,121,Stack-based Buffer Overflow,2017-06-18 16:22:39 UTC,New,2,proposed,Mitigation Proposed,This call to vsprintf() contains a buffer overflow...,lib1.dll,path1,chunk.c,305,void fun(...),57,vsprintf,,,</>,</>"
         // TODO: Gradle isn't properly asserting openFlawsOutput[2]. Seems related to the \n char
-        assert openFlawsOutput[2] == "18,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),78,2017-04-15 20:08:51 UTC,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,0,void run(),49,181,115,proposed,Mitigation Proposed,moudle\$something,Open,3,5,module.java,path,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name"
+        assert openFlawsOutput[2] == "181,5,0,18,78,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),2017-04-15 20:08:51 UTC,Open,3,proposed,Mitigation Proposed,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,moudle\$something,path,module.java,115,void run(),49,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name"
     }
 }
