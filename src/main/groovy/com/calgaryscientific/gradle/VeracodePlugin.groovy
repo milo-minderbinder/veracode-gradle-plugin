@@ -29,6 +29,7 @@ package com.calgaryscientific.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+@groovy.transform.CompileStatic
 class VeracodePlugin implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create('veracodeSetup', VeracodeSetup)
@@ -50,6 +51,7 @@ class VeracodePlugin implements Plugin<Project> {
         // Common tasks
         project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
+        project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
 
         // TODO: Review these tasks
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)

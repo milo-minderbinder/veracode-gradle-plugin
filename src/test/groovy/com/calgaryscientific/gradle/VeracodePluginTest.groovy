@@ -26,56 +26,11 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.testkit.runner.UnexpectedBuildFailure
-import spock.lang.Specification
-import org.gradle.testkit.runner.GradleRunner
-import static org.gradle.testkit.runner.TaskOutcome.*
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.testkit.runner.UnexpectedBuildFailure
+import static org.gradle.testkit.runner.TaskOutcome.*
 
-class VeracodeTaskTest extends Specification {
-    @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
-    Boolean debug = true
-    PrintStream stdout = System.out
-
-    def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
-    }
-
-    def executeTask(String... tasks) {
-        GradleRunner.create()
-                .withDebug(debug)
-                .withProjectDir(testProjectDir.root)
-                .withPluginClasspath()
-                .withArguments(tasks)
-                .build()
-    }
-
-    def mockSystemOut() {
-        def os = new ByteArrayOutputStream()
-        System.out = new PrintStream(os)
-        return os
-    }
-
-    def getSystemOut(def os) {
-        def array = os.toByteArray()
-        def is = new ByteArrayInputStream(array)
-        return is
-    }
-
-    def restoreStdout() {
-        System.out = stdout
-    }
-
-    File getResource(String filename) {
-        new File(getClass().classLoader.getResource(filename).toURI())
-    }
-
+class VeracodePluginTest extends TestCommonSetup {
     def 'Test Task Existence'() {
         when:
         def project = new ProjectBuilder().build()
@@ -190,5 +145,4 @@ class VeracodeTaskTest extends Specification {
         def _ = vsRead.filesToUpload.add(buildFile)
         assert vsRead.filesToUpload == [buildFile, buildFile] as Set
     }
-
 }

@@ -69,6 +69,14 @@ class VeracodeAPI {
         return uploadAPI().uploadFile(app_id, filePath)
     }
 
+    String detailedReport(String build_id) {
+        return resultsAPI().detailedReport(build_id)
+    }
+
+    byte[] detailedReportPdf(String build_id) {
+        return resultsAPI().detailedReportPdf(build_id)
+    }
+
     private boolean useAPICredentials() {
         if (username && password) {
             log.debug('Using username and password authentication')

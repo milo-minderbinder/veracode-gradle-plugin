@@ -26,16 +26,30 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.tasks.OutputFile
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeDetailedReportTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReport'
+    private String build_id
 
     VeracodeDetailedReportTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in'
+        description = 'Gets the Veracode Scan Detailed Report based on the given build_id'
         requiredArguments << 'build_id'
+        build_id = project.findProperty("build_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.xml")
+    }
+
+    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
+    @OutputFile
+    File getOutputFile() {
+        return defaultOutputFile
     }
 
     void run() {
-        String xmlResponse = resultsAPI().detailedReport(project.build_id)
-        xmlio.writeXml('scan-results.xml', xmlResponse)
+        File file = getOutputFile()
+        XMLIO.writeXml(file, veracodeAPI.detailedReport(build_id))
+        printf "report file: %s\n", file
     }
 }

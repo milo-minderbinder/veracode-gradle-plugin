@@ -26,7 +26,7 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeGetPreScanResultsTest extends VeracodeTaskTest {
+class VeracodeGetPreScanResultsTest extends TestCommonSetup {
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
     def 'Test VeracodeGetPreScanResults printModuleStatus'() {

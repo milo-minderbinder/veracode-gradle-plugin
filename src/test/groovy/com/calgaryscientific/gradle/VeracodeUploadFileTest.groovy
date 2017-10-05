@@ -30,7 +30,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 
-class VeracodeUploadFileTest extends VeracodeTaskTest {
+class VeracodeUploadFileTest extends TestCommonSetup {
 
     File filelistFile = getResource('filelist-1.1.xml')
 
