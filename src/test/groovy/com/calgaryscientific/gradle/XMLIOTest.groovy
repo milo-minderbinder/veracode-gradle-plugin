@@ -26,8 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import spock.lang.Specification
-
 class XMLIOTest extends TestCommonSetup {
     def 'Test getNode gets first node when there are multiple options'() {
         given:
@@ -62,7 +60,7 @@ class XMLIOTest extends TestCommonSetup {
         assert XMLIO.getNode(xml, 'module', 'file_issue').attribute('filename') == 'noDebug.ext'
     }
 
-    def 'Test getNodeList returns a NodeList instead of a single Node'() {
+    def 'Test getNodeList returns a List<Node> instead of a single Node'() {
         given:
         File fileList = getResource('filelist-1.1.xml')
 
@@ -75,7 +73,7 @@ class XMLIOTest extends TestCommonSetup {
         assert XMLIO.getNodeList(xml,'file')[2].attribute('file_id') == "3"
     }
 
-    def 'Test getNodeList returns a NodeList object when the requested node does not exists or is not provided'() {
+    def 'Test getNodeList returns a List<Node> object when the requested node does not exists or is not provided'() {
         given:
         File fileList = getResource('filelist-1.1.xml')
 
@@ -111,7 +109,18 @@ class XMLIOTest extends TestCommonSetup {
         Node fileNode = XMLIO.getNode(xml,'file')
 
         then:
-        assert XMLIO.getNodeAsString(fileNode, false) == '<file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>'
-        assert XMLIO.getNodeAsString(fileNode, true) == '<file xmlns="https://analysiscenter.veracode.com/schema/2.0/filelist" file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>'
+        assert XMLIO.getNodeAsXMLString(fileNode, false) == '<file file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>'
+        assert XMLIO.getNodeAsXMLString(fileNode, true) == '<file xmlns="https://analysiscenter.veracode.com/schema/2.0/filelist" file_id="1" file_md5="d98b6f5ccfce3799e9b60b5d78cc1" file_name="file1" file_status="Uploaded"/>'
+    }
+
+    def 'Test getNodeAttributes'() {
+        given:
+        File fileList = getResource('filelist-1.1.xml')
+        Node xml = XMLIO.parse(fileList)
+        Node file = XMLIO.getNode(xml,'file')
+
+        expect:
+        assert XMLIO.getNodeAttributes(file,'file_id') == ["1"]
+        assert XMLIO.getNodeAttributes(file,'file_id', 'file_name', 'file_status') == ["1", "file1", "Uploaded"]
     }
 }

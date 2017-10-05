@@ -69,40 +69,26 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
      * Extracts the software_composition_analysis information of the detailed XML report and return a list of rows with it
      * @param xml - detailed report.
      * @param file - file to write the report to.
+     *
+     * Component tree:
+     *
+     * /component @description @file_name @library @max_cvss_score @sha1 @vendor @version @vulnerabilities
+     *  /file_paths
+     *      /file_path @value
+     *  /vulnerabilities
+     *      /vulnerability @cve_id @cve_summary @cvss_score @cwe_id @severity
+     *  /violated_policy_rules
      */
     static List<List<String>> softwareCompositionAnalysisRows(Node xml) {
         List<List<String>> rows = []
-        List<String> headerRow = ['library', 'file_name', 'vendor', 'description', 'cve_id', 'cwe_id', 'cvss_score', 'severity', 'cve_summary']
-        rows.add(headerRow)
-        NodeList componentList = XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component')
-        /**
-         * Component tree:
-         *
-         * /component @description @file_name @library @max_cvss_score @sha1 @vendor @version @vulnerabilities
-         *  /file_paths
-         *      /file_path @value
-         *  /vulnerabilities
-         *      /vulnerability @cve_id @cve_summary @cvss_score @cwe_id @severity
-         *  /violated_policy_rules
-         */
-        for (int i = 0; i < componentList.size(); i++) {
-            Node component = componentList.get(i) as Node
-            Integer vulnerabilities = component.attribute('vulnerabilities') as Integer
-            if (vulnerabilities > 0) {
-                String description = component.attribute('description')
-                String library = component.attribute('library')
-                String file_name = component.attribute('file_name')
-                String vendor = component.attribute('vendor')
-                NodeList vulnerabilityList = XMLIO.getNodeList(component, 'vulnerabilities', 'vulnerability')
-                for (int j = 0; j < vulnerabilityList.size(); j++) {
-                    Node vulnerability = vulnerabilityList.get(j) as Node
-                    String cve_id = vulnerability.attribute('cve_id')
-                    String cve_summary = vulnerability.attribute('cve_summary')
-                    String cvss_score = vulnerability.attribute('cvss_score')
-                    String cwe_id = vulnerability.attribute('cwe_id')
-                    String severity = vulnerability.attribute('severity')
-                    List<String> row = [library, file_name, vendor, description, cve_id, cwe_id, cvss_score, severity, cve_summary]
-                    rows.add(row)
+        List<String> componentFields = ['library', 'file_name', 'vendor', 'description']
+        List<String> vulnerabilityFields = ['cve_id', 'cwe_id', 'cvss_score', 'severity', 'cve_summary']
+        // header row
+        rows.add(componentFields + vulnerabilityFields)
+        for (Node component : XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component')) {
+            if ((component.attribute('vulnerabilities') as Integer) > 0) {
+                for (Node vulnerability : XMLIO.getNodeList(component, 'vulnerabilities', 'vulnerability')) {
+                    rows.add(XMLIO.getNodeAttributes(component, componentFields) + XMLIO.getNodeAttributes(vulnerability, vulnerabilityFields))
                 }
             }
         }
@@ -114,162 +100,104 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
      *
      * @param xml
      * @return flawRows
-     */
+     *
+     * cwe tree:
+     *
+     * /cwe @certc @certcpp @certjava @cweid @cwename @owasp @pcirelated @sans
+     *     /description
+     *         /text @text
+     *     /staticflaws
+     *         /flaw @affects_policy_compliance
+     *              -@categoryid
+     *              -@categoryname
+     *              -@cia_impact
+     *              -@count
+     *              -@cweid
+     *              -@date_first_occurrence
+     *              -@description
+     *              -@exploitLevel
+     *              -@functionprototype
+     *              -@functionrelativelocation
+     *              -@grace_period_expires
+     *              -@issueid
+     *              -@line
+     *              -@mitigation_status
+     *              -@mitigation_status_desc
+     *              -@module
+     *              -@note
+     *              -@pcirelated
+     *              -@remediation_status
+     *              -@remediationeffort
+     *              -@scope
+     *              -@severity
+     *              -@sourcefile
+     *              -@sourcefilepath
+     *              -@type
+     *             /mitigations
+     *                /mitigation @action @date @description @user
+     *            /annotations
+     *                /annotation @action @date @description @user
+     * */
     static List<List<String>> extractFlawsFromDetailedReport(Node xml) {
         List<List<String>> rows = []
-        List<String> headerRow = [
-                'Category ID',
-                'Category Name',
-                'CWE ID',
-                'Date',
-                'Description',
-                'Exploit Level',
-                'Function Prototype',
-                'Function Relative Location',
-                'Issue ID',
-                'Line',
-                'Mitigation Status',
-                'Mitigation StatusDesc',
-                'Module',
-                'Remediation Status',
-                'Remediation Effort',
-                'Severity',
-                'Source File',
-                'Source File Path',
-                'Type',
-                'Mitigations',
-                'Annotations',
-                'Mitigations XML',
-                'Annotations XML'
+        List<String> flawFields = [
+                'categoryid',
+                'categoryname',
+                'cweid',
+                'date_first_occurrence',
+                'description',
+                'exploitLevel',
+                'functionprototype',
+                'functionrelativelocation',
+                'issueid',
+                'line',
+                'mitigation_status',
+                'mitigation_status_desc',
+                'module',
+                'remediation_status',
+                'remediationeffort',
+                'severity',
+                'sourcefile',
+                'sourcefilepath',
+                'type',
         ]
-        rows.add(headerRow)
-        NodeList severityList = XMLIO.getNodeList(xml, 'severity')
-        for (int i = 0; i < severityList.size(); i++) {
-            Node severity = severityList.get(i) as Node
-            NodeList categoryList = XMLIO.getNodeList(severity, 'category')
-            for (int j = 0; j < categoryList.size(); j++) {
-                Node category = categoryList.get(j) as Node
-                /**
-                 * cwe tree:
-                 *
-                 * /cwe @certc @certcpp @certjava @cweid @cwename @owasp @pcirelated @sans
-                 *     /description
-                 *         /text @text
-                 *     /staticflaws
-                 *         /flaw @affects_policy_compliance
-                 *              -@categoryid
-                 *              -@categoryname
-                 *              -@cia_impact
-                 *              -@count
-                 *              -@cweid
-                 *              -@date_first_occurrence
-                 *              -@description
-                 *              -@exploitLevel
-                 *              -@functionprototype
-                 *              -@functionrelativelocation
-                 *              -@grace_period_expires
-                 *              -@issueid
-                 *              -@line
-                 *              -@mitigation_status
-                 *              -@mitigation_status_desc
-                 *              -@module
-                 *              -@note
-                 *              -@pcirelated
-                 *              -@remediation_status
-                 *              -@remediationeffort
-                 *              -@scope
-                 *              -@severity
-                 *              -@sourcefile
-                 *              -@sourcefilepath
-                 *              -@type
-                 *             /mitigations
-                 *                /mitigation @action @date @description @user
-                 *            /annotations
-                 *                /annotation @action @date @description @user
-                 * */
-                NodeList cweList = XMLIO.getNodeList(category, 'cwe')
-                for (int k = 0; k < cweList.size(); k++) {
-                    Node cwe = cweList.get(k) as Node
-                    NodeList flawList = XMLIO.getNodeList(cwe, 'staticflaws', 'flaw')
-                    for (int l = 0; l < flawList.size(); l++) {
-                        Node flaw = flawList.get(l) as Node
-                        String flawCategoryID = flaw.attribute('categoryid')
-                        String flawCategoryName = flaw.attribute('categoryname')
-                        String flawCWEID = flaw.attribute('cweid')
-                        String flawDate = flaw.attribute('date_first_occurrence')
-                        String flawDescription = flaw.attribute('description')
-                        String flawExploitLevel = flaw.attribute('exploitLevel')
-                        String flawFunctionPrototype = flaw.attribute('functionprototype')
-                        String flawFunctionRelativeLocation = flaw.attribute('functionrelativelocation')
-                        String flawIssueID = flaw.attribute('issueid')
-                        String flawLine = flaw.attribute('line')
-                        String flawMitigationStatus = flaw.attribute('mitigation_status')
-                        String flawMitigationStatusDesc = flaw.attribute('mitigation_status_desc')
-                        String flawModule = flaw.attribute('module')
-                        String flawRemediationStatus = flaw.attribute('remediation_status')
-                        String flawRemediationEffort = flaw.attribute('remediationeffort')
-                        String flawSeverity = flaw.attribute('severity')
-                        String flawSourceFile = flaw.attribute('sourcefile')
-                        String flawSourceFilePath = flaw.attribute('sourcefilepath')
-                        String flawType = flaw.attribute('type')
-                        NodeList mitigationList = XMLIO.getNodeList(flaw, 'mitigations', 'mitigation')
-                        List<String> mitigationEntries = []
-                        for (int m = 0; m < mitigationList.size(); m++) {
-                            Node mitigation = mitigationList.get(m) as Node
-                            String mitigationAction = mitigation.attribute('action')
-                            String mitigationDate = mitigation.attribute('date')
-                            String mitigationDescription = mitigation.attribute('description')
-                            String mitigationUser = mitigation.attribute('user')
-                            String mitigationEntry = sprintf "action: %s, date: %s, user: %s\ndescription: %s\n",
-                                    mitigationAction, mitigationDate, mitigationUser, mitigationDescription
-                            mitigationEntries.add(mitigationEntry)
-                        }
-                        NodeList annotationList = XMLIO.getNodeList(flaw, 'annotations', 'annotation')
-                        List<String> annotationEntries = []
-                        for (int m = 0; m < annotationList.size(); m++) {
-                            Node annotation = annotationList.get(m) as Node
-                            String annotationAction = annotation.attribute('action')
-                            String annotationDate = annotation.attribute('date')
-                            String annotationDescription = annotation.attribute('description')
-                            String annotationUser = annotation.attribute('user')
-                            String annotationEntry = sprintf "action: %s, date: %s, user: %s\ndescription: %s\n",
-                                    annotationAction, annotationDate, annotationUser, annotationDescription
-                            annotationEntries.add(annotationEntry)
-                        }
-                        Node mitigations = XMLIO.getNode(flaw, 'mitigations')
-                        Node annotations = XMLIO.getNode(flaw, 'annotations')
-
-                        List<String> row = [
-                                flawCategoryID,
-                                flawCategoryName,
-                                flawCWEID,
-                                flawDate,
-                                flawDescription,
-                                flawExploitLevel,
-                                flawFunctionPrototype,
-                                flawFunctionRelativeLocation,
-                                flawIssueID,
-                                flawLine,
-                                flawMitigationStatus,
-                                flawMitigationStatusDesc,
-                                flawModule,
-                                flawRemediationStatus,
-                                flawRemediationEffort,
-                                flawSeverity,
-                                flawSourceFile,
-                                flawSourceFilePath,
-                                flawType,
-                                mitigationEntries.join("\n"),
-                                annotationEntries.join("\n"),
-                                XMLIO.getNodeAsString(mitigations, false),
-                                XMLIO.getNodeAsString(annotations, false)
+        List<String> extraFields = [
+                'mitigations',
+                'annotations',
+                'mitigations_xml',
+                'annotations_xml'
+        ]
+        // header row
+        rows.add(flawFields + extraFields)
+        for (Node severity : XMLIO.getNodeList(xml, 'severity')) {
+            for (Node category : XMLIO.getNodeList(severity, 'category')) {
+                for (Node cwe : XMLIO.getNodeList(category, 'cwe')) {
+                    for (Node flaw : XMLIO.getNodeList(cwe, 'staticflaws', 'flaw')) {
+                        List<String> flawAttributes = XMLIO.getNodeAttributes(flaw, flawFields)
+                        List<String> extraEntries = [
+                                getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'mitigations'), 'mitigation'),
+                                getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'annotations'), 'annotation'),
+                                XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'mitigations'), false),
+                                XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'annotations'), false)
                         ]
-                        rows.add(row)
+                        rows.add(flawAttributes + extraEntries)
                     }
                 }
             }
         }
         return rows
+    }
+
+    /**
+     * Given a mitigations or annotations Node it will return its formatted content
+     * @param node
+     * @return formatted string
+     */
+    static String getMitigationsAnnotationsAsString(Node node, String type) {
+        XMLIO.getNodeList(node, type).collect { n ->
+            List<String> nodeAttributes = XMLIO.getNodeAttributes(n, 'action', 'date', 'user', 'description')
+            return sprintf("action: %s, date: %s, user: %s\ndescription: %s\n", nodeAttributes)
+        }.join("\n")
     }
 
     /**

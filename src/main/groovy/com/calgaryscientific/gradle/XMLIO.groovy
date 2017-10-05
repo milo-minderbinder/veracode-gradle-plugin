@@ -80,14 +80,14 @@ class XMLIO {
 
     static Node getNode(Node node, List<String> name) {
         if (name.size() == 1) {
-            NodeList nodeList = node.get(name[0]) as NodeList
+            List<Node> nodeList = node.get(name[0]) as List<Node>
             if (nodeList.size() >= 1) {
                 return nodeList.get(0) as Node
             } else {
                 return new Node(null, '')
             }
         } else if (name.size() > 1) {
-            NodeList nodeList = node.get(name[0]) as NodeList
+            List<Node> nodeList = node.get(name[0]) as List<Node>
             if (nodeList.size() >= 1) {
                 Node subNode = nodeList.get(0) as Node
                 return getNode(subNode, name[1..-1])
@@ -102,30 +102,40 @@ class XMLIO {
      * getNodeList - For a list of nodes names it will iterate over the first node
      * matching the name until the last member in which case it will return the entire nodeList
      */
-    static NodeList getNodeList(Node node, String... name) {
+    static List<Node> getNodeList(Node node, String... name) {
         return getNodeList(node, name.toList())
     }
 
-    static NodeList getNodeList(Node node, List<String> name) {
+    static List<Node> getNodeList(Node node, List<String> name) {
         if (name.size() == 1) {
-            return node.get(name[0]) as NodeList
+            return node.get(name[0]) as List<Node>
         } else if (name.size() > 1) {
-            NodeList nodeList = node.get(name[0]) as NodeList
+            List<Node> nodeList = node.get(name[0]) as List<Node>
             if (nodeList.size() >= 1) {
                 Node subNode = nodeList.get(0) as Node
                 return getNodeList(subNode, name[1..-1])
             } else {
-                return new NodeList()
+                return new ArrayList<Node>()
             }
         }
-        return new NodeList()
+        return new ArrayList<Node>()
+    }
+
+    static List<String> getNodeAttributes(Node node, String... attributes){
+        return getNodeAttributes(node, attributes.toList())
+    }
+
+    static List<String> getNodeAttributes(Node node, List<String> attributes){
+        return attributes.collect { attr ->
+            node.attribute(attr) as String
+        }
     }
 
     static fail(String msg) {
         throw new GradleException(msg)
     }
 
-    static String getNodeAsString(Node node, boolean namespaceAware) {
+    static String getNodeAsXMLString(Node node, boolean namespaceAware) {
         StringWriter str = new StringWriter();
         PrintWriter pw = new PrintWriter(str)
         XmlNodePrinter np = new groovy.util.XmlNodePrinter(pw)
