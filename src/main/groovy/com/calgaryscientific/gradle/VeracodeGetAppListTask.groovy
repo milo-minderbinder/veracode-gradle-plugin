@@ -30,7 +30,7 @@ class VeracodeGetAppListTask extends VeracodeTask {
     static final String NAME = 'veracodeGetAppList'
 
     VeracodeGetAppListTask() {
-        description = 'Lists all applications from the Veracode site with Application number to Application name mapping'
+        description = 'List all Veracode applications'
     }
 
     void run() {

@@ -38,7 +38,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
     String waitTimeBetweenAttempts
 
     VeracodeUploadFileTask() {
-        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given app_id"
+        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'"
         requiredArguments << 'app_id'
         optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
         app_id = project.findProperty("app_id")

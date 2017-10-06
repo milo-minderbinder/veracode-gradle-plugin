@@ -30,7 +30,7 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
     static final String NAME = 'veracodeBeginPreScan'
 
     VeracodeBeginPreScanTask() {
-        description = 'Start Veracode pre-scan for the application id passed in'
+        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
         requiredArguments << 'app_id'
     }
 

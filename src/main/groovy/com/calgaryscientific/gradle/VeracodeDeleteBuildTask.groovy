@@ -30,7 +30,7 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeDeleteBuild'
 
     VeracodeDeleteBuildTask() {
-        description = 'Deletes the most recent build, even those that have their scan completed!'
+        description = "Delete the most recent Veracode build for 'app_id', even if it has a completed scan"
         requiredArguments << 'app_id'
     }
 

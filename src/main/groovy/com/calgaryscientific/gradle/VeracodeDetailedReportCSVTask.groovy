@@ -41,7 +41,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
     private File softwareCompositionAnalysisFile
 
     VeracodeDetailedReportCSVTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in and convert it to CSV format'
+        description = "Get the Veracode Scan Report in CSV format based on the given 'build_id'"
         requiredArguments << 'build_id'
         dependsOn 'veracodeDetailedReport'
         build_id = project.findProperty("build_id")
