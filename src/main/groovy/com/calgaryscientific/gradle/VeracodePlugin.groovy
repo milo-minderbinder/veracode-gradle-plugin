@@ -52,6 +52,7 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
         project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
+        project.task(VeracodeVerifyMitigationsTask.NAME, type: VeracodeVerifyMitigationsTask)
 
         // TODO: Review these tasks
         project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
