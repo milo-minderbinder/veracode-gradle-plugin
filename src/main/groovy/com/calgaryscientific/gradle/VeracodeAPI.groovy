@@ -48,6 +48,14 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String deleteBuild(String app_id) {
+        return uploadAPI().deleteBuild(app_id)
+    }
+
+    String getBuildList(String app_id) {
+        return uploadAPI().getBuildList(app_id)
+    }
+
     String beginScan(String app_id, Set<String> moduleIds) {
         return uploadAPI().beginScan(
                 app_id,

@@ -29,20 +29,13 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
-
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList(app_id))
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
+class VeracodeBuildList {
+    static void printBuildList(Node xml) {
+        String app_id = xml.attribute('app_id') as String
+        XMLIO.getNodeList(xml, 'build').each { build ->
+            printf "app_id=%s ", app_id
+            printf "build_id=%-10s date=%-25s version=\"%s\"\n",
+                    XMLIO.getNodeAttributes(build, 'build_id', 'policy_updated_date', 'version')
+        }
     }
 }
