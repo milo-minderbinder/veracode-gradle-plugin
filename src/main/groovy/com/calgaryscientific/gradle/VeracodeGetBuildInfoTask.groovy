@@ -30,7 +30,7 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetBuildInfo'
 
     VeracodeGetBuildInfoTask() {
-        description = "Lists latest build information for the applicaiton id passed in. If a build id is provided, that build's information will be listed instead"
+        description = "Lists build information for the given 'app_id' and 'build_id'. If no 'build_id' is provided the latest will be used"
         requiredArguments << 'app_id'
         optionalArguments << 'build_id'
     }

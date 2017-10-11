@@ -30,7 +30,7 @@ class VeracodeRemoveFileTask extends VeracodeTask {
     static final String NAME = 'veracodeRemoveFile'
 
     VeracodeRemoveFileTask() {
-        description = 'Remove file based on the file id for the application id passed in'
+        description = "Remove an uploaded file based on the given 'app_id' and 'file_id' combination"
         requiredArguments << 'app_id' << 'file_id'
     }
 

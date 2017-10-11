@@ -30,7 +30,7 @@ class VeracodeGetBuildListTask extends VeracodeTask {
     static final String NAME = 'veracodeGetBuildList'
 
     VeracodeGetBuildListTask() {
-        description = 'Lists builds that are under the apllication id passed in'
+        description = "List builds for the given 'app_id'"
         requiredArguments << 'app_id'
     }
 

@@ -35,7 +35,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
     private String build_id
 
     VeracodeDetailedReportTask() {
-        description = 'Gets the Veracode Scan Detailed Report based on the given build_id'
+        description = "Get the Veracode Scan Report in XML format based on the given 'build_id'"
         requiredArguments << 'build_id'
         build_id = project.findProperty("build_id")
         defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.xml")
@@ -48,8 +48,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
     }
 
     void run() {
-        File file = getOutputFile()
-        XMLIO.writeXml(file, veracodeAPI.detailedReport(build_id))
-        printf "report file: %s\n", file
+        XMLIO.writeXml(getOutputFile(), veracodeAPI.detailedReport(build_id))
+        printf "report file: %s\n", getOutputFile()
     }
 }

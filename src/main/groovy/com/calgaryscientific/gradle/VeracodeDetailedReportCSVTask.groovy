@@ -41,7 +41,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
     private File softwareCompositionAnalysisFile
 
     VeracodeDetailedReportCSVTask() {
-        description = 'Gets the Veracode scan results based on the build id passed in and convert it to CSV format'
+        description = "Get the Veracode Scan Report in CSV format based on the given 'build_id'"
         requiredArguments << 'build_id'
         dependsOn 'veracodeDetailedReport'
         build_id = project.findProperty("build_id")
@@ -101,44 +101,50 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
      * @param xml
      * @return flawRows
      *
-     * cwe tree:
-     *
-     * /cwe @certc @certcpp @certjava @cweid @cwename @owasp @pcirelated @sans
-     *     /description
-     *         /text @text
-     *     /staticflaws
-     *         /flaw @affects_policy_compliance
-     *              -@categoryid
-     *              -@categoryname
-     *              -@cia_impact
-     *              -@count
-     *              -@cweid
-     *              -@date_first_occurrence
-     *              -@description
-     *              -@exploitLevel
-     *              -@functionprototype
-     *              -@functionrelativelocation
-     *              -@grace_period_expires
-     *              -@issueid
-     *              -@line
-     *              -@mitigation_status
-     *              -@mitigation_status_desc
-     *              -@module
-     *              -@note
-     *              -@pcirelated
-     *              -@remediation_status
-     *              -@remediationeffort
-     *              -@scope
-     *              -@severity
-     *              -@sourcefile
-     *              -@sourcefilepath
-     *              -@type
-     *             /mitigations
-     *                /mitigation @action @date @description @user
-     *            /annotations
-     *                /annotation @action @date @description @user
      * */
-    static List<List<String>> extractFlawsFromDetailedReport(Node xml) {
+    static List<List<String>> getFlawRowsFromDetailedReport(Node xml) {
+        return getFlawsAsRows(VeracodeDetailedReport.getAllFlawsFromDetailedReportXML(xml))
+    }
+
+    /**
+     * Turn a list of flaws into Rows
+     *
+     * flaw tree:
+     *   /flaw @affects_policy_compliance
+     *        -@categoryid
+     *        -@categoryname
+     *        -@cia_impact
+     *        -@count
+     *        -@cweid
+     *        -@date_first_occurrence
+     *        -@description
+     *        -@exploitLevel
+     *        -@functionprototype
+     *        -@functionrelativelocation
+     *        -@grace_period_expires
+     *        -@issueid
+     *        -@line
+     *        -@mitigation_status
+     *        -@mitigation_status_desc
+     *        -@module
+     *        -@note
+     *        -@pcirelated
+     *        -@remediation_status
+     *        -@remediationeffort
+     *        -@scope
+     *        -@severity
+     *        -@sourcefile
+     *        -@sourcefilepath
+     *        -@type
+     *        /mitigations
+     *          /mitigation @action @date @description @user
+     *        /annotations
+     *          /annotation @action @date @description @user
+     *
+     * @param flaws
+     * @return rows
+     */
+    static List<List<String>> getFlawsAsRows(List<Node> flaws) {
         List<List<String>> rows = []
         List<String> flawFields = [
                 'issueid',
@@ -169,21 +175,15 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
         ]
         // header row
         rows.add(flawFields + extraFields)
-        for (Node severity : XMLIO.getNodeList(xml, 'severity')) {
-            for (Node category : XMLIO.getNodeList(severity, 'category')) {
-                for (Node cwe : XMLIO.getNodeList(category, 'cwe')) {
-                    for (Node flaw : XMLIO.getNodeList(cwe, 'staticflaws', 'flaw')) {
-                        List<String> flawAttributes = XMLIO.getNodeAttributes(flaw, flawFields)
-                        List<String> extraEntries = [
-                                getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'mitigations'), 'mitigation'),
-                                getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'annotations'), 'annotation'),
-                                XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'mitigations'), false),
-                                XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'annotations'), false)
-                        ]
-                        rows.add(flawAttributes + extraEntries)
-                    }
-                }
-            }
+        for (Node flaw : flaws) {
+            List<String> flawAttributes = XMLIO.getNodeAttributes(flaw, flawFields)
+            List<String> extraEntries = [
+                    getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'mitigations'), 'mitigation'),
+                    getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'annotations'), 'annotation'),
+                    XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'mitigations'), false),
+                    XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'annotations'), false)
+            ]
+            rows.add(flawAttributes + extraEntries)
         }
         return rows
     }
@@ -222,34 +222,15 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
      * @param flawRows
      * @return
      */
-    static List<List<String>> extractOpenFlawsFromFlawRows(List<List<String>> flawRows) {
-        List<List<String>> rows = []
-        int remediationStatusColumn = 7
-        if (flawRows.size() < 1) {
-            return rows
-        }
-        if (flawRows[0].size() < remediationStatusColumn) {
-            println "ERROR: Wrong column size"
-            return rows
-        }
-        // header row
-        rows.add(flawRows[0])
-        for (int i = 1; i < flawRows.size(); i++) {
-            List<String> row = flawRows[i]
-            if (row[remediationStatusColumn] == "Open" ||
-                    row[remediationStatusColumn] == "New" ||
-                    row[remediationStatusColumn] != "Fixed") {
-                rows.add(row)
-            }
-        }
-        return rows
+    static List<List<String>> getOpenFlawRowsFromDetailedReport(Node xml) {
+        return getFlawsAsRows(VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml))
     }
 
     void run() {
         Node xml = XMLIO.readXml(inputFile)
-        List<List<String>> flaws = extractFlawsFromDetailedReport(xml)
+        List<List<String>> flaws = getFlawRowsFromDetailedReport(xml)
         writeCSV(flawsDetailedReportCSVFile, flaws)
-        List<List<String>> openFlaws = extractOpenFlawsFromFlawRows(flaws)
+        List<List<String>> openFlaws = getOpenFlawRowsFromDetailedReport(xml)
         writeCSV(openFlawsDetailedReportCSVFile, openFlaws)
         List<List<String>> scaRows = softwareCompositionAnalysisRows(xml)
         writeCSV(softwareCompositionAnalysisFile, scaRows)

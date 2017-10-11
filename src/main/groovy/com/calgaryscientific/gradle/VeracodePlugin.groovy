@@ -43,6 +43,7 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeGetAppListTask.NAME, type: VeracodeGetAppListTask)
         project.task(VeracodeGetBuildInfoTask.NAME, type: VeracodeGetBuildInfoTask)
         project.task(VeracodeGetBuildListTask.NAME, type: VeracodeGetBuildListTask)
+        project.task(VeracodeGetCallStacksTask.NAME, type: VeracodeGetCallStacksTask)
         project.task(VeracodeGetFileListTask.NAME, type: VeracodeGetFileListTask)
         project.task(VeracodeGetPreScanResultsTask.NAME, type: VeracodeGetPreScanResultsTask)
         project.task(VeracodeRemoveFileTask.NAME, type: VeracodeRemoveFileTask)

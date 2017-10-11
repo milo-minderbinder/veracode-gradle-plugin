@@ -26,16 +26,31 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+import org.gradle.api.tasks.OutputFile
+import groovy.transform.CompileStatic
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+@CompileStatic
+class VeracodeGetCallStacksTask extends VeracodeTask {
+    static final String NAME = 'veracodeGetCallStacks'
+    private String build_id
+    private String flaw_id
+
+    VeracodeGetCallStacksTask() {
+        description = "Get the Veracode Flaw Call Stack in XML format based on the given 'build_id' and 'flaw_id'"
+        requiredArguments << 'build_id' << 'flaw_id'
+        build_id = project.findProperty("build_id")
+        flaw_id = project.findProperty("flaw_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "callstacks-${build_id}-${flaw_id}.xml")
+    }
+
+    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
+    @OutputFile
+    File getOutputFile() {
+        return defaultOutputFile
     }
 
     void run() {
-        xmlio.writeXml('pre-scan.xml', uploadAPI().beginPreScan(project.app_id))
-        println 'Check build/pre-scan.xml for response status.'
+        XMLIO.writeXml(getOutputFile(), veracodeAPI.getCallStacks(build_id, flaw_id))
+        printf "report file: %s\n", getOutputFile()
     }
 }

@@ -30,7 +30,7 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetAppInfo'
 
     VeracodeGetAppInfoTask() {
-        description = 'Lists application information based on the application id passed in'
+        description = "List application information for the given 'app_id'"
         requiredArguments << 'app_id'
     }
 

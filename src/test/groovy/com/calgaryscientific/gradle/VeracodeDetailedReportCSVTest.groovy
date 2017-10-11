@@ -51,7 +51,7 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         File flawsFile = testProjectDir.newFile('buildinfo-flaws.csv')
 
         when:
-        List<List<String>> flawRows = VeracodeDetailedReportCSVTask.extractFlawsFromDetailedReport(xml)
+        List<List<String>> flawRows = VeracodeDetailedReportCSVTask.getFlawRowsFromDetailedReport(xml)
         VeracodeDetailedReportCSVTask.writeCSV(flawsFile, flawRows)
         List<String> flawsOutput = flawsFile.readLines()
 
@@ -69,8 +69,7 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         File openFlawsFile = testProjectDir.newFile('buildinfo-open-flaws.csv')
 
         when:
-        List<List<String>> flawRows = VeracodeDetailedReportCSVTask.extractFlawsFromDetailedReport(xml)
-        List<List<String>> openFlawRows = VeracodeDetailedReportCSVTask.extractOpenFlawsFromFlawRows(flawRows)
+        List<List<String>> openFlawRows = VeracodeDetailedReportCSVTask.getOpenFlawRowsFromDetailedReport(xml)
         VeracodeDetailedReportCSVTask.writeCSV(openFlawsFile, openFlawRows)
         List<String> openFlawsOutput = openFlawsFile.readLines()
 

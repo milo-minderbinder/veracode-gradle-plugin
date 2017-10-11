@@ -35,7 +35,7 @@ class VeracodeBeginScanTask extends VeracodeTask {
     private Set<String> moduleWhitelist
 
     VeracodeBeginScanTask() {
-        description = 'Starts a Veracode scan for given application ID'
+        description = "Begin a Veracode Scan for the given 'app_id'"
         requiredArguments << 'app_id' << 'build_id'
         dependsOn "veracodeGetPreScanResults"
         app_id = project.findProperty("app_id")

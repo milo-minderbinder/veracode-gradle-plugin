@@ -35,7 +35,7 @@ class VeracodeDetailedReportPDFTask extends VeracodeTask {
     private String build_id
 
     VeracodeDetailedReportPDFTask() {
-        description = 'Gets the Veracode Scan Detailed Report PDF based on the given build_id'
+        description = "Get the Veracode Scan Report in PDF format based on the given 'build_id'"
         requiredArguments << 'build_id'
         build_id = project.findProperty("build_id")
         defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
