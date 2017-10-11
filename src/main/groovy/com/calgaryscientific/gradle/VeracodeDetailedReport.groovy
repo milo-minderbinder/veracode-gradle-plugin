@@ -104,14 +104,10 @@ class VeracodeDetailedReport {
      * @return flaws
      */
     static List<Node> filterOpenFlaws(List<Node> flaws) {
-        List<Node> openFlaws = []
-        for (Node flaw : flaws) {
+        flaws.findAll { flaw ->
             String status = flaw.attribute('remediation_status')
-            if (status == "Open" || status == "New" || status != "Fixed") {
-                openFlaws.add(flaw)
-            }
+            (status == "Open" || status == "New" || status != "Fixed")
         }
-        return openFlaws
     }
 
 }

@@ -50,8 +50,7 @@ class VeracodeGetCallStacksTask extends VeracodeTask {
     }
 
     void run() {
-        File file = getOutputFile()
-        XMLIO.writeXml(file, veracodeAPI.getCallStacks(build_id, flaw_id))
-        printf "report file: %s\n", file
+        XMLIO.writeXml(getOutputFile(), veracodeAPI.getCallStacks(build_id, flaw_id))
+        printf "report file: %s\n", getOutputFile()
     }
 }

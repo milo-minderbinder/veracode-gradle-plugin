@@ -48,8 +48,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
     }
 
     void run() {
-        File file = getOutputFile()
-        XMLIO.writeXml(file, veracodeAPI.detailedReport(build_id))
-        printf "report file: %s\n", file
+        XMLIO.writeXml(getOutputFile(), veracodeAPI.detailedReport(build_id))
+        printf "report file: %s\n", getOutputFile()
     }
 }
