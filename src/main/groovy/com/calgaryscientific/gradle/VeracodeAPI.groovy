@@ -77,6 +77,10 @@ class VeracodeAPI {
         return resultsAPI().detailedReportPdf(build_id)
     }
 
+    String getCallStacks(String build_id, String flaw_id) {
+        return resultsAPI().getCallStacks(build_id, flaw_id)
+    }
+
     private boolean useAPICredentials() {
         if (username && password) {
             log.debug('Using username and password authentication')

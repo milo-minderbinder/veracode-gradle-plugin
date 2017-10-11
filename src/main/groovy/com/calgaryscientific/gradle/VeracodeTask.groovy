@@ -46,6 +46,7 @@ abstract class VeracodeTask extends DefaultTask {
     final static Map<String, String> validArguments = [
             'app_id'           : '123',
             'build_id'         : '123',
+            'flaw_id'          : '123',
             'build_version'    : 'xxx',
             'dir'              : 'xxx',
             'force'            : 'force',
