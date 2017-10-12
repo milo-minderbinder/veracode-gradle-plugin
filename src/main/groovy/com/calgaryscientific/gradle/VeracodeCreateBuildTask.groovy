@@ -26,29 +26,25 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeCreateBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateBuild'
+    private String app_id
+    private String build_version
 
     VeracodeCreateBuildTask() {
-        description = 'Creates a new build under the application id passed in, with the build_version as the identifier for the new build'
+        description = "Create a Veracode Build for the given 'app_id' using 'build_version' as the identifier"
         requiredArguments << 'app_id' << 'build_version'
+        app_id = project.findProperty("app_id")
+        build_version = project.findProperty("build_version")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
     }
 
     void run() {
-        Node buildInfo = xmlio.writeXml(
-                'create-build.xml',
-                uploadAPI().createBuild(project.app_id, project.build_version))
-        if (buildInfo.name().equals('error')) {
-            println buildInfo.text()
-        } else {
-            println '[Build]'
-            buildInfo.build[0].attributes().each() { k, v ->
-                println "\t$k=$v"
-            }
-            println '[Analysis Unit]'
-            buildInfo.build[0].children()[0].attributes().each { k, v ->
-                println "\t$k=$v"
-            }
-        }
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.createBuild(app_id, build_version))
+        VeracodeBuildInfo.printBuildInfo(buildInfo)
+        printf "report file: %s\n", getOutputFile()
     }
 }
