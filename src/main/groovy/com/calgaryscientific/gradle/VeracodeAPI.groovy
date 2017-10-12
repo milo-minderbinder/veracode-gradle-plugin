@@ -49,6 +49,10 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String beginPreScan(String app_id) {
+        return uploadAPI().beginPreScan(app_id)
+    }
+
     String deleteBuild(String app_id) {
         return uploadAPI().deleteBuild(app_id)
     }
