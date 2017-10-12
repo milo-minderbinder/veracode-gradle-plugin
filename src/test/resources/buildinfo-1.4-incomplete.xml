@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<buildinfo xmlns="https://analysiscenter.veracode.com/schema/4.0/buildinfo"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           account_id="0" app_id="1" build_id="2"
+           buildinfo_version="1.4" sandbox_id="3"
+           xsi:schemaLocation="https://analysiscenter.veracode.com/schema/4.0/buildinfo https://analysiscenter.veracode.com/resource/4.0/buildinfo.xsd">
+  <build build_id="123"
+         grace_period_expired="false"
+         launch_date="2016-11-29T16:08:53-05:00"
+         legacy_scan_engine="false"
+         lifecycle_stage="Internal or Alpha Testing"
+         platform="Not Specified"
+         policy_compliance_status="Not Assessed"
+         policy_name="policy"
+         policy_version="1"
+         results_ready="false"
+         rules_status="Not Assessed"
+         scan_overdue="false"
+         submitter="David Gamba"
+         version="deleteme">
+      <analysis_unit analysis_type="Static" status="Incomplete"/>
+   </build>
+</buildinfo>
