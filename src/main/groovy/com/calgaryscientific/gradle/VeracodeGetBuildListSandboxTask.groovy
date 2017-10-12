@@ -26,6 +26,9 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeGetBuildListSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxGetBuildList'
     private String app_id
