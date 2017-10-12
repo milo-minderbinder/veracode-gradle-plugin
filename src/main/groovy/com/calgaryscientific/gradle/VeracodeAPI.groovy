@@ -27,6 +27,7 @@
 package com.calgaryscientific.gradle
 
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
+import com.veracode.apiwrapper.wrappers.SandboxAPIWrapper
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
 import org.gradle.api.GradleException
@@ -73,6 +74,10 @@ class VeracodeAPI {
         return uploadAPI().getPreScanResults(app_id, build_id)
     }
 
+    String getSandboxList(String app_id) {
+        return sandboxAPI().getSandboxList(app_id)
+    }
+
     String uploadFile(String app_id, String filePath) {
         return uploadAPI().uploadFile(app_id, filePath)
     }
@@ -113,6 +118,16 @@ class VeracodeAPI {
 
     protected ResultsAPIWrapper resultsAPI() {
         ResultsAPIWrapper api = new ResultsAPIWrapper()
+        if (useAPICredentials()) {
+            api.setUpApiCredentials(this.id, this.key)
+        } else {
+            api.setUpCredentials(this.username, this.password)
+        }
+        return api
+    }
+
+    protected SandboxAPIWrapper sandboxAPI() {
+        SandboxAPIWrapper api = new SandboxAPIWrapper()
         if (useAPICredentials()) {
             api.setUpApiCredentials(this.id, this.key)
         } else {
