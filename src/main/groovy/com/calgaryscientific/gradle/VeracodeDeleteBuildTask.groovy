@@ -26,15 +26,24 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeDeleteBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeDeleteBuild'
+    private String app_id
 
     VeracodeDeleteBuildTask() {
         description = "Delete the most recent Veracode build for 'app_id', even if it has a completed scan"
         requiredArguments << 'app_id'
+        app_id = project.findProperty("app_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
     }
 
     void run() {
-        xmlio.writeXml('delete-build.xml', uploadAPI().deleteBuild(project.app_id))
+        // TODO: Run clean UploadFileTask after deleting the build
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.deleteBuild(app_id))
+        VeracodeBuildList.printBuildList(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
