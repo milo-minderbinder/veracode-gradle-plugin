@@ -36,10 +36,10 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     VeracodeBeginScanTask() {
         description = "Begin a Veracode Scan for the given 'app_id'"
-        requiredArguments << 'app_id' << 'build_id'
+        requiredArguments << 'app_id'
         dependsOn "veracodeGetPreScanResults"
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", 'begin-scan.xml')
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
     }
 
     VeracodeGetPreScanResultsTask preScan = new VeracodeGetPreScanResultsTask()
@@ -129,26 +129,12 @@ class VeracodeBeginScanTask extends VeracodeTask {
         missingWhitelistModules
     }
 
-
-    static void printBeginScanStatus(Node xml) {
-        String app_id = xml.attribute('app_id')
-        String build_id = xml.attribute('build_id')
-        NodeList buildList = xml.getAt("build") as NodeList
-        Node build = buildList.get(0) as Node
-        String version = build.attribute('version')
-        NodeList analysis_unitList = build.getAt('analysis_unit') as NodeList
-        Node analysis_unit = analysis_unitList.get(0) as Node
-        String analysis_type = analysis_unit.attribute('analysis_type')
-        String status = analysis_unit.attribute('status')
-        printf "app_id=%s build_id=%s version=%s analysis_type=%s status=%s\n",
-                app_id, build_id, version, analysis_type, status
-    }
-
     void run() {
         moduleWhitelist = veracodeSetup.moduleWhitelist
         Set<String> moduleIds = extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), moduleWhitelist)
         println "Module IDs: " + moduleIds.join(",")
         Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(app_id, moduleIds))
-        printBeginScanStatus(xml)
+        VeracodeBuildInfo.printBuildInfo(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
