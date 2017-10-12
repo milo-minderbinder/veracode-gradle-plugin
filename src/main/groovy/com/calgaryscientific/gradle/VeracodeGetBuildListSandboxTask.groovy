@@ -26,20 +26,23 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetBuildListSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetBuildList'
+    private String app_id
+    private String sandbox_id
 
-@CompileStatic
-class VeracodeBuildList {
-    static void printBuildList(Node xml) {
-        String app_id = xml.attribute('app_id') as String
-        String sandbox_id = xml.attribute('sandbox_id') as String
-        XMLIO.getNodeList(xml, 'build').each { build ->
-            printf "app_id=%s ", app_id
-            if (sandbox_id) {
-                printf "sandbox_id=%s ", sandbox_id
-            }
-            printf "build_id=%-10s date=%-25s version=\"%s\"\n",
-                    XMLIO.getNodeAttributes(build, 'build_id', 'policy_updated_date', 'version')
-        }
+    VeracodeGetBuildListSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "List builds for the given 'app_id' and 'sandbox_id'"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}-${sandbox_id}.xml")
+    }
+
+    void run() {
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList(app_id, sandbox_id))
+        VeracodeBuildList.printBuildList(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
