@@ -36,10 +36,10 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     VeracodeBeginScanTask() {
         description = "Begin a Veracode Scan for the given 'app_id'"
-        requiredArguments << 'app_id' << 'build_id'
+        requiredArguments << 'app_id'
         dependsOn "veracodeGetPreScanResults"
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", 'begin-scan.xml')
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
     }
 
     VeracodeGetPreScanResultsTask preScan = new VeracodeGetPreScanResultsTask()
@@ -54,41 +54,32 @@ class VeracodeBeginScanTask extends VeracodeTask {
      * @return
      */
     static Set<String> extractWhitelistModuleIds(Node xml, Set<String> whitelist) {
-        NodeList moduleList = xml.getAt("module") as NodeList
-        HashMap<String, List<String>> nonFatalModules = filterOutFatalModules(moduleList)
-        HashMap<String, List<String>> whitelistModules = getWhitelistModules(nonFatalModules, whitelist)
+        List<Node> nonFatalModules = filterOutFatalModules(XMLIO.getNodeList(xml, 'module'))
+        List<Node> whitelistModules = getWhitelistModules(nonFatalModules, whitelist)
+        printMissingWhitelistModules(whitelist, whitelistModules)
+        return whitelistModules.collect { module ->
+            module.attribute('id') as String
+        }.toSet()
+    }
+
+    private static void printMissingWhitelistModules(Set<String> whitelist, List<Node> whitelistModules) {
         Set<String> missingWhitelistModules = getMissingWhitelistModules(whitelist, whitelistModules)
         if (missingWhitelistModules.size() > 0) {
             // TODO: Look into logging levels. The whole plugin is using print statements.
             printf "WARNING: Missing whitelist modules: ${missingWhitelistModules}\n"
         }
-        Set<String> moduleIds = []
-        for (List<String> data : whitelistModules.values()) {
-            moduleIds << data.get(0)
-        }
-        return moduleIds
     }
 
     /**
-     * Given a Veracode moduleList NodeList (xml), it will return a Map of names to [id, status] of modules that are
-     * not fatal.
+     * Given a Veracode moduleList List<Node> (xml), it will filter out modules that are not fatal.
      *
      * @param moduleList
      * @return Map{ name: [id, status] }
      */
-    private static HashMap<String, List<String>> filterOutFatalModules(NodeList moduleList) {
-        HashMap<String, List<String>> nonFatalModules = new HashMap()
-        for (int i = 0; i < moduleList.size(); i++) {
-            Node moduleEntry = moduleList.get(i) as Node
-            String id = moduleEntry.attribute('id')
-            String name = moduleEntry.attribute('name')
-            String status = moduleEntry.attribute('status')
-            if (!status.startsWith('(Fatal)')) {
-                List<String> data = [id, status]
-                nonFatalModules.put(name, data)
-            }
+    private static List<Node> filterOutFatalModules(List<Node> moduleList) {
+        moduleList.findAll { module ->
+            !(module.attribute('status') as String).startsWith('(Fatal)')
         }
-        return nonFatalModules
     }
 
     /**
@@ -98,19 +89,13 @@ class VeracodeBeginScanTask extends VeracodeTask {
      * @return Map{ name: [id, status] }
      */
     private
-    static HashMap<String, List<String>> getWhitelistModules(HashMap<String, List<String>> modules, Set<String> whitelist) {
-        HashMap<String, List<String>> whitelistedModules = new HashMap()
-        for (Map.Entry<String, List<String>> module : modules.entrySet()) {
-            String name = module.getKey()
-            List<String> data = module.getValue()
-            String id = data.get(0)
-            String status = data.get(1)
-            if (whitelist.contains(name)) {
-                whitelistedModules.put(id, data)
-                printf "Selecting module: %s: %s - %s\n", id, name, status
+    static List<Node> getWhitelistModules(List<Node> modules, Set<String> whitelist) {
+        modules.findAll { module ->
+            if (whitelist.contains(module.attribute('name') as String)) {
+                printf "Selecting module: %s: %s - %s\n", XMLIO.getNodeAttributes(module, 'id', 'name', 'status')
+                return true
             }
         }
-        whitelistedModules
     }
 
     /**
@@ -121,27 +106,15 @@ class VeracodeBeginScanTask extends VeracodeTask {
      * @return
      */
     private
-    static Set<String> getMissingWhitelistModules(Set<String> whitelist, HashMap<String, List<String>> whitelistModules) {
+    static Set<String> getMissingWhitelistModules(Set<String> whitelist, List<Node> whitelistModules) {
         Set<String> missingWhitelistModules = []
         if (whitelist.size() != whitelistModules.size()) {
-            missingWhitelistModules = whitelist - whitelistModules.keySet()
+            Set<String> moduleNames = whitelistModules.collect { module ->
+                module.attribute('name') as String
+            }.toSet()
+            missingWhitelistModules = whitelist - moduleNames
         }
         missingWhitelistModules
-    }
-
-
-    static void printBeginScanStatus(Node xml) {
-        String app_id = xml.attribute('app_id')
-        String build_id = xml.attribute('build_id')
-        NodeList buildList = xml.getAt("build") as NodeList
-        Node build = buildList.get(0) as Node
-        String version = build.attribute('version')
-        NodeList analysis_unitList = build.getAt('analysis_unit') as NodeList
-        Node analysis_unit = analysis_unitList.get(0) as Node
-        String analysis_type = analysis_unit.attribute('analysis_type')
-        String status = analysis_unit.attribute('status')
-        printf "app_id=%s build_id=%s version=%s analysis_type=%s status=%s\n",
-                app_id, build_id, version, analysis_type, status
     }
 
     void run() {
@@ -149,6 +122,7 @@ class VeracodeBeginScanTask extends VeracodeTask {
         Set<String> moduleIds = extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), moduleWhitelist)
         println "Module IDs: " + moduleIds.join(",")
         Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(app_id, moduleIds))
-        printBeginScanStatus(xml)
+        VeracodeBuildInfo.printBuildInfo(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }

@@ -54,18 +54,4 @@ class VeracodeBeginScanTest extends TestCommonSetup {
         then:
         assert moduleIds == ['5', '7'] as Set<String>
     }
-
-    def 'Test printBeginScanStatus'() {
-        given:
-        def os = mockSystemOut()
-        Node xml = XMLIO.parse(buildInfoFile)
-
-        when:
-        VeracodeBeginScanTask.printBeginScanStatus(xml)
-        def is = getSystemOut(os)
-        restoreStdout()
-
-        then:
-        assert is.readLines() == ['app_id=1 build_id=2 version=CSI-001 analysis_type=Static status=Submitted to Engine']
-    }
 }

@@ -29,20 +29,25 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+class VeracodeCreateBuildSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxCreateBuild'
     private String app_id
+    private String sandbox_id
+    private String build_version
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+    VeracodeCreateBuildSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Create a Veracode Build for the given 'app_id' and 'sandbox_id' using 'build_version' as the identifier"
+        requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        sandbox_id = project.findProperty("sandbox_id")
+        build_version = project.findProperty("build_version")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan(app_id))
-        VeracodeBuildInfo.printBuildInfo(xml)
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.createBuild(app_id, sandbox_id, build_version))
+        VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }
 }

@@ -29,20 +29,23 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
-    private String app_id
-
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+class VeracodeBuildInfo {
+    static void printBuildInfo(Node xml) {
+        println "[build]"
+        XMLIO.getNode(xml, 'build').attributes().each() { k, v ->
+            println "$k=$v"
+        }
+        println "\t[analysis_unit]"
+        XMLIO.getNode(xml, 'build', 'analysis_unit').attributes().each() { k, v ->
+            println "\t$k=$v"
+        }
     }
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan(app_id))
-        VeracodeBuildInfo.printBuildInfo(xml)
-        printf "report file: %s\n", getOutputFile()
+    static String getBuildStatus(Node xml) {
+        return XMLIO.getNode(xml, 'build', 'analysis_unit').attribute('status')
+    }
+
+    static boolean isBuildReady(Node xml) {
+        return (XMLIO.getNode(xml, 'build').attribute('results_ready') == "true")
     }
 }

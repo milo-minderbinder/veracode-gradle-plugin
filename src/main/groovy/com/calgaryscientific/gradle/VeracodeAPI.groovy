@@ -49,8 +49,30 @@ class VeracodeAPI {
         this.id = id
     }
 
+    String beginPreScan(String app_id) {
+        return uploadAPI().beginPreScan(app_id)
+    }
+
+    String createBuild(String app_id, String build_version) {
+        return uploadAPI().createBuild(app_id, build_version)
+    }
+
+    String createBuild(String app_id, String sandbox_id, String build_version) {
+        return uploadAPI().createBuild(app_id, build_version,
+                        "", // platform
+                        "", // platform_id
+                        "", // lifecycle_stage
+                        "", // lifecycle_stage_id
+                        "", // launch_date
+                        sandbox_id)
+    }
+
     String deleteBuild(String app_id) {
         return uploadAPI().deleteBuild(app_id)
+    }
+
+    String deleteBuild(String app_id, String sandbox_id) {
+        return uploadAPI().deleteBuild(app_id, sandbox_id)
     }
 
     String getBuildList(String app_id) {
@@ -59,6 +81,18 @@ class VeracodeAPI {
 
     String getBuildList(String app_id, String sandbox_id) {
         return uploadAPI().getBuildList(app_id, sandbox_id)
+    }
+
+    String getBuildInfo(String app_id) {
+        return uploadAPI().getBuildInfo(app_id)
+    }
+
+    String getBuildInfo(String app_id, String build_id) {
+        return uploadAPI().getBuildInfo(app_id, build_id)
+    }
+
+    String getBuildInfo(String app_id, String build_id, String sandbox_id) {
+        return uploadAPI().getBuildInfo(app_id, build_id, sandbox_id)
     }
 
     String beginScan(String app_id, Set<String> moduleIds) {

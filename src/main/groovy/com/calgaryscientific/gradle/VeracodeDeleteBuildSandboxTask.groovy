@@ -29,20 +29,24 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxDeleteBuild'
     private String app_id
+    private String sandbox_id
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+    VeracodeDeleteBuildSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Delete the most recent Veracode build for 'app_id' and 'sandbox_id', even if it has a completed scan"
+        requiredArguments << 'app_id' << 'sandbox_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        sandbox_id = project.findProperty("sandbox_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}-${sandbox_id}.xml")
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan(app_id))
-        VeracodeBuildInfo.printBuildInfo(xml)
+        // TODO: Run clean UploadFileTask after deleting the build
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.deleteBuild(app_id, sandbox_id))
+        VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()
     }
 }

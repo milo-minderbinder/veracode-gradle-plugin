@@ -34,6 +34,7 @@ class VeracodeGetSandboxList extends VeracodeTask {
     private String app_id
 
     VeracodeGetSandboxList() {
+        group = 'Veracode Sandbox'
         description = "List sandboxes for the given 'app_id'"
         requiredArguments << 'app_id'
         app_id = project.findProperty("app_id")

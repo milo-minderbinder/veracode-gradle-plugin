@@ -29,20 +29,30 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+class VeracodeGetBuildInfoSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetBuildInfo'
     private String app_id
+    private String sandbox_id
+    private String build_id
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+    VeracodeGetBuildInfoSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Lists build information for the given 'app_id', 'sandbox_id' and 'build_id'. If no 'build_id' is provided the latest will be used"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        optionalArguments << 'build_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        sandbox_id = project.findProperty("sandbox_id")
+        if (project.hasProperty('build_id')) {
+            build_id = project.findProperty('build_id')
+            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-${build_id}.xml")
+        } else {
+            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
+        }
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan(app_id))
-        VeracodeBuildInfo.printBuildInfo(xml)
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfo(app_id, build_id, sandbox_id))
+        VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }
 }

@@ -26,30 +26,36 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeGetBuildInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetBuildInfo'
+    private String app_id
+    private String build_id
 
     VeracodeGetBuildInfoTask() {
         description = "Lists build information for the given 'app_id' and 'build_id'. If no 'build_id' is provided the latest will be used"
         requiredArguments << 'app_id'
         optionalArguments << 'build_id'
+        app_id = project.findProperty("app_id")
+        if (project.hasProperty('build_id')) {
+            build_id = project.findProperty('build_id')
+            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${build_id}.xml")
+        } else {
+            defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        }
     }
 
     void run() {
-        String xmlResponse
+        String response
         if (project.hasProperty('build_id')) {
-            xmlResponse = uploadAPI().getBuildInfo(project.app_id, project.build_id)
+            response = veracodeAPI.getBuildInfo(app_id, build_id)
         } else {
-            xmlResponse = uploadAPI().getBuildInfo(project.app_id)
+            response = veracodeAPI.getBuildInfo(app_id)
         }
-        Node buildInfo = xmlio.writeXml('build-info.xml', xmlResponse) // need to print twice, so assign var
-        println '[Build]'
-        buildInfo.build[0].attributes().each() { k, v ->
-            println "\t$k=$v"
-        }
-        println '[Analysis Unit]'
-        buildInfo.build[0].children()[0].attributes().each { k, v ->
-            println "\t$k=$v"
-        }
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), response)
+        VeracodeBuildInfo.printBuildInfo(buildInfo)
+        printf "report file: %s\n", getOutputFile()
     }
 }
