@@ -77,6 +77,10 @@ class VeracodeAPI {
         return uploadAPI().getBuildInfo(app_id, build_id)
     }
 
+    String getBuildInfo(String app_id, String build_id, String sandbox_id) {
+        return uploadAPI().getBuildInfo(app_id, build_id, sandbox_id)
+    }
+
     String beginScan(String app_id, Set<String> moduleIds) {
         return uploadAPI().beginScan(
                 app_id,
