@@ -26,15 +26,9 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.testkit.runner.UnexpectedBuildFailure
 import spock.lang.Specification
 import org.gradle.testkit.runner.GradleRunner
-import static org.gradle.testkit.runner.TaskOutcome.*
-import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import org.gradle.testfixtures.ProjectBuilder
 
 class TestCommonSetup extends Specification {
     TemporaryFolder testProjectDir
@@ -68,10 +62,11 @@ class TestCommonSetup extends Specification {
         return os
     }
 
-    def getSystemOut(def os) {
-        def array = os.toByteArray()
-        def is = new ByteArrayInputStream(array)
-        return is
+    BufferedReader getSystemOut(def os) {
+        ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray())
+        InputStreamReader isr = new InputStreamReader(is)
+        BufferedReader ir = new BufferedReader(isr)
+        return ir
     }
 
     def restoreStdout() {

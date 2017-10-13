@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<buildlist xmlns="https://analysiscenter.veracode.com/schema/2.0/buildlist"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           account_id="0" app_id="1" app_name="myapp"
+           buildlist_version="1.3" sandbox_id="2"
+           xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/buildlist https://analysiscenter.veracode.com/resource/2.0/buildlist.xsd">
+   <build build_id="123" policy_updated_date="2017-09-11T12:21:17-04:00" version="app-scan-123"/>
+   <build build_id="124" version="app-scan-456"/>
+   <build build_id="125" policy_updated_date="2017-10-05T11:33:36-04:00" version="app-scan-789"/>
+</buildlist>
