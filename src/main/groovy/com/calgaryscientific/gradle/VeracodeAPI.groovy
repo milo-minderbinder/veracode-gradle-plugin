@@ -57,6 +57,16 @@ class VeracodeAPI {
         return uploadAPI().createBuild(app_id, build_version)
     }
 
+    String createBuild(String app_id, String sandbox_id, String build_version) {
+        return uploadAPI().createBuild(app_id, build_version,
+                        "", // platform
+                        "", // platform_id
+                        "", // lifecycle_stage
+                        "", // lifecycle_stage_id
+                        "", // launch_date
+                        sandbox_id)
+    }
+
     String deleteBuild(String app_id) {
         return uploadAPI().deleteBuild(app_id)
     }
