@@ -56,14 +56,18 @@ class VeracodeBeginScanTask extends VeracodeTask {
     static Set<String> extractWhitelistModuleIds(Node xml, Set<String> whitelist) {
         List<Node> nonFatalModules = filterOutFatalModules(XMLIO.getNodeList(xml, 'module'))
         List<Node> whitelistModules = getWhitelistModules(nonFatalModules, whitelist)
+        printMissingWhitelistModules(whitelist, whitelistModules)
+        return whitelistModules.collect { module ->
+            module.attribute('id') as String
+        }.toSet()
+    }
+
+    private static void printMissingWhitelistModules(Set<String> whitelist, List<Node> whitelistModules) {
         Set<String> missingWhitelistModules = getMissingWhitelistModules(whitelist, whitelistModules)
         if (missingWhitelistModules.size() > 0) {
             // TODO: Look into logging levels. The whole plugin is using print statements.
             printf "WARNING: Missing whitelist modules: ${missingWhitelistModules}\n"
         }
-        return whitelistModules.collect { module ->
-            module.attribute('id') as String
-        }.toSet()
     }
 
     /**
