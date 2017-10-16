@@ -53,8 +53,19 @@ class VeracodeAPI {
         this.sandbox_id = sandbox_id
     }
 
+    // upload API methods
+
     String beginPreScan(String app_id) {
         return uploadAPI().beginPreScan(app_id)
+    }
+
+    String beginScan(String app_id, Set<String> moduleIds) {
+        return uploadAPI().beginScan(
+                app_id,
+                moduleIds.join(","),
+                "", // scan_all_top_level_modules
+                "scan_selected_modules",
+                "") // scan_previously_selected_modules
     }
 
     String createBuild(String app_id, String build_version) {
@@ -69,10 +80,6 @@ class VeracodeAPI {
                 "", // lifecycle_stage_id
                 "", // launch_date
                 sandbox_id)
-    }
-
-    String createSandbox(String app_id, String sandbox_name) {
-        return sandboxAPI().createSandbox(app_id, sandbox_name)
     }
 
     String deleteBuild(String app_id) {
@@ -103,13 +110,11 @@ class VeracodeAPI {
         return uploadAPI().getBuildInfo(app_id, build_id, sandbox_id)
     }
 
-    String beginScan(String app_id, Set<String> moduleIds) {
-        return uploadAPI().beginScan(
-                app_id,
-                moduleIds.join(","),
-                "", // scan_all_top_level_modules
-                "scan_selected_modules",
-                "") // scan_previously_selected_modules
+    String getFileList(String build_id) {
+        if (sandbox_id) {
+            return uploadAPI().getFileList(app_id, build_id, sandbox_id)
+        }
+        return uploadAPI().getFileList(app_id, build_id)
     }
 
     String getPreScanResults(String app_id) {
@@ -120,20 +125,14 @@ class VeracodeAPI {
         return uploadAPI().getPreScanResults(app_id, build_id)
     }
 
-    String getSandboxList(String app_id) {
-        return sandboxAPI().getSandboxList(app_id)
-    }
-
-    String uploadFile(String app_id, String filePath) {
-        return uploadAPI().uploadFile(app_id, filePath)
-    }
-
     String uploadFile(String filePath) {
         if (sandbox_id) {
             return uploadAPI().uploadFile(app_id, filePath, sandbox_id)
         }
         return uploadAPI().uploadFile(app_id, filePath)
     }
+
+    // results API methods
 
     String detailedReport(String build_id) {
         return resultsAPI().detailedReport(build_id)
@@ -145,6 +144,16 @@ class VeracodeAPI {
 
     String getCallStacks(String build_id, String flaw_id) {
         return resultsAPI().getCallStacks(build_id, flaw_id)
+    }
+
+    // sandbox API methods
+
+    String createSandbox(String app_id, String sandbox_name) {
+        return sandboxAPI().createSandbox(app_id, sandbox_name)
+    }
+
+    String getSandboxList(String app_id) {
+        return sandboxAPI().getSandboxList(app_id)
     }
 
     private boolean useAPICredentials() {
