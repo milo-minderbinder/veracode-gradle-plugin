@@ -26,29 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodePreScanResultsTest extends TestCommonSetup {
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-@CompileStatic
-class VeracodeGetPreScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetPreScanResults'
-    String build_id
+    def 'Test printModuleStatus'() {
+        given:
+        Node xml = XMLIO.parse(preScanResultsFile)
+        def os = mockSystemOut()
 
-    VeracodeGetPreScanResultsTask() {
-        description = "Get the Veracode Pre-Scan Results based on the given 'app_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
-        app_id = project.findProperty('app_id')
-        if (project.hasProperty('build_id')) {
-            build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-${build_id}.xml")
-        } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-latest.xml")
-        }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getPreScanResults(build_id))
+        when:
         VeracodePreScanResults.printModuleStatus(xml)
-        printf "report file: %s\n", getOutputFile()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLines() == [
+                'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"',
+                'id=5 name="class1.jar" status="OK"',
+                'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"',
+                'id=7 name="class2.jar" status="OK"',
+        ]
     }
 }

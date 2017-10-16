@@ -26,25 +26,30 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
+
 class VeracodeGetPreScanResultsTest extends TestCommonSetup {
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-    def 'Test VeracodeGetPreScanResults printModuleStatus'() {
+    def 'Test veracodeGetPreScanResults Task'() {
         given:
-        Node xml = XMLIO.parse(preScanResultsFile)
         def os = mockSystemOut()
+        def task = taskSetup('veracodeGetPreScanResults')
+        task.build_id = '123'
 
         when:
-        VeracodeGetPreScanResultsTask.printModuleStatus(xml)
+        task.run()
         def is = getSystemOut(os)
         restoreStdout()
 
         then:
-        assert is.readLines() == [
-                'app_id=1 build_id=2 id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"',
-                'app_id=1 build_id=2 id=5 name="class1.jar" status="OK"',
-                'app_id=1 build_id=2 id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"',
-                'app_id=1 build_id=2 id=7 name="class2.jar" status="OK"',
-        ]
+        1 * task.veracodeAPI.getPreScanResults('123') >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
+        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
+        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
+        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
     }
 }

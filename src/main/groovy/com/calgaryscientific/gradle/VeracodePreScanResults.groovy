@@ -29,26 +29,10 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetPreScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetPreScanResults'
-    String build_id
-
-    VeracodeGetPreScanResultsTask() {
-        description = "Get the Veracode Pre-Scan Results based on the given 'app_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
-        app_id = project.findProperty('app_id')
-        if (project.hasProperty('build_id')) {
-            build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-${build_id}.xml")
-        } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-latest.xml")
+class VeracodePreScanResults {
+    static void printModuleStatus(Node xml) {
+        XMLIO.getNodeList(xml, 'module').each { module ->
+            printf "id=%s name=\"%s\" status=\"%s\"\n", XMLIO.getNodeAttributes(module, 'id', 'name', 'status')
         }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getPreScanResults(build_id))
-        VeracodePreScanResults.printModuleStatus(xml)
-        printf "report file: %s\n", getOutputFile()
     }
 }

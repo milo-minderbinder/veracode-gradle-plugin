@@ -26,29 +26,31 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 
-@CompileStatic
-class VeracodeGetPreScanResultsTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetPreScanResults'
-    String build_id
+class VeracodeGetPreScanResultsSandboxTest extends TestCommonSetup {
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-    VeracodeGetPreScanResultsTask() {
-        description = "Get the Veracode Pre-Scan Results based on the given 'app_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
-        app_id = project.findProperty('app_id')
-        if (project.hasProperty('build_id')) {
-            build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-${build_id}.xml")
-        } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-latest.xml")
+    def 'Test veracodeSandboxGetPreScanResults Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxGetPreScanResults')
+        task.build_id = '123'
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.getPreScanResults('123') >> {
+            return new String(preScanResultsFile.readBytes())
         }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getPreScanResults(build_id))
-        VeracodePreScanResults.printModuleStatus(xml)
-        printf "report file: %s\n", getOutputFile()
+        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
+        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
+        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
+        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
     }
 }
+
