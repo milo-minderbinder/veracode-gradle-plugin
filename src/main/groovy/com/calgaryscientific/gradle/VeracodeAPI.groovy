@@ -55,7 +55,10 @@ class VeracodeAPI {
 
     // upload API methods
 
-    String beginPreScan(String app_id) {
+    String beginPreScan() {
+        if (sandbox_id) {
+            return uploadAPI().beginPreScan(app_id, sandbox_id)
+        }
         return uploadAPI().beginPreScan(app_id)
     }
 

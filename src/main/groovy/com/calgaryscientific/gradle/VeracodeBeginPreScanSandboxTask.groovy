@@ -29,14 +29,16 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+class VeracodeBeginPreScanSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxBeginPreScan'
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+    VeracodeBeginPreScanSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Begin a Veracode Pre-Scan for the given 'app_id' and 'sandbox_id'"
+        requiredArguments << 'app_id' << 'sandbox_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        sandbox_id = project.findProperty("sandbox_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
     }
 
     void run() {
