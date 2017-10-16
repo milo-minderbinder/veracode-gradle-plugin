@@ -67,6 +67,10 @@ class VeracodeAPI {
                         sandbox_id)
     }
 
+    String createSandbox(String app_id, String sandbox_name) {
+        return sandboxAPI().createSandbox(app_id, sandbox_name)
+    }
+
     String deleteBuild(String app_id) {
         return uploadAPI().deleteBuild(app_id)
     }

@@ -85,6 +85,8 @@ Tested with the following XML file versions:
 * filelist: filelist_version="1.1"
 * sandboxlist: sandboxlist_version="1.0"
 
+* sandboxinfo: sandboxinfo_version="1.2"
+
 == LICENSE
 
 MIT License

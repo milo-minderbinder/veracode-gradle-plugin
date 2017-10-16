@@ -26,31 +26,39 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 
-@CompileStatic
-class VeracodeGetSandboxList extends VeracodeTask {
-    static final String NAME = 'veracodeGetSandboxList'
-    private String app_id
+class VeracodeCreateSandboxTest extends TestCommonSetup {
+    File sandboxInfoFile = getResource('sandboxinfo-1.2.xml')
 
-    VeracodeGetSandboxList() {
-        group = 'Veracode Sandbox'
-        description = "List sandboxes for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
+    VeracodeCreateSandboxTask taskSetup() {
+        // Setup project with plugin
+        Project project = new ProjectBuilder().build()
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        // Get task from project
+        VeracodeCreateSandboxTask task = project.tasks.getByName("veracodeCreateSandbox")
+        // Mock VeracodeAPI calls
+        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
+        task.veracodeAPI = veracodeAPIMock
+        return task
     }
 
-    void printSandboxList(Node xml) {
-        XMLIO.getNodeList(xml, 'sandbox').collect { sandbox ->
-            printf "sandbox_id=%-10s last_modified=%s owner=%s name=%s\n",
-                    XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'last_modified', 'owner', 'sandbox_name')
+    def 'Test veracodeCreateSandbox Task'() {
+        given:
+        def os = mockSystemOut()
+        VeracodeCreateSandboxTask task = taskSetup()
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.createSandbox(_,_) >> {
+            return new String(sandboxInfoFile.readBytes())
         }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList(app_id))
-        printSandboxList(xml)
-        printf "report file: %s\n", getOutputFile()
+        assert is.readLine() == 'sandbox_id=123 sandbox_name="test-integration" owner=david.gamba&#x40;org.com date=2017-10-13T19:00:14-04:00'
     }
 }
+

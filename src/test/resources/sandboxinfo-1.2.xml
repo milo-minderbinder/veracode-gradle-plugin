@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<sandboxinfo xmlns="https://analysiscenter.veracode.com/schema/4.0/sandboxinfo"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             account_id="0" app_id="1"
+             sandboxinfo_version="1.2"
+             xsi:schemaLocation="https://analysiscenter.veracode.com/schema/4.0/sandboxinfo https://analysiscenter.veracode.com/resource/4.0/sandboxinfo.xsd">
+  <sandbox created_date="2017-10-13T19:00:14-04:00"
+           modified_date="2017-10-13T19:00:14-04:00"
+           owner="david.gamba&amp;#x40;org.com"
+           sandbox_id="123"
+           sandbox_name="test-integration"
+           sandbox_status="sandbox">
+      <customfield name="Custom 1" value=""/>
+      <customfield name="Custom 2" value=""/>
+      <customfield name="Custom 3" value=""/>
+      <customfield name="Custom 4" value=""/>
+      <customfield name="Custom 5" value=""/>
+   </sandbox>
+</sandboxinfo>
