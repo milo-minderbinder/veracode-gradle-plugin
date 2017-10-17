@@ -29,20 +29,22 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetFileListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetFileList'
+class VeracodeGetFileListSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxGetFileList'
     private String build_id
 
-    VeracodeGetFileListTask() {
-        description = "Lists all files for the given 'app_id' and 'build_id' combination. If no 'build_id' is provided, the latest will be used"
-        requiredArguments << 'app_id'
+    VeracodeGetFileListSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Lists all files for the given 'app_id', 'sandbox_id' and 'build_id' combination. If no 'build_id' is provided, the latest will be used"
+        requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'build_id'
         app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
         if (project.hasProperty('build_id')) {
             build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${build_id}.xml")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}-${build_id}.xml")
         } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-latest.xml")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}-latest.xml")
         }
     }
 
