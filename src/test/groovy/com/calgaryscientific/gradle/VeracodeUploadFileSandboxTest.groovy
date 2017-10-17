@@ -26,16 +26,23 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.api.GradleException
 
-class VeracodeCreateSandboxTest extends TestCommonSetup {
-    File sandboxInfoFile = getResource('sandboxinfo-1.2.xml')
+class VeracodeUploadFileSandboxTest extends TestCommonSetup {
 
-    def 'Test veracodeCreateSandbox Task'() {
+    File filelistFile = getResource('filelist-1.1.xml')
+
+    String errorXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<error>Could not upload file</error>
+'''
+
+    def 'Test VeracodeSandboxUploadFile Task'() {
         given:
         def os = mockSystemOut()
-        def task = taskSetup('veracodeCreateSandbox')
+        def task = taskSetup('veracodeSandboxUploadFile')
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()
@@ -43,10 +50,30 @@ class VeracodeCreateSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.createSandbox(_,_) >> {
-            return new String(sandboxInfoFile.readBytes())
+        1 * task.veracodeAPI.uploadFile(_) >> {
+            return new String(filelistFile.readBytes())
         }
-        assert is.readLine() == 'sandbox_id=123 sandbox_name="test-integration" owner=david.gamba&#x40;org.com date=2017-10-13T19:00:14-04:00'
+        assert is.readLine() == 'Processing build.gradle'
+        assert is.readLine() == 'file1=Uploaded'
+        assert is.readLine() == 'file2=Uploaded'
+        assert is.readLine() == 'file3=Uploaded'
+    }
+
+    def 'Test VeracodeSandboxUploadFile Task failure'() {
+        given:
+        def task = taskSetup('veracodeSandboxUploadFile')
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+
+        when:
+        task.run()
+
+        then:
+        10 * task.veracodeAPI.uploadFile(_) >> {
+            return errorXMLResponse
+        }
+        def e = thrown(GradleException)
+        e.toString().contains("ERROR: Could not upload file")
     }
 }
-

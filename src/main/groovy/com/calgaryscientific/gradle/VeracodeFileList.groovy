@@ -26,12 +26,13 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSetup {
-    String username
-    String password
-    String id
-    String key
-    Set<File> filesToUpload
-    Set<File> sandboxFilesToUpload
-    Set<String> moduleWhitelist
+import groovy.transform.CompileStatic
+
+@CompileStatic
+class VeracodeFileList {
+    static void printFileList(Node xml) {
+        XMLIO.getNodeList(xml, 'file').each { file ->
+            printf "%s=%s\n", XMLIO.getNodeAttributes(file, 'file_name', 'file_status')
+        }
+    }
 }

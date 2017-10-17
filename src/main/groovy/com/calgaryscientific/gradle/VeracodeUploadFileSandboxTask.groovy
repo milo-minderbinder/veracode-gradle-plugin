@@ -31,19 +31,21 @@ import org.gradle.api.tasks.OutputFile
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeUploadFileTask extends VeracodeTask {
-    static final String NAME = 'veracodeUploadFile'
+class VeracodeUploadFileSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxUploadFile'
     String maxUploadAttempts
     String waitTimeBetweenAttempts
 
-    VeracodeUploadFileTask() {
-        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'"
-        requiredArguments << 'app_id'
+    VeracodeUploadFileSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Uploads all files defined in 'sandboxFilesToUpload' to Veracode based on the given 'app_id' and 'sandbox_id'"
+        requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
         app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-latest.xml")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}-latest.xml")
     }
 
     @OutputFile
@@ -54,7 +56,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
     @InputFiles
     Set<File> getFileSet() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-        return veracodeSetup.filesToUpload
+        return veracodeSetup.sandboxFilesToUpload
     }
 
     void run() {

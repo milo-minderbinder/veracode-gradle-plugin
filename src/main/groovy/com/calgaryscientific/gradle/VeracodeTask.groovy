@@ -36,6 +36,8 @@ import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 @CompileStatic
 abstract class VeracodeTask extends DefaultTask {
     abstract static final String NAME
+    String app_id
+    String sandbox_id
     VeracodeAPI veracodeAPI
     VeracodeSetup veracodeSetup
     XMLIO xmlio
@@ -91,7 +93,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected void setupTask() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-        veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
+        veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id, app_id, sandbox_id)
         xmlio = new XMLIO("${project.buildDir}/veracode")
     }
 

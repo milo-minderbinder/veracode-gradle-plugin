@@ -38,63 +38,44 @@ class VeracodeUploadFileTest extends TestCommonSetup {
 <error>Could not upload file</error>
 '''
 
-    VeracodeUploadFileTask UploadFileTaskSetup() {
-        // Setup project with plugin
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        // Setup dummy files to upload
-        VeracodeSetup vs = new VeracodeSetup()
-        vs.filesToUpload = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        project.veracodeSetup.filesToUpload = vs.filesToUpload
-        // Get task from project
-        VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
-        // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        // Mock VeracodeAPI calls
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        task.veracodeAPI = veracodeAPIMock
-        return task
-    }
-
     def 'Test VeracodeUploadFile Task'() {
         given:
-        VeracodeUploadFileTask task = UploadFileTaskSetup()
-
-        when:
-        task.run()
-
-        then:
-        1 * task.veracodeAPI.uploadFile(_, _) >> {
-            return new String(filelistFile.readBytes())
-        }
-    }
-
-    def 'Test VeracodeUploadFile Task failure'() {
-        given:
-        VeracodeUploadFileTask task = UploadFileTaskSetup()
-
-        when:
-        task.run()
-
-        then:
-        10 * task.veracodeAPI.uploadFile(_, _) >> {
-            return errorXMLResponse
-        }
-        def e = thrown(GradleException)
-        e.toString().contains("ERROR: Could not upload file")
-    }
-
-    def 'Test VeracodeUploadFile printFileUploadStatus'() {
-        given:
         def os = mockSystemOut()
-        Node xml = XMLIO.parse(filelistFile)
+        def task = taskSetup('veracodeUploadFile')
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
-        VeracodeUploadFileTask.printFileUploadStatus(xml)
+        task.run()
         def is = getSystemOut(os)
         restoreStdout()
 
         then:
-        assert is.readLines() == ['file1=Uploaded', 'file2=Uploaded', 'file3=Uploaded']
+        1 * task.veracodeAPI.uploadFile(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+        assert is.readLine() == 'Processing build.gradle'
+        assert is.readLine() == 'file1=Uploaded'
+        assert is.readLine() == 'file2=Uploaded'
+        assert is.readLine() == 'file3=Uploaded'
+    }
+
+    def 'Test VeracodeUploadFile Task failure'() {
+        given:
+        def task = taskSetup('veracodeUploadFile')
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+
+        when:
+        task.run()
+
+        then:
+        10 * task.veracodeAPI.uploadFile(_) >> {
+            return errorXMLResponse
+        }
+        def e = thrown(GradleException)
+        e.toString().contains("ERROR: Could not upload file")
     }
 }
