@@ -26,12 +26,37 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSetup {
-    String username
-    String password
-    String id
-    String key
-    Set<File> filesToUpload
-    Set<File> sandboxFilesToUpload
-    Set<String> moduleWhitelist
+import groovy.transform.CompileStatic
+
+@CompileStatic
+class VeracodeUploadFile {
+    static void uploadFile(File file, Integer maxTries, Integer waitTime, VeracodeAPI veracodeAPI, File outputFile) {
+        Exception error
+        Integer tries = 1;
+        println "Processing ${file.name}"
+
+        boolean success = false
+        while (!success && (tries <= maxTries || maxTries == 0)) {
+            if (tries > 1) {
+                println "Attempt ${tries}"
+                println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
+            }
+            try {
+                String response = veracodeAPI.uploadFile(file.absolutePath)
+                Node xml = XMLIO.writeXml(outputFile, response)
+                VeracodeFileList.printFileList(xml)
+                success = true
+            } catch (Exception e) {
+                println ''
+                println e
+                println ''
+                error = e
+                sleep(waitTime)
+                tries++
+            }
+        }
+        if (tries > maxTries) {
+            throw error
+        }
+    }
 }

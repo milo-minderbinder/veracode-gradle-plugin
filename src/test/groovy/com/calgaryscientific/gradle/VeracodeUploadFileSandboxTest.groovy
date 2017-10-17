@@ -27,10 +27,8 @@
 package com.calgaryscientific.gradle
 
 import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 
-class VeracodeUploadFileTest extends TestCommonSetup {
+class VeracodeUploadFileSandboxTest extends TestCommonSetup {
 
     File filelistFile = getResource('filelist-1.1.xml')
 
@@ -38,13 +36,13 @@ class VeracodeUploadFileTest extends TestCommonSetup {
 <error>Could not upload file</error>
 '''
 
-    def 'Test VeracodeUploadFile Task'() {
+    def 'Test VeracodeSandboxUploadFile Task'() {
         given:
         def os = mockSystemOut()
-        def task = taskSetup('veracodeUploadFile')
+        def task = taskSetup('veracodeSandboxUploadFile')
         // Don't delay unit tests
         task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()
@@ -61,12 +59,12 @@ class VeracodeUploadFileTest extends TestCommonSetup {
         assert is.readLine() == 'file3=Uploaded'
     }
 
-    def 'Test VeracodeUploadFile Task failure'() {
+    def 'Test VeracodeSandboxUploadFile Task failure'() {
         given:
-        def task = taskSetup('veracodeUploadFile')
+        def task = taskSetup('veracodeSandboxUploadFile')
         // Don't delay unit tests
         task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()

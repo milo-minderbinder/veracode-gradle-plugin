@@ -40,13 +40,17 @@ class VeracodeAPI {
     private String password
     private String key
     private String id
+    private String app_id
+    private String sandbox_id
     private static Logger log = LoggerFactory.getLogger(VeracodeAPI.class);
 
-    VeracodeAPI(String username, String password, String key, String id) {
+    VeracodeAPI(String username, String password, String key, String id, String app_id, String sandbox_id) {
         this.username = username
         this.password = password
         this.key = key
         this.id = id
+        this.app_id = app_id
+        this.sandbox_id = sandbox_id
     }
 
     String beginPreScan(String app_id) {
@@ -59,12 +63,12 @@ class VeracodeAPI {
 
     String createBuild(String app_id, String sandbox_id, String build_version) {
         return uploadAPI().createBuild(app_id, build_version,
-                        "", // platform
-                        "", // platform_id
-                        "", // lifecycle_stage
-                        "", // lifecycle_stage_id
-                        "", // launch_date
-                        sandbox_id)
+                "", // platform
+                "", // platform_id
+                "", // lifecycle_stage
+                "", // lifecycle_stage_id
+                "", // launch_date
+                sandbox_id)
     }
 
     String createSandbox(String app_id, String sandbox_name) {
@@ -121,6 +125,13 @@ class VeracodeAPI {
     }
 
     String uploadFile(String app_id, String filePath) {
+        return uploadAPI().uploadFile(app_id, filePath)
+    }
+
+    String uploadFile(String filePath) {
+        if (sandbox_id) {
+            return uploadAPI().uploadFile(app_id, filePath, sandbox_id)
+        }
         return uploadAPI().uploadFile(app_id, filePath)
     }
 

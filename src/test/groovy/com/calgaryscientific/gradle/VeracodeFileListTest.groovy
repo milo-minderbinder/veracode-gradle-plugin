@@ -26,12 +26,20 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSetup {
-    String username
-    String password
-    String id
-    String key
-    Set<File> filesToUpload
-    Set<File> sandboxFilesToUpload
-    Set<String> moduleWhitelist
+class VeracodeFileListTest extends TestCommonSetup {
+    File filelistFile = getResource('filelist-1.1.xml')
+
+    def 'Test printFileList'() {
+        given:
+        def os = mockSystemOut()
+        Node xml = XMLIO.parse(filelistFile)
+
+        when:
+        VeracodeFileList.printFileList(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLines() == ['file1=Uploaded', 'file2=Uploaded', 'file3=Uploaded']
+    }
 }

@@ -26,6 +26,8 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.rules.TemporaryFolder
@@ -54,6 +56,18 @@ class TestCommonSetup extends Specification {
                 .withPluginClasspath()
                 .withArguments(tasks)
                 .build()
+    }
+
+    def taskSetup(String name) {
+        // Setup project with plugin
+        Project project = new ProjectBuilder().build()
+        project.plugins.apply('com.calgaryscientific.gradle.veracode')
+        // Get task from project
+        def task = project.tasks.getByName(name)
+        // Mock VeracodeAPI calls
+        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null, null, null])
+        task.veracodeAPI = veracodeAPIMock
+        return task
     }
 
     def mockSystemOut() {
