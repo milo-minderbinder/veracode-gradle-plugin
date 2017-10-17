@@ -26,9 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-
 class VeracodeGetBuildListSandboxTest extends TestCommonSetup {
     File buildlistSandboxFile = getResource('buildlist-sandbox-1.3.xml')
 

@@ -26,7 +26,8 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.json.*
+import groovy.json.JsonSlurper
+
 import java.rmi.UnexpectedException
 
 class ReportFlawsByTeamTask extends VeracodeTask {

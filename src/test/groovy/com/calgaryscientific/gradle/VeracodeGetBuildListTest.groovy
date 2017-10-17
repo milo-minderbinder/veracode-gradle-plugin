@@ -26,9 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-
 class VeracodeGetBuildListTest extends TestCommonSetup {
     File buildlistFile = getResource('buildlist-1.3.xml')
 

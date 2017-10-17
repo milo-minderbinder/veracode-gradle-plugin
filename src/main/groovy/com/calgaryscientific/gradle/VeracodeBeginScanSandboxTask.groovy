@@ -26,28 +26,34 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeGetPreScanResultsSandboxTest extends TestCommonSetup {
-    File preScanResultsFile = getResource('prescanresults-1.4.xml')
+import groovy.transform.CompileStatic
 
-    def 'Test veracodeSandboxGetPreScanResults Task'() {
-        given:
-        def os = mockSystemOut()
-        def task = taskSetup('veracodeSandboxGetPreScanResults')
-        task.build_id = '123'
+@CompileStatic
+class VeracodeBeginScanSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxBeginScan'
 
-        when:
-        task.run()
-        def is = getSystemOut(os)
-        restoreStdout()
+    VeracodeBeginScanSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Begin a Veracode Scan for the given 'app_id' and 'sandbox_id'"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        dependsOn "veracodeSandboxGetPreScanResults"
+        app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
+    }
 
-        then:
-        1 * task.veracodeAPI.getPreScanResults('123') >> {
-            return new String(preScanResultsFile.readBytes())
-        }
-        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
-        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
-        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
-        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
+    VeracodeGetPreScanResultsSandboxTask preScan = new VeracodeGetPreScanResultsSandboxTask()
+    File preScanResultsOutputFile = preScan.getOutputFile()
+
+    Set<String> getModuleWhitelist() {
+        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        return veracodeSetup.moduleWhitelist
+    }
+    void run() {
+        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), getModuleWhitelist())
+        println "Module IDs: " + moduleIds.join(",")
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(moduleIds))
+        VeracodeBuildInfo.printBuildInfo(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
-

@@ -27,8 +27,6 @@
 package com.calgaryscientific.gradle
 
 import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 
 class VeracodeUploadFileTest extends TestCommonSetup {
 

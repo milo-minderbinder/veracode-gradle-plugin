@@ -27,31 +27,31 @@
 package com.calgaryscientific.gradle
 
 class VeracodeBeginScanTest extends TestCommonSetup {
-
-    File preScanResultsFile = getResource('prescanresults-1.4.xml')
     File buildInfoFile = getResource('buildinfo-1.4.xml')
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-    def 'Test VeracodeBeginScan extractModuleIds'() {
+    def 'Test veracodeBeginScan Task'() {
         given:
-        Node xml = XMLIO.parse(preScanResultsFile)
-        Set<String> whitelist = ['class1.jar', 'class2.jar']
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeBeginScan')
+        task.preScanResultsOutputFile = preScanResultsFile
+        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
-        Set<String> moduleIds = VeracodeBeginScanTask.extractWhitelistModuleIds(xml, whitelist)
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
         then:
-        assert moduleIds == ['5', '7'] as Set<String>
+        1 * task.veracodeAPI.beginScan(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
+        assert is.readLine() == 'Selecting module: 5: class1.jar - OK'
+        assert is.readLine() == 'Selecting module: 7: class2.jar - OK'
+        assert is.readLine() == 'WARNING: Missing whitelist modules: [class3.jar]'
+        assert is.readLine() == 'Module IDs: 5,7'
+        assert is.readLine() == '[build]'
+        assert is.readLine() == 'build_id=2'
     }
 
-    def 'Test VeracodeBeginScan extractModuleIds with missing classes'() {
-        given:
-        Node xml = XMLIO.parse(preScanResultsFile)
-        Set<String> whitelist = ['class1.jar', 'class2.jar', 'class3.jar']
-
-        when:
-        Set<String> moduleIds = VeracodeBeginScanTask.extractWhitelistModuleIds(xml, whitelist)
-
-        then:
-        assert moduleIds == ['5', '7'] as Set<String>
-    }
 }

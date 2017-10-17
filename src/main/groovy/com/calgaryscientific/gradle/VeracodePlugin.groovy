@@ -51,6 +51,7 @@ class VeracodePlugin implements Plugin<Project> {
 
         // Sandbox tasks
         project.task(VeracodeBeginPreScanSandboxTask.NAME, type: VeracodeBeginPreScanSandboxTask)
+        project.task(VeracodeBeginScanSandboxTask.NAME, type: VeracodeBeginScanSandboxTask)
         project.task(VeracodeCreateBuildSandboxTask.NAME, type: VeracodeCreateBuildSandboxTask)
         project.task(VeracodeCreateSandboxTask.NAME, type: VeracodeCreateSandboxTask)
         project.task(VeracodeDeleteBuildSandboxTask.NAME, type: VeracodeDeleteBuildSandboxTask)
