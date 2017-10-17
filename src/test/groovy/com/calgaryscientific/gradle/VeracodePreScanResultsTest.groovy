@@ -47,4 +47,28 @@ class VeracodePreScanResultsTest extends TestCommonSetup {
                 'id=7 name="class2.jar" status="OK"',
         ]
     }
+
+    def 'Test VeracodeBeginScan extractModuleIds'() {
+        given:
+        Node xml = XMLIO.parse(preScanResultsFile)
+        Set<String> whitelist = ['class1.jar', 'class2.jar']
+
+        when:
+        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(xml, whitelist)
+
+        then:
+        assert moduleIds == ['5', '7'] as Set<String>
+    }
+
+    def 'Test VeracodeBeginScan extractModuleIds with missing classes'() {
+        given:
+        Node xml = XMLIO.parse(preScanResultsFile)
+        Set<String> whitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+
+        when:
+        Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(xml, whitelist)
+
+        then:
+        assert moduleIds == ['5', '7'] as Set<String>
+    }
 }
