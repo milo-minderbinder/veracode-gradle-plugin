@@ -43,7 +43,7 @@ class VeracodeBeginScanTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.beginScan(_,_) >> {
+        1 * task.veracodeAPI.beginScan(_) >> {
             return new String(buildInfoFile.readBytes())
         }
         assert is.readLine() == 'Selecting module: 5: class1.jar - OK'

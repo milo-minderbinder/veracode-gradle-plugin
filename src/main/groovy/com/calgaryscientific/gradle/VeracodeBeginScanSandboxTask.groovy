@@ -29,25 +29,26 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeBeginScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginScan'
+class VeracodeBeginScanSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxBeginScan'
 
-    VeracodeBeginScanTask() {
-        description = "Begin a Veracode Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
-        dependsOn "veracodeGetPreScanResults"
+    VeracodeBeginScanSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Begin a Veracode Scan for the given 'app_id' and 'sandbox_id'"
+        requiredArguments << 'app_id' << 'sandbox_id'
+        dependsOn "veracodeSandboxGetPreScanResults"
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
+        sandbox_id = project.findProperty("sandbox_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
     }
 
-    VeracodeGetPreScanResultsTask preScan = new VeracodeGetPreScanResultsTask()
+    VeracodeGetPreScanResultsSandboxTask preScan = new VeracodeGetPreScanResultsSandboxTask()
     File preScanResultsOutputFile = preScan.getOutputFile()
 
     Set<String> getModuleWhitelist() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.moduleWhitelist
     }
-
     void run() {
         Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")

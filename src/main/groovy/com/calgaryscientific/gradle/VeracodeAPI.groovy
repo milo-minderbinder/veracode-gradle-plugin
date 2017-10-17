@@ -62,7 +62,16 @@ class VeracodeAPI {
         return uploadAPI().beginPreScan(app_id)
     }
 
-    String beginScan(String app_id, Set<String> moduleIds) {
+    String beginScan(Set<String> moduleIds) {
+        if (sandbox_id) {
+            return uploadAPI().beginScan(
+                    app_id,
+                    moduleIds.join(","),
+                    "", // scan_all_top_level_modules
+                    "scan_selected_modules",
+                    "", // scan_previously_selected_modules
+                    sandbox_id)
+        }
         return uploadAPI().beginScan(
                 app_id,
                 moduleIds.join(","),
