@@ -29,28 +29,30 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetSandboxList extends VeracodeTask {
-    static final String NAME = 'veracodeGetSandboxList'
+class VeracodeCreateSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeCreateSandbox'
     private String app_id
+    private String sandbox_name
 
-    VeracodeGetSandboxList() {
+    VeracodeCreateSandboxTask() {
         group = 'Veracode Sandbox'
-        description = "List sandboxes for the given 'app_id'"
-        requiredArguments << 'app_id'
+        description = "Creates a new sandbox for the given 'app_id'"
+        requiredArguments << 'app_id' << 'sandbox_name'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
+        sandbox_name = project.findProperty("sandbox_name")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxinfo-${app_id}-latest.xml")
     }
 
-    void printSandboxList(Node xml) {
+    void printSandboxInfo(Node xml) {
         XMLIO.getNodeList(xml, 'sandbox').each { sandbox ->
-            printf "sandbox_id=%-10s last_modified=%s owner=%s name=%s\n",
-                    XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'last_modified', 'owner', 'sandbox_name')
+            printf "sandbox_id=%s sandbox_name=\"%s\" owner=%s date=%s\n",
+                    XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'sandbox_name', 'owner', 'created_date')
         }
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList(app_id))
-        printSandboxList(xml)
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.createSandbox(app_id, sandbox_name))
+        printSandboxInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }
 }
