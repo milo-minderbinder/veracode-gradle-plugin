@@ -26,22 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodePreScanResultsTest extends TestCommonSetup {
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-@CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+    def 'Test printModuleStatus'() {
+        given:
+        Node xml = XMLIO.parse(preScanResultsFile)
+        def os = mockSystemOut()
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
-    }
+        when:
+        VeracodePreScanResults.printModuleStatus(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan())
-        VeracodeBuildInfo.printBuildInfo(xml)
-        printf "report file: %s\n", getOutputFile()
+        then:
+        assert is.readLines() == [
+                'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"',
+                'id=5 name="class1.jar" status="OK"',
+                'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"',
+                'id=7 name="class2.jar" status="OK"',
+        ]
     }
 }

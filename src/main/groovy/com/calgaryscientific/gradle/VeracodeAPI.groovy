@@ -55,7 +55,10 @@ class VeracodeAPI {
 
     // upload API methods
 
-    String beginPreScan(String app_id) {
+    String beginPreScan() {
+        if (sandbox_id) {
+            return uploadAPI().beginPreScan(app_id, sandbox_id)
+        }
         return uploadAPI().beginPreScan(app_id)
     }
 
@@ -117,11 +120,10 @@ class VeracodeAPI {
         return uploadAPI().getFileList(app_id, build_id)
     }
 
-    String getPreScanResults(String app_id) {
-        return uploadAPI().getPreScanResults(app_id)
-    }
-
-    String getPreScanResults(String app_id, String build_id) {
+    String getPreScanResults(String build_id) {
+        if (sandbox_id) {
+            return uploadAPI().getPreScanResults(app_id, build_id, sandbox_id)
+        }
         return uploadAPI().getPreScanResults(app_id, build_id)
     }
 

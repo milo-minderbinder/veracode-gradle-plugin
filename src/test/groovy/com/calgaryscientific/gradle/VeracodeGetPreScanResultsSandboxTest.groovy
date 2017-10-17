@@ -26,22 +26,31 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+import org.gradle.api.Project
+import org.gradle.testfixtures.ProjectBuilder
 
-@CompileStatic
-class VeracodeBeginPreScanTask extends VeracodeTask {
-    static final String NAME = 'veracodeBeginPreScan'
+class VeracodeGetPreScanResultsSandboxTest extends TestCommonSetup {
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-    VeracodeBeginPreScanTask() {
-        description = "Begin a Veracode Pre-Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-latest.xml")
-    }
+    def 'Test veracodeSandboxGetPreScanResults Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxGetPreScanResults')
+        task.build_id = '123'
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan())
-        VeracodeBuildInfo.printBuildInfo(xml)
-        printf "report file: %s\n", getOutputFile()
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.getPreScanResults('123') >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+        assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'
+        assert is.readLine() == 'id=5 name="class1.jar" status="OK"'
+        assert is.readLine() == 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"'
+        assert is.readLine() == 'id=7 name="class2.jar" status="OK"'
     }
 }
+

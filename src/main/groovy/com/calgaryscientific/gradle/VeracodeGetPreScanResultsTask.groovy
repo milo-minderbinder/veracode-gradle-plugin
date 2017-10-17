@@ -31,8 +31,7 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetPreScanResultsTask extends VeracodeTask {
     static final String NAME = 'veracodeGetPreScanResults'
-    private String app_id
-    private String build_id
+    String build_id
 
     VeracodeGetPreScanResultsTask() {
         description = "Get the Veracode Pre-Scan Results based on the given 'app_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
@@ -41,36 +40,15 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
         app_id = project.findProperty('app_id')
         if (project.hasProperty('build_id')) {
             build_id = project.findProperty('build_id')
-            defaultOutputFile = new File("${project.buildDir}/veracode", "pre-scan-results-${build_id}.xml")
+            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-${build_id}.xml")
         } else {
-            defaultOutputFile = new File("${project.buildDir}/veracode", 'pre-scan-results-latest.xml')
-        }
-    }
-
-    static void printModuleStatus(Node xml) {
-        String app_id = xml.attribute('app_id')
-        String build_id = xml.attribute('build_id')
-        NodeList moduleList = xml.getAt("module") as NodeList
-        for (int i = 0; i < moduleList.size(); i++) {
-            Node moduleEntry = moduleList.get(i) as Node
-            String id = moduleEntry.attribute('id')
-            String name = moduleEntry.attribute('name')
-            String status = moduleEntry.attribute('status')
-            printf "app_id=%s build_id=%s id=%s name=\"%s\" status=\"%s\"\n",
-                    app_id, build_id, id, name, status
+            defaultOutputFile = new File("${project.buildDir}/veracode", "prescanresults-${app_id}-latest.xml")
         }
     }
 
     void run() {
-        String response
-        File file = getOutputFile()
-        if (project.hasProperty('build_id')) {
-            response = veracodeAPI.getPreScanResults(app_id, build_id)
-        } else {
-            response = veracodeAPI.getPreScanResults(app_id)
-        }
-        Node xml = XMLIO.writeXml(file, response)
-        printModuleStatus(xml)
-        println file
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getPreScanResults(build_id))
+        VeracodePreScanResults.printModuleStatus(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
