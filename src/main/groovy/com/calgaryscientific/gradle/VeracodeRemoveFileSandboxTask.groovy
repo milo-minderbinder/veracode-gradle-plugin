@@ -29,16 +29,18 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeRemoveFileTask extends VeracodeTask {
-    static final String NAME = 'veracodeRemoveFile'
+class VeracodeRemoveFileSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxRemoveFile'
     private String file_id
 
-    VeracodeRemoveFileTask() {
-        description = "Remove an uploaded file based on the given 'app_id' and 'file_id' combination"
-        requiredArguments << 'app_id' << 'file_id'
+    VeracodeRemoveFileSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Remove an uploaded file based on the given 'app_id', 'sandbox_id' and 'file_id' combination"
+        requiredArguments << 'app_id' << 'sandbox_id' << 'file_id'
         app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
         file_id = project.findProperty("file_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}.xml")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}.xml")
     }
 
     void run() {
@@ -47,3 +49,4 @@ class VeracodeRemoveFileTask extends VeracodeTask {
         printf "report file: %s\n", getOutputFile()
     }
 }
+

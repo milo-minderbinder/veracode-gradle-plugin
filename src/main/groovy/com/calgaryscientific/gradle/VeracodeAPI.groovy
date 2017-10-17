@@ -136,6 +136,13 @@ class VeracodeAPI {
         return uploadAPI().getPreScanResults(app_id, build_id)
     }
 
+    String removeFile(String file_id) {
+        if (sandbox_id) {
+            return uploadAPI().removeFile(app_id, file_id, sandbox_id)
+        }
+        return uploadAPI().removeFile(app_id, file_id)
+    }
+
     String uploadFile(String filePath) {
         if (sandbox_id) {
             return uploadAPI().uploadFile(app_id, filePath, sandbox_id)
