@@ -52,13 +52,8 @@ abstract class VeracodeTask extends DefaultTask {
             'flaw_id'          : '123',
             'build_version'    : 'xxx',
             'sandbox_name'     : 'xxx',
-            'dir'              : 'xxx',
-            'force'            : 'force',
             'file_id'          : '123',
-            'mode'             : 'action|actionSummary|verbose',
             'maxUploadAttempts': '123',
-            'build_id1'        : '123',
-            'build_id2'        : '123'
     ]
 
     VeracodeTask() {
@@ -117,22 +112,6 @@ abstract class VeracodeTask extends DefaultTask {
     // TODO: Remove this wrapper when all code has been refactored.
     protected UploadAPIWrapper uploadAPI() {
         return this.veracodeAPI.uploadAPI()
-    }
-
-    // TODO: Remove this wrapper when all code has been refactored.
-    protected ResultsAPIWrapper resultsAPI() {
-        return this.veracodeAPI.resultsAPI()
-    }
-
-    protected List<String> readListFromFile(File file) {
-        List<String> set = []
-        file.eachLine { line ->
-            if (set.contains(line)) {
-                println "ERROR: duplicate line: [$line]"
-            }
-            set.add(line)
-        }
-        return set
     }
 
     protected fail(String msg) {
