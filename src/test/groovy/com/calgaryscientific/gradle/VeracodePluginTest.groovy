@@ -28,7 +28,8 @@ package com.calgaryscientific.gradle
 
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.UnexpectedBuildFailure
-import static org.gradle.testkit.runner.TaskOutcome.*
+
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class VeracodePluginTest extends TestCommonSetup {
     def 'Test Task Existence'() {

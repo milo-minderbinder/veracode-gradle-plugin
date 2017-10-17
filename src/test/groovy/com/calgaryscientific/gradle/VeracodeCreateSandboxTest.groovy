@@ -26,9 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-
 class VeracodeCreateSandboxTest extends TestCommonSetup {
     File sandboxInfoFile = getResource('sandboxinfo-1.2.xml')
 

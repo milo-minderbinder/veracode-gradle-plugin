@@ -26,8 +26,8 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.tasks.OutputFile
 import groovy.transform.CompileStatic
+import org.gradle.api.tasks.OutputFile
 
 @CompileStatic
 class VeracodeGetCallStacksTask extends VeracodeTask {

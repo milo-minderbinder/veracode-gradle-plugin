@@ -26,9 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-
 class VeracodeBeginScanTest extends TestCommonSetup {
     File buildInfoFile = getResource('buildinfo-1.4.xml')
     File preScanResultsFile = getResource('prescanresults-1.4.xml')

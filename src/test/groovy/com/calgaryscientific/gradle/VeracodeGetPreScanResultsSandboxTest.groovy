@@ -26,9 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
-
 class VeracodeGetPreScanResultsSandboxTest extends TestCommonSetup {
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
 

@@ -26,12 +26,12 @@
 
 package com.calgaryscientific.gradle
 
+import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
+import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
-import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
-import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
 
 @CompileStatic
 abstract class VeracodeTask extends DefaultTask {

@@ -26,9 +26,9 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
-import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeUploadFileTask extends VeracodeTask {
