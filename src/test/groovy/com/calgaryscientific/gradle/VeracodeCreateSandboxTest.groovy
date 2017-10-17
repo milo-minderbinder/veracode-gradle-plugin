@@ -32,22 +32,10 @@ import org.gradle.testfixtures.ProjectBuilder
 class VeracodeCreateSandboxTest extends TestCommonSetup {
     File sandboxInfoFile = getResource('sandboxinfo-1.2.xml')
 
-    VeracodeCreateSandboxTask taskSetup() {
-        // Setup project with plugin
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        // Get task from project
-        VeracodeCreateSandboxTask task = project.tasks.getByName("veracodeCreateSandbox")
-        // Mock VeracodeAPI calls
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        task.veracodeAPI = veracodeAPIMock
-        return task
-    }
-
     def 'Test veracodeCreateSandbox Task'() {
         given:
         def os = mockSystemOut()
-        VeracodeCreateSandboxTask task = taskSetup()
+        def task = taskSetup('veracodeCreateSandbox')
 
         when:
         task.run()

@@ -32,22 +32,10 @@ import org.gradle.testfixtures.ProjectBuilder
 class VeracodeGetBuildListTest extends TestCommonSetup {
     File buildlistFile = getResource('buildlist-1.3.xml')
 
-    VeracodeGetBuildListTask taskSetup() {
-        // Setup project with plugin
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        // Get task from project
-        VeracodeGetBuildListTask task = project.tasks.getByName("veracodeGetBuildList")
-        // Mock VeracodeAPI calls
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        task.veracodeAPI = veracodeAPIMock
-        return task
-    }
-
     def 'Test veracodeGetBuildList Task'() {
         given:
         def os = mockSystemOut()
-        VeracodeGetBuildListTask task = taskSetup()
+        def task = taskSetup('veracodeGetBuildList')
 
         when:
         task.run()

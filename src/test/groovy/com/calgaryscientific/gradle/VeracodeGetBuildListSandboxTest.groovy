@@ -32,22 +32,10 @@ import org.gradle.testfixtures.ProjectBuilder
 class VeracodeGetBuildListSandboxTest extends TestCommonSetup {
     File buildlistSandboxFile = getResource('buildlist-sandbox-1.3.xml')
 
-    VeracodeGetBuildListSandboxTask taskSetup() {
-        // Setup project with plugin
-        Project project = new ProjectBuilder().build()
-        project.plugins.apply('com.calgaryscientific.gradle.veracode')
-        // Get task from project
-        VeracodeGetBuildListSandboxTask task = project.tasks.getByName("veracodeSandboxGetBuildList")
-        // Mock VeracodeAPI calls
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null])
-        task.veracodeAPI = veracodeAPIMock
-        return task
-    }
-
     def 'Test veracodeGetBuildList Task'() {
         given:
         def os = mockSystemOut()
-        VeracodeGetBuildListSandboxTask task = taskSetup()
+        def task = taskSetup('veracodeSandboxGetBuildList')
 
         when:
         task.run()
