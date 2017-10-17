@@ -42,7 +42,7 @@ class VeracodeGetSandboxList extends VeracodeTask {
     }
 
     void printSandboxList(Node xml) {
-        XMLIO.getNodeList(xml, 'sandbox').collect { sandbox ->
+        XMLIO.getNodeList(xml, 'sandbox').each { sandbox ->
             printf "sandbox_id=%-10s last_modified=%s owner=%s name=%s\n",
                     XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'last_modified', 'owner', 'sandbox_name')
         }
