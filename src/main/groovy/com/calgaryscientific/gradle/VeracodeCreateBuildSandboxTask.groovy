@@ -46,7 +46,7 @@ class VeracodeCreateBuildSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.createBuild(app_id, sandbox_id, build_version))
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.createBuildSandbox(build_version))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }

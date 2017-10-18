@@ -30,7 +30,7 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeUploadFile {
-    static void uploadFile(File file, Integer maxTries, Integer waitTime, VeracodeAPI veracodeAPI, File outputFile) {
+    static void uploadFile(File file, Integer maxTries, Integer waitTime, VeracodeAPI veracodeAPI, File outputFile, boolean sandbox) {
         Exception error
         Integer tries = 1;
         println "Processing ${file.name}"
@@ -42,7 +42,12 @@ class VeracodeUploadFile {
                 println "Maximum upload attempts = ${maxTries} (0 means keep trying)"
             }
             try {
-                String response = veracodeAPI.uploadFile(file.absolutePath)
+                String response
+                if (sandbox) {
+                    response = veracodeAPI.uploadFileSandbox(file.absolutePath)
+                } else {
+                    response = veracodeAPI.uploadFile(file.absolutePath)
+                }
                 Node xml = XMLIO.writeXml(outputFile, response)
                 VeracodeFileList.printFileList(xml)
                 success = true

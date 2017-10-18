@@ -40,7 +40,7 @@ class VeracodeCreateSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.createSandbox(_,_) >> {
+        1 * task.veracodeAPI.createSandbox(_) >> {
             return new String(sandboxInfoFile.readBytes())
         }
         assert is.readLine() == 'sandbox_id=123 sandbox_name="test-integration" owner=david.gamba&#x40;org.com date=2017-10-13T19:00:14-04:00'

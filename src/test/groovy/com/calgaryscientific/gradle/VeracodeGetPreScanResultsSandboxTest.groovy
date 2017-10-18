@@ -41,7 +41,7 @@ class VeracodeGetPreScanResultsSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.getPreScanResults('123') >> {
+        1 * task.veracodeAPI.getPreScanResultsSandbox('123') >> {
             return new String(preScanResultsFile.readBytes())
         }
         assert is.readLine() == 'id=4 name="goodLib.jar" status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files"'

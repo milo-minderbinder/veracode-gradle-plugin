@@ -52,7 +52,7 @@ class VeracodeBeginScanSandboxTask extends VeracodeTask {
     void run() {
         Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(XMLIO.readXml(preScanResultsOutputFile), getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(moduleIds))
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScanSandbox(moduleIds))
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

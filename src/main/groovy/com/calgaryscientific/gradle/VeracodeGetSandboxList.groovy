@@ -49,7 +49,7 @@ class VeracodeGetSandboxList extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList(app_id))
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList())
         printSandboxList(xml)
         printf "report file: %s\n", getOutputFile()
     }

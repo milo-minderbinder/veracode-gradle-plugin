@@ -48,13 +48,7 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
     }
 
     void run() {
-        String response
-        if (project.hasProperty('build_id')) {
-            response = veracodeAPI.getBuildInfo(app_id, build_id)
-        } else {
-            response = veracodeAPI.getBuildInfo(app_id)
-        }
-        Node buildInfo = XMLIO.writeXml(getOutputFile(), response)
+        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfo(build_id))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }

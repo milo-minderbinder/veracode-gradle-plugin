@@ -44,7 +44,7 @@ class VeracodeRemoveFileSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.removeFile(file_id))
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.removeFileSandbox(file_id))
         VeracodeFileList.printFileList(xml)
         printf "report file: %s\n", getOutputFile()
     }
