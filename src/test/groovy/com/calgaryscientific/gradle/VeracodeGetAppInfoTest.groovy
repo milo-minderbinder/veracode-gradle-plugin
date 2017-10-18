@@ -26,20 +26,26 @@
 
 package com.calgaryscientific.gradle
 
-class ReportFlawsDiffTask extends VeracodeTask {
-    static final String NAME = 'reportFlawsDiff'
+class VeracodeGetAppInfoTest extends TestCommonSetup {
+    File appinfoFile = getResource('appinfo-1.1.xml')
 
-    ReportFlawsDiffTask() {
-        description = 'Compares veracode report for two builds'
-        requiredArguments << 'build_id1' << 'build_id2'
-    }
+    def 'Test veracodeGetAppInfo Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeGetAppInfo')
 
-    void run() {
-        println 'Can you help to implement this? Basically, performing veracodeScanResults on two build_ids and report on:'
-        println '  - Flaws in build1 only.'
-        println '  - Flaws in build2 only.'
-        println '  - Flaws where status changed from build1 to build2.'
-        println '  - Think what else useful to know how to follow up.'
-        println '  - Format should be in ... probably csv (not sure).'
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.getAppInfo() >> {
+            return new String(appinfoFile.readBytes())
+        }
+        assert is.readLine() == 'app_id=1'
+        assert is.readLine() == 'app_name=App name'
+        assert is.readLine() == 'app_type=Information Access/Delivery/Mining/Portal'
     }
 }
+

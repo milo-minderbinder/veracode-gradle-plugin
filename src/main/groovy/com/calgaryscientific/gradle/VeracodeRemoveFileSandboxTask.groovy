@@ -29,19 +29,24 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetAppListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetAppList'
+class VeracodeRemoveFileSandboxTask extends VeracodeTask {
+    static final String NAME = 'veracodeSandboxRemoveFile'
+    private String file_id
 
-    VeracodeGetAppListTask() {
-        description = 'List all Veracode applications'
-        defaultOutputFile = new File("${project.buildDir}/veracode", "applist.xml")
+    VeracodeRemoveFileSandboxTask() {
+        group = 'Veracode Sandbox'
+        description = "Remove an uploaded file based on the given 'app_id', 'sandbox_id' and 'file_id' combination"
+        requiredArguments << 'app_id' << 'sandbox_id' << 'file_id'
+        app_id = project.findProperty("app_id")
+        sandbox_id = project.findProperty("sandbox_id")
+        file_id = project.findProperty("file_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-${sandbox_id}.xml")
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getAppList())
-        XMLIO.getNodeList(xml, 'app').each { app ->
-            printf "app_id=%s app_name=%s\n", XMLIO.getNodeAttributes(app, 'app_id', 'app_name')
-        }
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.removeFile(file_id))
+        VeracodeFileList.printFileList(xml)
         printf "report file: %s\n", getOutputFile()
     }
 }
+

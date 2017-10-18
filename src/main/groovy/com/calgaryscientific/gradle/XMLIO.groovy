@@ -32,12 +32,6 @@ import org.gradle.util.GFileUtils
 
 @CompileStatic
 class XMLIO {
-    private String outputDir
-
-    XMLIO(String ouptutDir) {
-        this.outputDir = outputDir
-    }
-
     static Node parseText(String xml) {
         XmlParser xmlParser = new XmlParser()
         return xmlParser.parseText(xml)
@@ -55,11 +49,6 @@ class XMLIO {
             fail("ERROR: ${xml.text()}\nSee ${file} for details!")
         }
         xml
-    }
-
-    Node writeXml(String filename, String content) {
-        File file = new File(outputDir, filename)
-        writeXml(file, content)
     }
 
     static Node readXml(File file) {

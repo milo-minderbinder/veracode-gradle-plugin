@@ -60,15 +60,12 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeGetFileListSandboxTask.NAME, type: VeracodeGetFileListSandboxTask)
         project.task(VeracodeGetPreScanResultsSandboxTask.NAME, type: VeracodeGetPreScanResultsSandboxTask)
         project.task(VeracodeGetSandboxList.NAME, type: VeracodeGetSandboxList)
+        project.task(VeracodeRemoveFileSandboxTask.NAME, type: VeracodeRemoveFileSandboxTask)
         project.task(VeracodeUploadFileSandboxTask.NAME, type: VeracodeUploadFileSandboxTask)
 
         // Common tasks
         project.task(VeracodeDetailedReportTask.NAME, type: VeracodeDetailedReportTask)
         project.task(VeracodeDetailedReportCSVTask.NAME, type: VeracodeDetailedReportCSVTask)
         project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
-
-        // TODO: Review these tasks
-        project.task(ReportFlawsByTeamTask.NAME, type: ReportFlawsByTeamTask)
-        project.task(ReportFlawsDiffTask.NAME, type: ReportFlawsDiffTask)
     }
 }

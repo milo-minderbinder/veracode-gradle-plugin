@@ -26,15 +26,24 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeRemoveFileTask extends VeracodeTask {
     static final String NAME = 'veracodeRemoveFile'
+    private String file_id
 
     VeracodeRemoveFileTask() {
         description = "Remove an uploaded file based on the given 'app_id' and 'file_id' combination"
         requiredArguments << 'app_id' << 'file_id'
+        app_id = project.findProperty("app_id")
+        file_id = project.findProperty("file_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}.xml")
     }
 
     void run() {
-        xmlio.writeXml('remove-file.xml', uploadAPI().removeFile(project.app_id, project.file_id))
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.removeFile(file_id))
+        VeracodeFileList.printFileList(xml)
+        printf "report file: %s\n", getOutputFile()
     }
 }
