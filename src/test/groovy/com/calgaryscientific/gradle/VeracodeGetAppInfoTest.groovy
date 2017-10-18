@@ -26,22 +26,26 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetAppInfoTest extends TestCommonSetup {
+    File appinfoFile = getResource('appinfo-1.1.xml')
 
-@CompileStatic
-class VeracodeGetAppListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetAppList'
+    def 'Test veracodeGetAppInfo Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeGetAppInfo')
 
-    VeracodeGetAppListTask() {
-        description = 'List all Veracode applications'
-        defaultOutputFile = new File("${project.buildDir}/veracode", "applist.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getAppList())
-        XMLIO.getNodeList(xml, 'app').each { app ->
-            printf "app_id=%s app_name=%s\n", XMLIO.getNodeAttributes(app, 'app_id', 'app_name')
+        then:
+        1 * task.veracodeAPI.getAppInfo() >> {
+            return new String(appinfoFile.readBytes())
         }
-        printf "report file: %s\n", getOutputFile()
+        assert is.readLine() == 'app_id=1'
+        assert is.readLine() == 'app_name=App name'
+        assert is.readLine() == 'app_type=Information Access/Delivery/Mining/Portal'
     }
 }
+

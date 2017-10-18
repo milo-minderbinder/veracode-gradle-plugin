@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<appinfo xmlns="https://analysiscenter.veracode.com/schema/2.0/appinfo"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         account_id="0" appinfo_version="1.1"
+         xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/appinfo https://analysiscenter.veracode.com/resource/2.0/appinfo.xsd">
+  <application app_id="1"
+               app_name="App name"
+               app_type="Information Access/Delivery/Mining/Portal"
+               business_criticality="High"
+               business_owner="owner"
+               business_owner_email="owner@company.com"
+               business_unit="Not Specified"
+               cots="false"
+               deployment_method="Web Based"
+               industry_vertical="Healthcare"
+               is_web_application="false"
+               modified_date="2017-10-11T18:50:17-04:00"
+               origin="Internally Developed"
+               policy="policy"
+               policy_updated_date="2017-10-11T18:56:37-04:00"
+               tags=""
+               teams="team"
+               vast="false">
+      <customfield name="Custom 1" value=""/>
+      <customfield name="Custom 2" value=""/>
+      <customfield name="Custom 3" value=""/>
+      <customfield name="Custom 4" value=""/>
+      <customfield name="Custom 5" value=""/>
+      <customfield name="Custom 6" value=""/>
+      <customfield name="Custom 7" value=""/>
+      <customfield name="Custom 8" value=""/>
+      <customfield name="Custom 9" value=""/>
+      <customfield name="Custom 10" value=""/>
+   </application>
+</appinfo>

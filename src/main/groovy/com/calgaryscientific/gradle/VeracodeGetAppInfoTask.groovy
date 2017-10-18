@@ -26,18 +26,24 @@
 
 package com.calgaryscientific.gradle
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class VeracodeGetAppInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetAppInfo'
 
     VeracodeGetAppInfoTask() {
         description = "List application information for the given 'app_id'"
         requiredArguments << 'app_id'
+        app_id = project.findProperty("app_id")
+        defaultOutputFile = new File("${project.buildDir}/veracode", "appinfo-${app_id}.xml")
     }
 
     void run() {
-        xmlio.writeXml('app-info.xml', uploadAPI().getAppInfo(project.app_id)
-        ).application[0].attributes().each() { k, v ->
-            println "$k=$v"
+        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getAppInfo())
+        XMLIO.getNode(xml, 'application').attributes().each { k, v ->
+            printf "%s=%s\n", k, v
         }
+        printf "report file: %s\n", getOutputFile()
     }
 }

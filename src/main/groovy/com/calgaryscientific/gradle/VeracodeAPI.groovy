@@ -102,6 +102,14 @@ class VeracodeAPI {
         return uploadAPI().deleteBuild(app_id, sandbox_id)
     }
 
+    String getAppInfo() {
+        return uploadAPI().getAppInfo(app_id)
+    }
+
+    String getAppList() {
+        return uploadAPI().getAppList()
+    }
+
     String getBuildList(String app_id) {
         return uploadAPI().getBuildList(app_id)
     }

@@ -40,7 +40,6 @@ abstract class VeracodeTask extends DefaultTask {
     String sandbox_id
     VeracodeAPI veracodeAPI
     VeracodeSetup veracodeSetup
-    XMLIO xmlio
     File outputFile
     protected File defaultOutputFile
     List<String> requiredArguments = []
@@ -89,7 +88,6 @@ abstract class VeracodeTask extends DefaultTask {
     protected void setupTask() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id, app_id, sandbox_id)
-        xmlio = new XMLIO("${project.buildDir}/veracode")
     }
 
     @TaskAction
@@ -107,11 +105,6 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected File getOutputFile() {
         return defaultOutputFile
-    }
-
-    // TODO: Remove this wrapper when all code has been refactored.
-    protected UploadAPIWrapper uploadAPI() {
-        return this.veracodeAPI.uploadAPI()
     }
 
     protected fail(String msg) {
