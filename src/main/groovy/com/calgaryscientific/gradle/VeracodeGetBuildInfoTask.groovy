@@ -31,7 +31,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetBuildInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetBuildInfo'
-    private String app_id
     private String build_id
 
     VeracodeGetBuildInfoTask() {

@@ -31,8 +31,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxDeleteBuild'
-    private String app_id
-    private String sandbox_id
 
     VeracodeDeleteBuildSandboxTask() {
         group = 'Veracode Sandbox'
