@@ -26,31 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeDeleteBuildSandboxTest extends TestCommonSetup {
+    File buildlistFile = getResource('buildlist-1.3.xml')
 
-@CompileStatic
-class VeracodeGetSandboxListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetSandboxList'
-    private String app_id
+    def 'Test veracodeSandboxDeleteBuild Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxDeleteBuild')
 
-    VeracodeGetSandboxListTask() {
-        group = 'Veracode Sandbox'
-        description = "List sandboxes for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    static void printSandboxList(Node xml) {
-        XMLIO.getNodeList(xml, 'sandbox').each { sandbox ->
-            printf "sandbox_id=%-10s last_modified=%s owner=%s name=%s\n",
-                    XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'last_modified', 'owner', 'sandbox_name')
+        then:
+        1 * task.veracodeAPI.deleteBuildSandbox() >> {
+            return new String(buildlistFile.readBytes())
         }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList())
-        printSandboxList(xml)
-        printf "report file: %s\n", getOutputFile()
+        assert is.readLine() == 'app_id=1 build_id=123        date=2017-09-11T12:21:17-04:00 version="app-scan-123"'
+        assert is.readLine() == 'app_id=1 build_id=124        date=null                      version="app-scan-456"'
+        assert is.readLine() == 'app_id=1 build_id=125        date=2017-10-05T11:33:36-04:00 version="app-scan-789"'
     }
 }

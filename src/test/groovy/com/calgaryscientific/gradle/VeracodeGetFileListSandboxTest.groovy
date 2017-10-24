@@ -26,31 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetFileListSandboxTest extends TestCommonSetup {
+    File filelistFile = getResource('filelist-1.1.xml')
 
-@CompileStatic
-class VeracodeGetSandboxListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetSandboxList'
-    private String app_id
+    def 'Test veracodeSandboxGetFileList Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxGetFileList')
 
-    VeracodeGetSandboxListTask() {
-        group = 'Veracode Sandbox'
-        description = "List sandboxes for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    static void printSandboxList(Node xml) {
-        XMLIO.getNodeList(xml, 'sandbox').each { sandbox ->
-            printf "sandbox_id=%-10s last_modified=%s owner=%s name=%s\n",
-                    XMLIO.getNodeAttributes(sandbox, 'sandbox_id', 'last_modified', 'owner', 'sandbox_name')
+        then:
+        1 * task.veracodeAPI.getFileListSandbox(_) >> {
+            return new String(filelistFile.readBytes())
         }
-    }
-
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getSandboxList())
-        printSandboxList(xml)
-        printf "report file: %s\n", getOutputFile()
+        assert is.readLine() == 'file1=Uploaded'
+        assert is.readLine() == 'file2=Uploaded'
+        assert is.readLine() == 'file3=Uploaded'
     }
 }
