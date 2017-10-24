@@ -29,11 +29,11 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class VeracodeGetSandboxList extends VeracodeTask {
+class VeracodeGetSandboxListTask extends VeracodeTask {
     static final String NAME = 'veracodeGetSandboxList'
     private String app_id
 
-    VeracodeGetSandboxList() {
+    VeracodeGetSandboxListTask() {
         group = 'Veracode Sandbox'
         description = "List sandboxes for the given 'app_id'"
         requiredArguments << 'app_id'
