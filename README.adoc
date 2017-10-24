@@ -63,6 +63,7 @@ veracodeSetup {
     id = "$veracodeID" <1>
     key = "$veracodeKey"
     filesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
+    sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
     moduleWhitelist = ['class1.jar', 'class2.jar']
 }
 ----
