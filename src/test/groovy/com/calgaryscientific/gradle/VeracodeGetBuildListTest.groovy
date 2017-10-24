@@ -40,7 +40,7 @@ class VeracodeGetBuildListTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.getBuildList(_) >> {
+        1 * task.veracodeAPI.getBuildList() >> {
             return new String(buildlistFile.readBytes())
         }
         assert is.readLine() == 'app_id=1 build_id=123        date=2017-09-11T12:21:17-04:00 version="app-scan-123"'

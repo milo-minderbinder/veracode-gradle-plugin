@@ -65,7 +65,7 @@ class TestCommonSetup extends Specification {
         // Get task from project
         def task = project.tasks.getByName(name)
         // Mock VeracodeAPI calls
-        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: ["", "", null, null, null, null])
+        VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
         task.veracodeAPI = veracodeAPIMock
         return task
     }

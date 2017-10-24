@@ -26,53 +26,35 @@
 
 package com.calgaryscientific.gradle
 
-import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
-import com.veracode.apiwrapper.wrappers.SandboxAPIWrapper
-import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
-import org.gradle.api.GradleException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 @CompileStatic
 class VeracodeAPI {
-    private String username
-    private String password
-    private String key
-    private String id
     private String app_id
     private String sandbox_id
+    private VeracodeAPIWrapperFactory veracodeAPIFactory
     private static Logger log = LoggerFactory.getLogger(VeracodeAPI.class);
 
-    VeracodeAPI(String username, String password, String key, String id, String app_id, String sandbox_id) {
-        this.username = username
-        this.password = password
-        this.key = key
-        this.id = id
+    VeracodeAPI(VeracodeAPIWrapperFactory veracodeAPIFactory, String app_id, String sandbox_id) {
         this.app_id = app_id
         this.sandbox_id = sandbox_id
+        this.veracodeAPIFactory = veracodeAPIFactory
     }
 
     // upload API methods
 
     String beginPreScan() {
-        if (sandbox_id) {
-            return uploadAPI().beginPreScan(app_id, sandbox_id)
-        }
-        return uploadAPI().beginPreScan(app_id)
+        return veracodeAPIFactory.uploadAPI().beginPreScan(app_id)
+    }
+
+    String beginPreScanSandbox() {
+        return veracodeAPIFactory.uploadAPI().beginPreScan(app_id, sandbox_id)
     }
 
     String beginScan(Set<String> moduleIds) {
-        if (sandbox_id) {
-            return uploadAPI().beginScan(
-                    app_id,
-                    moduleIds.join(","),
-                    "", // scan_all_top_level_modules
-                    "scan_selected_modules",
-                    "", // scan_previously_selected_modules
-                    sandbox_id)
-        }
-        return uploadAPI().beginScan(
+        return veracodeAPIFactory.uploadAPI().beginScan(
                 app_id,
                 moduleIds.join(","),
                 "", // scan_all_top_level_modules
@@ -80,12 +62,22 @@ class VeracodeAPI {
                 "") // scan_previously_selected_modules
     }
 
-    String createBuild(String app_id, String build_version) {
-        return uploadAPI().createBuild(app_id, build_version)
+    String beginScanSandbox(Set<String> moduleIds) {
+        return veracodeAPIFactory.uploadAPI().beginScan(
+                app_id,
+                moduleIds.join(","),
+                "", // scan_all_top_level_modules
+                "scan_selected_modules",
+                "", // scan_previously_selected_modules
+                sandbox_id)
     }
 
-    String createBuild(String app_id, String sandbox_id, String build_version) {
-        return uploadAPI().createBuild(app_id, build_version,
+    String createBuild(String build_version) {
+        return veracodeAPIFactory.uploadAPI().createBuild(app_id, build_version)
+    }
+
+    String createBuildSandbox(String build_version) {
+        return veracodeAPIFactory.uploadAPI().createBuild(app_id, build_version,
                 "", // platform
                 "", // platform_id
                 "", // lifecycle_stage
@@ -94,133 +86,91 @@ class VeracodeAPI {
                 sandbox_id)
     }
 
-    String deleteBuild(String app_id) {
-        return uploadAPI().deleteBuild(app_id)
+    String deleteBuild() {
+        return veracodeAPIFactory.uploadAPI().deleteBuild(app_id)
     }
 
-    String deleteBuild(String app_id, String sandbox_id) {
-        return uploadAPI().deleteBuild(app_id, sandbox_id)
+    String deleteBuildSandbox() {
+        return veracodeAPIFactory.uploadAPI().deleteBuild(app_id, sandbox_id)
     }
 
     String getAppInfo() {
-        return uploadAPI().getAppInfo(app_id)
+        return veracodeAPIFactory.uploadAPI().getAppInfo(app_id)
     }
 
     String getAppList() {
-        return uploadAPI().getAppList()
+        return veracodeAPIFactory.uploadAPI().getAppList()
     }
 
-    String getBuildList(String app_id) {
-        return uploadAPI().getBuildList(app_id)
+    String getBuildList() {
+        return veracodeAPIFactory.uploadAPI().getBuildList(app_id)
     }
 
-    String getBuildList(String app_id, String sandbox_id) {
-        return uploadAPI().getBuildList(app_id, sandbox_id)
+    String getBuildListSandbox() {
+        return veracodeAPIFactory.uploadAPI().getBuildList(app_id, sandbox_id)
     }
 
-    String getBuildInfo(String app_id) {
-        return uploadAPI().getBuildInfo(app_id)
+    String getBuildInfo(String build_id) {
+        return veracodeAPIFactory.uploadAPI().getBuildInfo(app_id, build_id)
     }
 
-    String getBuildInfo(String app_id, String build_id) {
-        return uploadAPI().getBuildInfo(app_id, build_id)
-    }
-
-    String getBuildInfo(String app_id, String build_id, String sandbox_id) {
-        return uploadAPI().getBuildInfo(app_id, build_id, sandbox_id)
+    String getBuildInfoSandbox(String build_id) {
+        return veracodeAPIFactory.uploadAPI().getBuildInfo(app_id, build_id, sandbox_id)
     }
 
     String getFileList(String build_id) {
-        if (sandbox_id) {
-            return uploadAPI().getFileList(app_id, build_id, sandbox_id)
-        }
-        return uploadAPI().getFileList(app_id, build_id)
+        return veracodeAPIFactory.uploadAPI().getFileList(app_id, build_id)
+    }
+
+    String getFileListSandbox(String build_id) {
+        return veracodeAPIFactory.uploadAPI().getFileList(app_id, build_id, sandbox_id)
     }
 
     String getPreScanResults(String build_id) {
-        if (sandbox_id) {
-            return uploadAPI().getPreScanResults(app_id, build_id, sandbox_id)
-        }
-        return uploadAPI().getPreScanResults(app_id, build_id)
+        return veracodeAPIFactory.uploadAPI().getPreScanResults(app_id, build_id)
+    }
+
+    String getPreScanResultsSandbox(String build_id) {
+        return veracodeAPIFactory.uploadAPI().getPreScanResults(app_id, build_id, sandbox_id)
     }
 
     String removeFile(String file_id) {
-        if (sandbox_id) {
-            return uploadAPI().removeFile(app_id, file_id, sandbox_id)
-        }
-        return uploadAPI().removeFile(app_id, file_id)
+        return veracodeAPIFactory.uploadAPI().removeFile(app_id, file_id)
+    }
+
+    String removeFileSandbox(String file_id) {
+        return veracodeAPIFactory.uploadAPI().removeFile(app_id, file_id, sandbox_id)
     }
 
     String uploadFile(String filePath) {
-        if (sandbox_id) {
-            return uploadAPI().uploadFile(app_id, filePath, sandbox_id)
-        }
-        return uploadAPI().uploadFile(app_id, filePath)
+        return veracodeAPIFactory.uploadAPI().uploadFile(app_id, filePath)
+    }
+
+    String uploadFileSandbox(String filePath) {
+        return veracodeAPIFactory.uploadAPI().uploadFile(app_id, filePath, sandbox_id)
     }
 
     // results API methods
 
     String detailedReport(String build_id) {
-        return resultsAPI().detailedReport(build_id)
+        return veracodeAPIFactory.resultsAPI().detailedReport(build_id)
     }
 
     byte[] detailedReportPdf(String build_id) {
-        return resultsAPI().detailedReportPdf(build_id)
+        return veracodeAPIFactory.resultsAPI().detailedReportPdf(build_id)
     }
 
     String getCallStacks(String build_id, String flaw_id) {
-        return resultsAPI().getCallStacks(build_id, flaw_id)
+        return veracodeAPIFactory.resultsAPI().getCallStacks(build_id, flaw_id)
     }
 
     // sandbox API methods
 
-    String createSandbox(String app_id, String sandbox_name) {
-        return sandboxAPI().createSandbox(app_id, sandbox_name)
+    String createSandbox(String sandbox_name) {
+        return veracodeAPIFactory.sandboxAPI().createSandbox(app_id, sandbox_name)
     }
 
-    String getSandboxList(String app_id) {
-        return sandboxAPI().getSandboxList(app_id)
-    }
-
-    private boolean useAPICredentials() {
-        if (username && password) {
-            log.debug('Using username and password authentication')
-            return false
-        }
-        if (!key && !id) {
-            throw new GradleException("Missing Veracode Credentials!")
-        }
-        log.debug('Using key and ID authentication')
-        return true
-    }
-
-    protected UploadAPIWrapper uploadAPI() {
-        UploadAPIWrapper api = new UploadAPIWrapper()
-        if (useAPICredentials()) {
-            api.setUpApiCredentials(this.id, this.key)
-        } else {
-            api.setUpCredentials(this.username, this.password)
-        }
-        return api
-    }
-
-    protected ResultsAPIWrapper resultsAPI() {
-        ResultsAPIWrapper api = new ResultsAPIWrapper()
-        if (useAPICredentials()) {
-            api.setUpApiCredentials(this.id, this.key)
-        } else {
-            api.setUpCredentials(this.username, this.password)
-        }
-        return api
-    }
-
-    protected SandboxAPIWrapper sandboxAPI() {
-        SandboxAPIWrapper api = new SandboxAPIWrapper()
-        if (useAPICredentials()) {
-            api.setUpApiCredentials(this.id, this.key)
-        } else {
-            api.setUpCredentials(this.username, this.password)
-        }
-        return api
+    String getSandboxList() {
+        return veracodeAPIFactory.sandboxAPI().getSandboxList(app_id)
     }
 }

@@ -26,23 +26,26 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetSandboxListTest extends TestCommonSetup {
+    File sandboxlistFile = getResource('sandboxlist-1.0.xml')
 
-@CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
+    def 'Test veracodeGetSandboxList Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeGetSandboxList')
 
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList())
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
+        then:
+        1 * task.veracodeAPI.getSandboxList() >> {
+            return new String(sandboxlistFile.readBytes())
+        }
+        assert is.readLine() == 'sandbox_id=123        last_modified=2017-03-21T15:28:17-04:00 owner=david.gamba@org.com name=sandbox1'
+        assert is.readLine() == 'sandbox_id=124        last_modified=2017-05-08T00:58:11-04:00 owner=david.gamba@org.com name=sandbox2'
+        assert is.readLine() == 'sandbox_id=125        last_modified=2017-05-18T14:42:59-04:00 owner=david.gamba@org.com name=sandbox3'
+        assert is.readLine() == 'sandbox_id=126        last_modified=2017-07-15T00:59:29-04:00 owner=david.gamba@org.com name=sandbox4'
     }
 }

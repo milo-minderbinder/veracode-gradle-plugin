@@ -26,8 +26,6 @@
 
 package com.calgaryscientific.gradle
 
-import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper
-import com.veracode.apiwrapper.wrappers.UploadAPIWrapper
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -40,6 +38,7 @@ abstract class VeracodeTask extends DefaultTask {
     String sandbox_id
     VeracodeAPI veracodeAPI
     VeracodeSetup veracodeSetup
+    VeracodeAPIWrapperFactory veracodeAPIWrapperFactory
     File outputFile
     protected File defaultOutputFile
     List<String> requiredArguments = []
@@ -87,7 +86,8 @@ abstract class VeracodeTask extends DefaultTask {
 
     protected void setupTask() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
-        veracodeAPI = new VeracodeAPI(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id, app_id, sandbox_id)
+        veracodeAPIWrapperFactory = new VeracodeAPIWrapperFactory(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
+        veracodeAPI = new VeracodeAPI(veracodeAPIWrapperFactory, app_id, sandbox_id)
     }
 
     @TaskAction

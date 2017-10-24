@@ -26,23 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetFileListSandboxTest extends TestCommonSetup {
+    File filelistFile = getResource('filelist-1.1.xml')
 
-@CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
+    def 'Test veracodeSandboxGetFileList Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxGetFileList')
 
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList())
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
+        then:
+        1 * task.veracodeAPI.getFileListSandbox(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+        assert is.readLine() == 'file1=Uploaded'
+        assert is.readLine() == 'file2=Uploaded'
+        assert is.readLine() == 'file3=Uploaded'
     }
 }

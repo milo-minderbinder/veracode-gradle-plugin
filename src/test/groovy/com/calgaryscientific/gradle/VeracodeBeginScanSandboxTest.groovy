@@ -26,23 +26,32 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeBeginScanSandboxTest extends TestCommonSetup {
+    File buildInfoFile = getResource('buildinfo-1.4.xml')
+    File preScanResultsFile = getResource('prescanresults-1.4.xml')
 
-@CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
+    def 'Test veracodeSandboxBeginScan Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxBeginScan')
+        task.preScanResultsOutputFile = preScanResultsFile
+        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.beginScanSandbox(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
+        assert is.readLine() == 'Selecting module: 5: class1.jar - OK'
+        assert is.readLine() == 'Selecting module: 7: class2.jar - OK'
+        assert is.readLine() == 'WARNING: Missing whitelist modules: [class3.jar]'
+        assert is.readLine() == 'Module IDs: 5,7'
+        assert is.readLine() == '[build]'
+        assert is.readLine() == 'build_id=2'
     }
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList())
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
-    }
 }

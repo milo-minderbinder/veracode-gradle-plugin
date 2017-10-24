@@ -26,23 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeGetBuildInfoSandboxTest extends TestCommonSetup {
+    File buildInfoFile = getResource('buildinfo-1.4.xml')
 
-@CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
+    def 'Test veracodeSandboxGetBuildInfo Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeSandboxGetBuildInfo')
 
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
+        assert is.readLine() == '[build]'
+        assert is.readLine() == 'build_id=2'
     }
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList())
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
-    }
 }

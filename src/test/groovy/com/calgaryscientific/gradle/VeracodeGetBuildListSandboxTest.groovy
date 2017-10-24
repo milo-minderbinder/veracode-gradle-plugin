@@ -40,7 +40,7 @@ class VeracodeGetBuildListSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.getBuildList(_,_) >> {
+        1 * task.veracodeAPI.getBuildListSandbox() >> {
             return new String(buildlistSandboxFile.readBytes())
         }
         assert is.readLine() == 'app_id=1 sandbox_id=2 build_id=123        date=2017-09-11T12:21:17-04:00 version="app-scan-123"'

@@ -26,23 +26,25 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeDeleteBuildTest extends TestCommonSetup {
+    File buildlistFile = getResource('buildlist-1.3.xml')
 
-@CompileStatic
-class VeracodeGetBuildListTask extends VeracodeTask {
-    static final String NAME = 'veracodeGetBuildList'
-    private String app_id
+    def 'Test veracodeDeleteBuild Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeDeleteBuild')
 
-    VeracodeGetBuildListTask() {
-        description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildList())
-        VeracodeBuildList.printBuildList(xml)
-        printf "report file: %s\n", getOutputFile()
+        then:
+        1 * task.veracodeAPI.deleteBuild() >> {
+            return new String(buildlistFile.readBytes())
+        }
+        assert is.readLine() == 'app_id=1 build_id=123        date=2017-09-11T12:21:17-04:00 version="app-scan-123"'
+        assert is.readLine() == 'app_id=1 build_id=124        date=null                      version="app-scan-456"'
+        assert is.readLine() == 'app_id=1 build_id=125        date=2017-10-05T11:33:36-04:00 version="app-scan-789"'
     }
 }

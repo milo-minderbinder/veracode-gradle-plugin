@@ -50,7 +50,7 @@ class VeracodeUploadFileSandboxTest extends TestCommonSetup {
         restoreStdout()
 
         then:
-        1 * task.veracodeAPI.uploadFile(_) >> {
+        1 * task.veracodeAPI.uploadFileSandbox(_) >> {
             return new String(filelistFile.readBytes())
         }
         assert is.readLine() == 'Processing build.gradle'
@@ -70,7 +70,7 @@ class VeracodeUploadFileSandboxTest extends TestCommonSetup {
         task.run()
 
         then:
-        10 * task.veracodeAPI.uploadFile(_) >> {
+        10 * task.veracodeAPI.uploadFileSandbox(_) >> {
             return errorXMLResponse
         }
         def e = thrown(GradleException)
