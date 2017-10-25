@@ -30,6 +30,8 @@ import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @CompileStatic
 abstract class VeracodeTask extends DefaultTask {
@@ -39,6 +41,7 @@ abstract class VeracodeTask extends DefaultTask {
     VeracodeAPI veracodeAPI
     VeracodeSetup veracodeSetup
     VeracodeAPIWrapperFactory veracodeAPIWrapperFactory
+    static Logger log = LoggerFactory.getLogger(VeracodeTask.class);
     File outputFile
     protected File defaultOutputFile
     List<String> requiredArguments = []
@@ -85,6 +88,7 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     protected void setupTask() {
+        log.info("[SetupTask] app_id=${app_id} sandbox_id=${sandbox_id}")
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         veracodeAPIWrapperFactory = new VeracodeAPIWrapperFactory(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
         veracodeAPI = new VeracodeAPI(veracodeAPIWrapperFactory, app_id, sandbox_id)
