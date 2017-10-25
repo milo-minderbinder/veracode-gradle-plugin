@@ -57,6 +57,34 @@ class VeracodeUploadFileTest extends TestCommonSetup {
         assert is.readLine() == 'file1=Uploaded'
         assert is.readLine() == 'file2=Uploaded'
         assert is.readLine() == 'file3=Uploaded'
+        assert is.readLine() =~ /results file: /
+        assert task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles().size() == 1
+    }
+
+    def 'Test VeracodeUploadFile Task delete file'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeUploadFile')
+        // Don't delay unit tests
+        task.waitTimeBetweenAttempts = "0"
+        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.setProperty("delete", "true")
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.uploadFile(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+        assert is.readLine() == 'Processing build.gradle'
+        assert is.readLine() == 'file1=Uploaded'
+        assert is.readLine() == 'file2=Uploaded'
+        assert is.readLine() == 'file3=Uploaded'
+        assert is.readLine() =~ /Deleting.*build.gradle/
+        assert task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles().size() == 0
     }
 
     def 'Test VeracodeUploadFile Task failure'() {
