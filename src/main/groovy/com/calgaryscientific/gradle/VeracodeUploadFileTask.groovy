@@ -35,14 +35,16 @@ class VeracodeUploadFileTask extends VeracodeTask {
     static final String NAME = 'veracodeUploadFile'
     String maxUploadAttempts
     String waitTimeBetweenAttempts
+    String delete
 
     VeracodeUploadFileTask() {
-        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'"
+        description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'. Use the 'delete=true' property to delete uploaded files"
         requiredArguments << 'app_id'
         optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts'
         app_id = project.findProperty("app_id")
         maxUploadAttempts = project.findProperty("maxUploadAttempts")
         waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
+        delete = project.findProperty("delete")
         defaultOutputFile = new File("${project.buildDir}/veracode", "filelist-${app_id}-latest.xml")
     }
 
@@ -62,6 +64,10 @@ class VeracodeUploadFileTask extends VeracodeTask {
         Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
         getFileSet().each { file ->
             VeracodeUploadFile.uploadFile(file, maxTries, waitTime, veracodeAPI, getOutputFile(), false)
+            if (delete == "true") {
+                println("Deleting ${file}")
+                file.delete()
+            }
         }
         println "results file: ${getOutputFile()}"
     }

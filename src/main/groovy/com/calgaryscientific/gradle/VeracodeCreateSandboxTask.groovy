@@ -31,7 +31,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeCreateSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateSandbox'
-    private String app_id
     private String sandbox_name
 
     VeracodeCreateSandboxTask() {

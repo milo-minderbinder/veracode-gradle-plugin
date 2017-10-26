@@ -31,7 +31,6 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeDeleteBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeDeleteBuild'
-    private String app_id
 
     VeracodeDeleteBuildTask() {
         description = "Delete the most recent Veracode build for 'app_id', even if it has a completed scan"
