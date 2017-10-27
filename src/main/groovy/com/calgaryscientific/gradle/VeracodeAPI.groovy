@@ -173,4 +173,14 @@ class VeracodeAPI {
     String getSandboxList() {
         return veracodeAPIFactory.sandboxAPI().getSandboxList(app_id)
     }
+
+    // mitigation API methods
+
+    String getMitigationInfo(String build_id, String flaw_id_list) {
+        return veracodeAPIFactory.mitigationAPI().getMitigationInfo(build_id, flaw_id_list)
+    }
+
+    String updateMitigationInfo(String build_id, String action, String comment, String flaw_id_list) {
+        return veracodeAPIFactory.mitigationAPI().updateMitigationInfo(build_id, action, comment, flaw_id_list)
+    }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mitigationinfo xmlns="https://analysiscenter.veracode.com/schema/mitigationinfo/1.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                build_id="1"
+                mitigationinfo_version="1.1"
+                xsi:schemaLocation="https://analysiscenter.veracode.com/schema/mitigationinfo/1.0 https://analysiscenter.veracode.com/resource/mitigationinfo.xsd">
+  <issue category="Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')" flaw_id="123">
+      <mitigation_action action="appdesign"
+                         comment="The command injection flaw identified applies to the following command... and its input is fully validated here..."
+                         date="2016-11-10 13:23:22"
+                         desc="Mitigate by Design"
+                         reviewer="User Name"/>
+      <mitigation_action action="fp"
+                         comment="The veracode platform is definitely not right about this one"
+                         date="2016-11-10 15:59:28"
+                         desc="Potential False Positive"
+                         reviewer="User Name"/>
+      <mitigation_action action="comment"
+                         comment="This needs further review"
+                         date="2016-11-10 16:02:17"
+                         desc="Add Comment"
+                         reviewer="User Name"/>
+   </issue>
+   <issue category="Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')" flaw_id="124">
+      <mitigation_action action="appdesign"
+                         comment="CRLF sequences removed as per the code below..."
+                         date="2016-11-30 13:00:27"
+                         desc="Mitigate by Design"
+                         reviewer="User Name"/>
+   </issue>
+</mitigationinfo>
