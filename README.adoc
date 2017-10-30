@@ -55,10 +55,10 @@ buildscript {
 }
 
 veracodeSetup {
-    username = "$veracodeUsername" <1>
-    password = "$veracodePassword"
-    id = "$veracodeID" <1>
-    key = "$veracodeKey"
+    username = project.findProperty("veracodeUsername") <1>
+    password = project.findProperty("veracodePassword")
+    id = project.findProperty("veracodeID") <1>
+    key = project.findProperty("veracodeKey")
     filesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
     sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
     moduleWhitelist = ['class1.jar', 'class2.jar']
