@@ -40,22 +40,19 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 [source,groovy]
 ----
 apply plugin: 'groovy'
+apply plugin: 'com.calgaryscientific.gradle.veracode'
 
 buildscript {
-    apply plugin: 'groovy'
     repositories {
-        // For locally published plugin
-        mavenLocal()
-        // For transitive dependencies
-        mavenCentral()
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath files('./lib/VeracodeJavaAPI.jar')
-        classpath 'com.calgaryscientific.gradle:veracodePlugin:1.0-SNAPSHOT'
+        classpath 'gradle.plugin.com.calgaryscientific.gradle:veracodePlugin:0.1.0'
     }
 }
-
-apply plugin: 'com.calgaryscientific.gradle.veracode'
 
 veracodeSetup {
     username = "$veracodeUsername" <1>
