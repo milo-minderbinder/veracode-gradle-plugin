@@ -39,7 +39,10 @@ class VeracodeBeginScanSandboxTask extends VeracodeTask {
         dependsOn "veracodeSandboxGetPreScanResults"
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-info-${app_id}-${sandbox_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
     }
 
     VeracodeGetPreScanResultsSandboxTask preScan = new VeracodeGetPreScanResultsSandboxTask()

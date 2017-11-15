@@ -36,7 +36,10 @@ class VeracodeGetBuildListTask extends VeracodeTask {
         description = "List builds for the given 'app_id'"
         requiredArguments << 'app_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
+    }
+
+    File getOutputFile() {
+        return VeracodeBuildList.getFile("${project.buildDir}/veracode", app_id)
     }
 
     void run() {
