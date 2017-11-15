@@ -30,6 +30,26 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeMitigationInfo {
+    static boolean validAction(String action) {
+        if (action != "comment" &&
+                action != "fp" &&
+                action != "appdesign" &&
+                action != "osenv" &&
+                action != "netenv" &&
+                action != "rejected" &&
+                action != "accepted") {
+            return false
+        }
+        return true
+    }
+
+    static boolean validComment(String comment) {
+        if (comment.length() > 1024) {
+            return false
+        }
+        return true
+    }
+
     static void printMitigationInfo(Node xml) {
         XMLIO.getNodeList(xml, 'issue').each { issue ->
             printf "="*80+"\n"

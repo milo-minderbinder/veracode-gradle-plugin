@@ -50,31 +50,11 @@ class VeracodeUpdateMitigationInfoTask extends VeracodeTask {
         return new File("${project.buildDir}/veracode", "mitigationinfo-${build_id}-${file_flaw_id_list}.xml")
     }
 
-    static boolean validAction(String action) {
-        if (action != "comment" &&
-                action != "fp" &&
-                action != "appdesign" &&
-                action != "osenv" &&
-                action != "netenv" &&
-                action != "rejected" &&
-                action != "accepted") {
-            return false
-        }
-        return true
-    }
-
-    static boolean validComment(String comment) {
-        if (comment.length() > 1024) {
-            return false
-        }
-        return true
-    }
-
     void run() {
-        if (!validAction(action)) {
+        if (!VeracodeMitigationInfo.validAction(action)) {
             fail("action must be one of: 'comment', 'fp', 'appdesign', 'osenv', 'netenv', 'rejected', 'accepted'. Received: ${action}")
         }
-        if (!validComment(comment)) {
+        if (!VeracodeMitigationInfo.validComment(comment)) {
             fail("comment must not exceed 1024 chars")
         }
         Node mitigationInfo = XMLIO.writeXml(getOutputFile(),

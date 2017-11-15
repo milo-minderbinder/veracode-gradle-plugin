@@ -29,6 +29,31 @@ package com.calgaryscientific.gradle
 class VeracodeMitigationInfoTest extends TestCommonSetup {
     File mitigationInfoFile = getResource('mitigationinfo-1.1.xml')
 
+    def 'Test validAction'() {
+        expect:
+        assert VeracodeMitigationInfo.validAction("invalid") == false
+        assert VeracodeMitigationInfo.validAction("comment") == true
+        assert VeracodeMitigationInfo.validAction("fp") == true
+        assert VeracodeMitigationInfo.validAction("appdesign") == true
+        assert VeracodeMitigationInfo.validAction("osenv") == true
+        assert VeracodeMitigationInfo.validAction("netenv") == true
+        assert VeracodeMitigationInfo.validAction("rejected") == true
+        assert VeracodeMitigationInfo.validAction("accepted") == true
+    }
+
+    def 'Test validComment'() {
+        expect:
+        assert VeracodeMitigationInfo.validComment('x'*1024) == true
+        assert VeracodeMitigationInfo.validComment('x'*1025) == false
+    }
+
+    static boolean validComment(String comment) {
+        if (comment.length() > 1024) {
+            return false
+        }
+        return true
+    }
+
     def 'Test printMitigationInfo'() {
         given:
         def os = mockSystemOut()
