@@ -47,13 +47,6 @@ class VeracodeMitigationInfoTest extends TestCommonSetup {
         assert VeracodeMitigationInfo.validComment('x'*1025) == false
     }
 
-    static boolean validComment(String comment) {
-        if (comment.length() > 1024) {
-            return false
-        }
-        return true
-    }
-
     def 'Test printMitigationInfo'() {
         given:
         def os = mockSystemOut()
