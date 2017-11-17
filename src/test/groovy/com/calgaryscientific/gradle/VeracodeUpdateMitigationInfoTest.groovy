@@ -26,6 +26,8 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.GradleException
+
 class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
     File mitigationInfoFile = getResource('mitigationinfo-1.1.xml')
 
@@ -51,5 +53,43 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         assert is.readLine() == "flaw_id: 123 | category: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
         assert is.readLine() == ''
         assert is.readLine() == 'action: appdesign'
+    }
+
+    def 'Test veracodeUpdateMitigationInfo action failure'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeUpdateMitigationInfo')
+        task.build_id = "1"
+        task.flaw_id_list = "123,456"
+        task.action = "badAction"
+        task.comment = "meant to be..."
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        def e = thrown(GradleException)
+        e.toString().contains("action must be one of: ")
+    }
+
+    def 'Test veracodeUpdateMitigationInfo comment failure'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeUpdateMitigationInfo')
+        task.build_id = "1"
+        task.flaw_id_list = "123,456"
+        task.action = "appdesign"
+        task.comment = "x"*1025
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        def e = thrown(GradleException)
+        e.toString().contains("comment must not exceed 1024 chars")
     }
 }
