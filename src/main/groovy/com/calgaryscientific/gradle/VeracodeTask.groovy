@@ -51,6 +51,7 @@ abstract class VeracodeTask extends DefaultTask {
             'sandbox_id'       : '123',
             'build_id'         : '123',
             'flaw_id'          : '123',
+            'flaw_id_list'     : '123',
             'build_version'    : 'xxx',
             'sandbox_name'     : 'xxx',
             'file_id'          : '123',

@@ -26,6 +26,7 @@
 
 package com.calgaryscientific.gradle
 
+import com.veracode.apiwrapper.wrappers.MitigationAPIWrapper
 import com.veracode.apiwrapper.wrappers.ResultsAPIWrapper;
 import com.veracode.apiwrapper.wrappers.SandboxAPIWrapper;
 import com.veracode.apiwrapper.wrappers.UploadAPIWrapper;
@@ -83,6 +84,16 @@ public class VeracodeAPIWrapperFactory {
 
     SandboxAPIWrapper sandboxAPI() {
         SandboxAPIWrapper api = new SandboxAPIWrapper()
+        if (useAPICredentials()) {
+            api.setUpApiCredentials(this.id, this.key)
+        } else {
+            api.setUpCredentials(this.username, this.password)
+        }
+        return api
+    }
+
+    MitigationAPIWrapper mitigationAPI() {
+        MitigationAPIWrapper api = new MitigationAPIWrapper()
         if (useAPICredentials()) {
             api.setUpApiCredentials(this.id, this.key)
         } else {
