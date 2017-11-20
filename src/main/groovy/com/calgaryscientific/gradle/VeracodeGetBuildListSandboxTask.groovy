@@ -38,7 +38,10 @@ class VeracodeGetBuildListSandboxTask extends VeracodeTask {
         requiredArguments << 'app_id' << 'sandbox_id'
         app_id = project.findProperty("app_id")
         sandbox_id = project.findProperty("sandbox_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}-${sandbox_id}.xml")
+    }
+
+    File getOutputFile() {
+        return VeracodeBuildList.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id)
     }
 
     void run() {

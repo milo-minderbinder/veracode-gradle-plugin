@@ -36,7 +36,10 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
         description = "Delete the most recent Veracode build for 'app_id', even if it has a completed scan"
         requiredArguments << 'app_id'
         app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "build-list-${app_id}.xml")
+    }
+
+    File getOutputFile() {
+        return VeracodeBuildList.getFile("${project.buildDir}/veracode", app_id)
     }
 
     void run() {
