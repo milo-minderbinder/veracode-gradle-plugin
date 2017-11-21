@@ -8,7 +8,7 @@ As a set of Gradle tasks, it is meant to be usable either as a command line subm
 It helps perform the following tasks:
 
 * Perform Veracode submissions for applications.
-* Scan results for flaws.
+* Retrieve Scan reports.
 
 == Pre-Requisites
 
@@ -19,23 +19,15 @@ The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAP
 
 == Getting Started
 
-=== Compile and publish the project
-
-* Clone the project.
-
-* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory in the root of the project.
-
-* Build and publish to mavenLocal by running:
-+
-`gradle publish`
+The plugin is published as a gradle plugin: https://plugins.gradle.org/plugin/com.calgaryscientific.gradle.veracode
 
 === Apply the plugin into your project
 
-* Create a new Gradle project.
+. Create a new Gradle project.
 
-* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory within your project.
+. Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory within your project.
 
-* Apply the plugin:
+. Apply the plugin:
 +
 [source,groovy]
 ----
@@ -66,28 +58,28 @@ veracodeSetup {
 ----
 <1> You are only required to use either username and password combination or API id and key.
 
-* Rename the `sample-gradle.properties` file to `gradle.properties` within your project and edit its contents to setup Veracode credentials.
+. Rename the `sample-gradle.properties` file to `gradle.properties` within your project and edit its contents to setup Veracode credentials.
 Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
 
-* Execute `gradle tasks` to see available tasks.
+. Execute `gradle tasks` to see available tasks.
 
-== Work flow tasks (CI environment)
+=== Work flow tasks (CI environment)
 
 The full work flow tasks are meant to be used in a CI environment.
 
 A single task will do the following:
 
 * _Query the status_ of the latest build:
-  - If the latest build scan is complete:
-    * _Creates a new build_.
-    * _Uploads the given files_ to the Veracode platform.
-    * _Begins a Pre-Scan_ of the uploaded files.
+  ** If the latest build Scan is complete:
+    . _Creates a new build_.
+    . _Uploads the given files_ to the Veracode platform.
+    . _Begins a Pre-Scan_ of the uploaded files.
 
-  - If the latest build scan has a completed pre-scan:
-    * _Begins the Scan_ of the application selecting the given white list modules.
+  ** If the latest build has a completed Pre-scan:
+    *** _Begins the Scan_ of the application selecting the given white list modules.
 
-  - If the pre-scan or Scan is in progress:
-    * Doesn't run any steps.
+  ** If the Pre-scan or Scan is in progress:
+    *** Doesn't run any steps.
 
 A sample configuration looks like this:
 
@@ -96,10 +88,10 @@ A sample configuration looks like this:
 task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowTask) {
     dependsOn buildMyApplication
     project.ext.build_version =  "build-name-if-creating-a-new-build"
-    project.ext.ignoreFailure =  "true"
+    project.ext.ignoreFailure =  "true" <1>
     doFirst {
         veracodeSetup {
-            filesToUpload = fileTree(dir: "upload/", include: "*").getFiles() <1>
+            filesToUpload = fileTree(dir: "upload/", include: "*").getFiles() <2>
         }
     }
 }
@@ -108,6 +100,22 @@ task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowTa
 <2> Setup `veracodeSetup` `filesToUpload` again to ensure it is evaluated after the `buildMyApplication` task.
 
 This task can be triggered by every commit and will only create a new build, upload files, begin pre-scans or begin scans when the Veracode platform is ready for it.
+
+The Sandbox counterpart can be used as:
+
+[source,groovy]
+----
+task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowSandboxTask) {
+    dependsOn buildMyApplication
+    project.ext.build_version =  "build-name-if-creating-a-new-sandbox-build"
+    project.ext.ignoreFailure =  "true"
+    doFirst {
+        veracodeSetup {
+            sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
+        }
+    }
+}
+----
 
 == Compatibility
 
@@ -132,6 +140,24 @@ Tested with the following XML file versions:
 * sandboxlist: sandboxlist_version="1.0"
 
 * sandboxinfo: sandboxinfo_version="1.2"
+
+== Contributing
+
+* Clone the project.
+
+* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory in the root of the project.
+
+* Run the tests:
++
+`gradle test`
+
+* Make your changes.
+
+* Build and publish to mavenLocal by running:
++
+`gradle publish`
+
+* Create a PR after you have verified things are working as expected.
 
 == LICENSE
 
