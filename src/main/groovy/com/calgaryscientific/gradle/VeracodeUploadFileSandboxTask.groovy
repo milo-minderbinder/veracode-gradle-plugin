@@ -63,7 +63,7 @@ class VeracodeUploadFileSandboxTask extends VeracodeTask {
     void run() {
         Integer maxTries = Integer.parseInt((this.maxUploadAttempts != null) ? this.maxUploadAttempts : '10')
         Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
-        VeracodeUploadFile.uploadSandboxFiles(veracodeAPI, getOutputFile(), getFileSet(), maxTries, waitTime, delete.toBoolean())
+        VeracodeUploadFile.uploadSandboxFiles(veracodeAPI, getOutputFile(), getFileSet(), maxTries, waitTime, Boolean.valueOf(delete))
         println "results file: ${getOutputFile()}"
     }
 }
