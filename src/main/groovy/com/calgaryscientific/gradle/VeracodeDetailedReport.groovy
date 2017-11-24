@@ -27,9 +27,41 @@
 package com.calgaryscientific.gradle
 
 import groovy.transform.CompileStatic
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVPrinter
 
 @CompileStatic
 class VeracodeDetailedReport {
+
+    /**
+     * Extracts the software_composition_analysis information of the detailed XML report and return a list of rows with it
+     * @param xml - detailed report.
+     * @param file - file to write the report to.
+     *
+     * Component tree:
+     *
+     * /component @description @file_name @library @max_cvss_score @sha1 @vendor @version @vulnerabilities
+     *  /file_paths
+     *      /file_path @value
+     *  /vulnerabilities
+     *      /vulnerability @cve_id @cve_summary @cvss_score @cwe_id @severity
+     *  /violated_policy_rules
+     */
+    static List<List<String>> softwareCompositionAnalysisRows(Node xml) {
+        List<List<String>> rows = []
+        List<String> componentFields = ['library', 'file_name', 'vendor', 'description']
+        List<String> vulnerabilityFields = ['cve_id', 'cwe_id', 'cvss_score', 'severity', 'cve_summary']
+        // header row
+        rows.add(componentFields + vulnerabilityFields)
+        for (Node component : XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component')) {
+            if ((component.attribute('vulnerabilities') as Integer) > 0) {
+                for (Node vulnerability : XMLIO.getNodeList(component, 'vulnerabilities', 'vulnerability')) {
+                    rows.add(XMLIO.getNodeAttributes(component, componentFields) + XMLIO.getNodeAttributes(vulnerability, vulnerabilityFields))
+                }
+            }
+        }
+        return rows
+    }
 
     /**
      * Extracts the flaw Nodes from the detailed XML report
@@ -110,4 +142,134 @@ class VeracodeDetailedReport {
         }
     }
 
+    /**
+     * Extracts the flaws information of the detailed XML report and return a list of rows with it
+     *
+     * @param xml
+     * @return flawRows
+     *
+     * */
+    static List<List<String>> getFlawRowsFromDetailedReport(Node xml) {
+        return getFlawsAsRows(VeracodeDetailedReport.getAllFlawsFromDetailedReportXML(xml))
+    }
+
+    /**
+     * Turn a list of flaws into Rows
+     *
+     * flaw tree:
+     *   /flaw @affects_policy_compliance
+     *        -@categoryid
+     *        -@categoryname
+     *        -@cia_impact
+     *        -@count
+     *        -@cweid
+     *        -@date_first_occurrence
+     *        -@description
+     *        -@exploitLevel
+     *        -@functionprototype
+     *        -@functionrelativelocation
+     *        -@grace_period_expires
+     *        -@issueid
+     *        -@line
+     *        -@mitigation_status
+     *        -@mitigation_status_desc
+     *        -@module
+     *        -@note
+     *        -@pcirelated
+     *        -@remediation_status
+     *        -@remediationeffort
+     *        -@scope
+     *        -@severity
+     *        -@sourcefile
+     *        -@sourcefilepath
+     *        -@type
+     *        /mitigations
+     *          /mitigation @action @date @description @user
+     *        /annotations
+     *          /annotation @action @date @description @user
+     *
+     * @param flaws
+     * @return rows
+     */
+    static List<List<String>> getFlawsAsRows(List<Node> flaws) {
+        List<List<String>> rows = []
+        List<String> flawFields = [
+                'issueid',
+                'severity',
+                'exploitLevel',
+                'categoryid',
+                'cweid',
+                'categoryname',
+                'date_first_occurrence',
+                'remediation_status',
+                'remediationeffort',
+                'mitigation_status',
+                'mitigation_status_desc',
+                'description',
+                'module',
+                'sourcefilepath',
+                'sourcefile',
+                'line',
+                'functionprototype',
+                'functionrelativelocation',
+                'type',
+        ]
+        List<String> extraFields = [
+                'mitigations',
+                'annotations',
+                'mitigations_xml',
+                'annotations_xml'
+        ]
+        // header row
+        rows.add(flawFields + extraFields)
+        for (Node flaw : flaws) {
+            List<String> flawAttributes = XMLIO.getNodeAttributes(flaw, flawFields)
+            List<String> extraEntries = [
+                    getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'mitigations'), 'mitigation'),
+                    getMitigationsAnnotationsAsString(XMLIO.getNode(flaw, 'annotations'), 'annotation'),
+                    XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'mitigations'), false),
+                    XMLIO.getNodeAsXMLString(XMLIO.getNode(flaw, 'annotations'), false)
+            ]
+            rows.add(flawAttributes + extraEntries)
+        }
+        return rows
+    }
+
+    /**
+     * Given a mitigations or annotations Node it will return its formatted content
+     * @param node
+     * @return formatted string
+     */
+    static String getMitigationsAnnotationsAsString(Node node, String type) {
+        XMLIO.getNodeList(node, type).collect { n ->
+            List<String> nodeAttributes = XMLIO.getNodeAttributes(n, 'action', 'date', 'user', 'description')
+            return sprintf("action: %s, date: %s, user: %s\ndescription: %s\n", nodeAttributes)
+        }.join("\n")
+    }
+
+    /**
+     * Write a list of rows to a CSV file
+     * @param csvFile
+     * @param rows
+     */
+    static void writeCSV(File csvFile, List<List<String>> rows) {
+        BufferedWriter csvFileWriter = new BufferedWriter(csvFile.newWriter())
+        CSVPrinter csvPrinter = new CSVPrinter(csvFileWriter, CSVFormat.DEFAULT)
+        for (List<String> row : rows) {
+            csvPrinter.printRecord(row)
+        }
+        csvFileWriter.flush()
+        csvFileWriter.close()
+        csvPrinter.close()
+    }
+
+    /**
+     * Given a list of flaw rows, it extracts the open flaws into another row list.
+     * It assumes remediation status is column 13
+     * @param flawRows
+     * @return
+     */
+    static List<List<String>> getOpenFlawRowsFromDetailedReport(Node xml) {
+        return getFlawsAsRows(VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml))
+    }
 }

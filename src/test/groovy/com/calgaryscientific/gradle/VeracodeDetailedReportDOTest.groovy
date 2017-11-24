@@ -26,7 +26,7 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeDetailedReportCSVTest extends TestCommonSetup {
+class VeracodeDetailedReportDOTest extends TestCommonSetup {
     File detailedReportFile = getResource('detailedreport-1.5.xml')
 
     def 'Test getting softwareCompositionAnalysis CSV report'() {
@@ -35,8 +35,8 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         File softwareCompositionAnalysisFile = testProjectDir.newFile('software-composition-analysis.csv')
 
         when:
-        List<List<String>> rows = VeracodeDetailedReportCSVTask.softwareCompositionAnalysisRows(xml)
-        VeracodeDetailedReportCSVTask.writeCSV(softwareCompositionAnalysisFile, rows)
+        List<List<String>> rows = VeracodeDetailedReport.softwareCompositionAnalysisRows(xml)
+        VeracodeDetailedReport.writeCSV(softwareCompositionAnalysisFile, rows)
         List<String> output = softwareCompositionAnalysisFile.readLines()
 
         then:
@@ -51,8 +51,8 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         File flawsFile = testProjectDir.newFile('buildinfo-flaws.csv')
 
         when:
-        List<List<String>> flawRows = VeracodeDetailedReportCSVTask.getFlawRowsFromDetailedReport(xml)
-        VeracodeDetailedReportCSVTask.writeCSV(flawsFile, flawRows)
+        List<List<String>> flawRows = VeracodeDetailedReport.getFlawRowsFromDetailedReport(xml)
+        VeracodeDetailedReport.writeCSV(flawsFile, flawRows)
         List<String> flawsOutput = flawsFile.readLines()
 
         then:
@@ -69,8 +69,8 @@ class VeracodeDetailedReportCSVTest extends TestCommonSetup {
         File openFlawsFile = testProjectDir.newFile('buildinfo-open-flaws.csv')
 
         when:
-        List<List<String>> openFlawRows = VeracodeDetailedReportCSVTask.getOpenFlawRowsFromDetailedReport(xml)
-        VeracodeDetailedReportCSVTask.writeCSV(openFlawsFile, openFlawRows)
+        List<List<String>> openFlawRows = VeracodeDetailedReport.getOpenFlawRowsFromDetailedReport(xml)
+        VeracodeDetailedReport.writeCSV(openFlawsFile, openFlawRows)
         List<String> openFlawsOutput = openFlawsFile.readLines()
 
         then:
