@@ -46,8 +46,7 @@ class VeracodeUpdateMitigationInfoTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        String file_flaw_id_list = flaw_id_list.replaceAll(',', '_')
-        return new File("${project.buildDir}/veracode", "mitigationinfo-${build_id}-${file_flaw_id_list}.xml")
+        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", build_id, flaw_id_list)
     }
 
     void run() {

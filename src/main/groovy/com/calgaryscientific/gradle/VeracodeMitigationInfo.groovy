@@ -30,6 +30,13 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class VeracodeMitigationInfo {
+    static File getFile(String dir, String build_id, String flaw_id_list) {
+        if (flaw_id_list.split(',').size() > 1) {
+            return new File(dir, "mitigationinfo-${build_id}-multiple-flaws.xml")
+        }
+        return new File(dir, "mitigationinfo-${build_id}-flaw${flaw_id_list}.xml")
+    }
+
     static boolean validAction(String action) {
         if (action != "comment" &&
                 action != "fp" &&
