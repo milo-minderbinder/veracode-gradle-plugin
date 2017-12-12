@@ -57,9 +57,9 @@ class VeracodeDetailedReport {
         List<String> vulnerabilityFields = ['cve_id', 'cwe_id', 'cvss_score', 'severity', 'cve_summary']
         // header row
         rows.add(componentFields + vulnerabilityFields)
-        for (Node component : XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component')) {
+        XMLIO.getNodeList(xml, 'software_composition_analysis', 'vulnerable_components', 'component').each { component ->
             if ((component.attribute('vulnerabilities') as Integer) > 0) {
-                for (Node vulnerability : XMLIO.getNodeList(component, 'vulnerabilities', 'vulnerability')) {
+                XMLIO.getNodeList(component, 'vulnerabilities', 'vulnerability').each { vulnerability ->
                     rows.add(XMLIO.getNodeAttributes(component, componentFields) + XMLIO.getNodeAttributes(vulnerability, vulnerabilityFields))
                 }
             }
@@ -112,10 +112,10 @@ class VeracodeDetailedReport {
      * */
     static List<Node> getAllFlawsFromDetailedReportXML(Node xml) {
         List<Node> flaws = []
-        for (Node severity : XMLIO.getNodeList(xml, 'severity')) {
-            for (Node category : XMLIO.getNodeList(severity, 'category')) {
-                for (Node cwe : XMLIO.getNodeList(category, 'cwe')) {
-                    for (Node flaw : XMLIO.getNodeList(cwe, 'staticflaws', 'flaw')) {
+        XMLIO.getNodeList(xml, 'severity').each { severity ->
+            XMLIO.getNodeList(severity, 'category').each { category ->
+                XMLIO.getNodeList(category, 'cwe').each { cwe ->
+                    XMLIO.getNodeList(cwe, 'staticflaws', 'flaw').each { flaw ->
                         flaws.add(flaw)
                     }
                 }
