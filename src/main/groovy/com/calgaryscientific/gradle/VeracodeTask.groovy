@@ -29,6 +29,7 @@ package com.calgaryscientific.gradle
 import groovy.transform.CompileStatic
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -102,6 +103,7 @@ abstract class VeracodeTask extends DefaultTask {
 
     @TaskAction
     final def vExecute() {
+        logging.level = LogLevel.INFO
         if (hasRequiredArguments()) {
             setupTask()
             run()

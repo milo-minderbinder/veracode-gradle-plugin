@@ -54,7 +54,7 @@ class VeracodeWorkflow {
 
         // Done previous work
         if (buildStatus == "Results Ready") {
-            log.info("createBuild")
+            log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.createBuild(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
@@ -62,7 +62,7 @@ class VeracodeWorkflow {
 
         // Clean build or with some uploaded files
         if (buildStatus == "Incomplete") {
-            log.info("uploadFile")
+            log.info("uploadFile: " + fileSet)
             VeracodeUploadFile.uploadFiles(veracodeAPI, VeracodeFileList.getFile(outputDir, app_id, build_id), fileSet, maxTries, waitTime, delete)
             log.info("beginPreScan")
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.beginPreScan())
@@ -76,7 +76,7 @@ class VeracodeWorkflow {
             Node preScanResultsXML = XMLIO.writeXml(VeracodePreScanResults.getFile(outputDir, app_id, build_id), veracodeAPI.getPreScanResults(build_id))
             VeracodePreScanResults.printModuleStatus(preScanResultsXML)
             Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(preScanResultsXML, moduleWhitelist)
-            println "Module IDs: " + moduleIds.join(",")
+            log.info("Module IDs: " + moduleIds.join(","))
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.beginScan(moduleIds))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
@@ -104,7 +104,7 @@ class VeracodeWorkflow {
 
         // Done previous work
         if (buildStatus == "Results Ready") {
-            log.info("createBuild")
+            log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.createBuildSandbox(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
@@ -112,7 +112,7 @@ class VeracodeWorkflow {
 
         // Clean build or with some uploaded files
         if (buildStatus == "Incomplete") {
-            log.info("uploadFile")
+            log.info("uploadFile: " + fileSet)
             VeracodeUploadFile.uploadSandboxFiles(veracodeAPI, VeracodeFileList.getSandboxFile(outputDir, app_id, sandbox_id, build_id), fileSet, maxTries, waitTime, delete)
             log.info("beginPreScan")
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.beginPreScanSandbox())
@@ -126,7 +126,7 @@ class VeracodeWorkflow {
             Node preScanResultsXML = XMLIO.writeXml(VeracodePreScanResults.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.getPreScanResultsSandbox(build_id))
             VeracodePreScanResults.printModuleStatus(preScanResultsXML)
             Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(preScanResultsXML, moduleWhitelist)
-            println "Module IDs: " + moduleIds.join(",")
+            log.info("Module IDs: " + moduleIds.join(","))
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.beginScanSandbox(moduleIds))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
