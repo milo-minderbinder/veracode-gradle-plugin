@@ -1,0 +1,29 @@
+= veracodeUpdateMitigationInfo
+
+Updates flaw information for the given 'build_id' and 'flaw_id_list'
+
+== Usage
+
+----
+gradle veracodeUpdateMitigationInfo -P build_id=xxx -P flaw_id_list=xxx,yyy,zzz -P action=xxx -P comment=xxx
+----
+
+== Properties
+
+build_id:: The Veracode _build_id_ that is being targeted.
+
+flaw_id_list:: Comma separated list of flaw __issueid__’s.
+
+action:: The Veracode mitigation action to execute.
+Action must be one of:
++
+* comment
+* fp
+* appdesign
+* osenv
+* netenv
+* rejected
+* accepted
+
+comment:: The comment to update the action with.
+Comment must not exceed 1024 chars.

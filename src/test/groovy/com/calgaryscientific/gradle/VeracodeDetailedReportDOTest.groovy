@@ -79,4 +79,37 @@ class VeracodeDetailedReportDOTest extends TestCommonSetup {
         // TODO: Gradle isn't properly asserting openFlawsOutput[2]. Seems related to the \n char
         assert openFlawsOutput[2] == "181,5,0,18,78,Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection'),2017-04-15 20:08:51 UTC,Open,3,proposed,Mitigation Proposed,This call to java.lang.ProcessBuilder.start() contains a command injection flaw...,moudle\$something,path,module.java,115,void run(),49,java.lang...,\"action: Mitigate by Design, date: 2017-11-10 18:23:22 UTC, user: User Name"
     }
+
+    def 'Test getting flaw list by cweid'() {
+        given:
+        Node xml = XMLIO.parse(detailedReportFile)
+        def os = mockSystemOut()
+
+        when:
+        VeracodeDetailedReport.printFlawInformationByCWEID(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+        List<String> lines = is.readLines()
+
+        then:
+        assert lines[0] == "CWEID, Severity, Count, Name"
+        assert lines[1] == "  121,        5,     1, Stack-based Buffer Overflow"
+        assert lines[2] == "   78,        5,     1, Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+    }
+
+    def 'Test getting flaw id list by given cweid'() {
+        given:
+        Node xml = XMLIO.parse(detailedReportFile)
+        def os = mockSystemOut()
+
+        when:
+        VeracodeDetailedReport.printFlawListByCWEID(xml, '121')
+        def is = getSystemOut(os)
+        restoreStdout()
+        List<String> lines = is.readLines()
+
+        then:
+        assert lines[0] == "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
+        assert lines[1] == "123, New, proposed, lib1.dll, path1, chunk.c, 305, vsprintf"
+    }
 }

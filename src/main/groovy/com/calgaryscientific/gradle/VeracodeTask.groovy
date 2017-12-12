@@ -59,6 +59,8 @@ abstract class VeracodeTask extends DefaultTask {
             'waitTimeBetweenAttempts': '123',
             'delete'                 : 'true',
             'ignoreFailure'          : 'true',
+            'action'                 : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
+            'comment'                : 'xxx',
     ]
 
     VeracodeTask() {

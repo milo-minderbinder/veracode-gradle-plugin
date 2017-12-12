@@ -73,5 +73,6 @@ class VeracodePlugin implements Plugin<Project> {
         project.task(VeracodeDetailedReportPDFTask.NAME, type: VeracodeDetailedReportPDFTask)
         project.task(VeracodeGetMitigationInfoTask.NAME, type: VeracodeGetMitigationInfoTask)
         project.task(VeracodeUpdateMitigationInfoTask.NAME, type: VeracodeUpdateMitigationInfoTask)
+        project.task(VeracodeGetFlawsByCWEIDTask.NAME, type: VeracodeGetFlawsByCWEIDTask)
     }
 }

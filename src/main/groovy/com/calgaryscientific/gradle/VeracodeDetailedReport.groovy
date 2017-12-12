@@ -276,4 +276,46 @@ class VeracodeDetailedReport {
     static List<List<String>> getOpenFlawRowsFromDetailedReport(Node xml) {
         return getFlawsAsRows(VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml))
     }
+
+    static void printFlawListByCWEID(Node xml, String cweid) {
+        List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
+        println "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
+        flaws.each { flaw ->
+            String flawCWEID = flaw.attribute('cweid')
+            if (flawCWEID != cweid) {
+                return
+            }
+            printf "%s, %s, %s, %s, %s, %s, %s, %s\n",
+                    XMLIO.getNodeAttributes(flaw, 'issueid', 'remediation_status', 'mitigation_status', 'module', 'sourcefilepath', 'sourcefile', 'line', 'type')
+        }
+    }
+
+    static void printFlawInformationByCWEID(Node xml) {
+        List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
+        // CWEID : {
+        //   attributes: [ Severity, Name]
+        //   count: 0
+        // }
+        Map<String, Map<String, Object>> flawsByCWE = new HashMap<>()
+        flaws.each { flaw ->
+            String cweid = flaw.attribute('cweid')
+            List<String> attributes = XMLIO.getNodeAttributes(flaw, 'severity', 'categoryname')
+            Map<String, Object> m = flawsByCWE.get(cweid)
+            if (!m) {
+                m = new HashMap<>()
+                m.put('attributes', attributes)
+                m.put('count', 1)
+                flawsByCWE.put(cweid, m)
+                return
+            }
+            Integer count = m.get('count') as Integer
+            m.put('count', count + 1)
+            flawsByCWE.put(cweid, m)
+        }
+        println "CWEID, Severity, Count, Name"
+        flawsByCWE.each { cweid, m ->
+            List<String> attributes = m['attributes'] as List<String>
+            printf "%5s, %8s, %5d, %s\n", cweid, attributes[0], m['count'], attributes[1]
+        }
+    }
 }

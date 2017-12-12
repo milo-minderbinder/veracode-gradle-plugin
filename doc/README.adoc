@@ -1,0 +1,7 @@
+= veracode-gradle-plugin Documentation
+
+Additional documentation on the Plugin tasks:
+
+link:./veracodeGetFlawsByCWEID.adoc[veracodeGetFlawsByCWEID]
+
+link:./veracodeUpdateMitigationInfo.adoc[veracodeUpdateMitigationInfo]
