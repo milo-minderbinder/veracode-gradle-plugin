@@ -2,6 +2,8 @@
 
 Additional documentation on the Plugin tasks:
 
+link:./veracodeDetailedReportCSV.adoc[veracodeDetailedReportCSV]
+
 link:./veracodeGetFlawsByCWEID.adoc[veracodeGetFlawsByCWEID]
 
 link:./veracodeUpdateMitigationInfo.adoc[veracodeUpdateMitigationInfo]
