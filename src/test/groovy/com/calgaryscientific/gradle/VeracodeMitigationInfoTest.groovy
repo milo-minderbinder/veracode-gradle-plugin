@@ -26,8 +26,11 @@
 
 package com.calgaryscientific.gradle
 
+import org.gradle.api.GradleException
+
 class VeracodeMitigationInfoTest extends TestCommonSetup {
     File mitigationInfoFile = getResource('mitigationinfo-1.1.xml')
+    File mitigationInfoErrorFile = getResource('mitigationinfo-1.1-error.xml')
 
     def 'Test validAction'() {
         expect:
@@ -62,5 +65,33 @@ class VeracodeMitigationInfoTest extends TestCommonSetup {
         assert is.readLine() == "flaw_id: 123 | category: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
         assert is.readLine() == ''
         assert is.readLine() == 'action: appdesign'
+    }
+
+    def 'Test printMitigationInfoErrors'() {
+        given:
+        def os = mockSystemOut()
+        Node xml = XMLIO.parse(mitigationInfoErrorFile)
+
+        when:
+        VeracodeMitigationInfo.printMitigationInfoErrors(xml)
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        assert is.readLine() == "ERROR: flaw_id_list: 123 | type: invalid_action"
+    }
+
+    def 'Test failOnErrors'() {
+        given:
+        def os = mockSystemOut()
+        Node xml = XMLIO.parse(mitigationInfoErrorFile)
+
+        when:
+        VeracodeMitigationInfo.failOnErrors(xml, mitigationInfoErrorFile)
+        restoreStdout()
+
+        then:
+        def e = thrown(GradleException)
+        e.toString().contains("ERROR: Failed to update Mitigation Information")
     }
 }

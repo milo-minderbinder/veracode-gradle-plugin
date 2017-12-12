@@ -56,9 +56,15 @@ class VeracodeUpdateMitigationInfoTask extends VeracodeTask {
         if (!VeracodeMitigationInfo.validComment(comment)) {
             fail("comment must not exceed 1024 chars")
         }
+        log.info(String.format("build_id: %s, action: %s", build_id, action))
+        log.info(String.format("flaw_id_list: %s", flaw_id_list))
+        log.info(String.format("comment: %s\n\n", comment))
         Node mitigationInfo = XMLIO.writeXml(getOutputFile(),
                 veracodeAPI.updateMitigationInfo(build_id, action, comment, flaw_id_list))
         VeracodeMitigationInfo.printMitigationInfo(mitigationInfo)
+        // Mitigation Info Updates have errors that are not top level as all other tasks.
+        // Custom error checking required.
+        VeracodeMitigationInfo.failOnErrors(mitigationInfo, getOutputFile())
         printf "report file: %s\n", getOutputFile()
     }
 }

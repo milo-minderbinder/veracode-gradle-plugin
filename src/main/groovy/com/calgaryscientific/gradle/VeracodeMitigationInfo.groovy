@@ -27,6 +27,7 @@
 package com.calgaryscientific.gradle
 
 import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
 
 @CompileStatic
 class VeracodeMitigationInfo {
@@ -67,6 +68,21 @@ class VeracodeMitigationInfo {
                 printf "\n\n"
             }
             printf "\n\n"
+        }
+    }
+
+    // Mitigation Info Updates have errors that are not top level as all other tasks.
+    // Custom error checking required.
+    static void failOnErrors(Node xml, File file) {
+        printMitigationInfoErrors(xml)
+        if (XMLIO.getNodeList(xml, 'error').size() > 0) {
+            throw new GradleException("ERROR: Failed to update Mitigation Information\nSee ${file} for details!")
+        }
+    }
+
+    static void printMitigationInfoErrors(Node xml) {
+        XMLIO.getNodeList(xml, 'error').each { error ->
+            printf "ERROR: flaw_id_list: %s | type: %s\n\n", XMLIO.getNodeAttributes(error, 'flaw_id_list', 'type')
         }
     }
 }
