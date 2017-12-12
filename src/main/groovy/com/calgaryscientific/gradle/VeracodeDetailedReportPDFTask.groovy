@@ -41,8 +41,7 @@ class VeracodeDetailedReportPDFTask extends VeracodeTask {
         defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
     }
 
-    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
-    @OutputFile
+    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getOutputFile() {
         return defaultOutputFile
     }

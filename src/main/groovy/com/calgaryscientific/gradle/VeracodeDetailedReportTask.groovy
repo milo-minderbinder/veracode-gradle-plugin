@@ -38,13 +38,11 @@ class VeracodeDetailedReportTask extends VeracodeTask {
         description = "Get the Veracode Scan Report in XML format based on the given 'build_id'"
         requiredArguments << 'build_id'
         build_id = project.findProperty("build_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.xml")
     }
 
-    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
-    @OutputFile
+    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getOutputFile() {
-        return defaultOutputFile
+        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", build_id)
     }
 
     void run() {

@@ -48,17 +48,12 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
         softwareCompositionAnalysisFile = new File("${project.buildDir}/veracode", "detailed-report-software-composition-analysis-${build_id}.csv")
     }
 
-    VeracodeDetailedReportTask veracodeDetailedReport = new VeracodeDetailedReportTask()
-    private File inputFile = veracodeDetailedReport.getOutputFile()
-
-    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
-    @InputFile
+    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getInputFile() {
-        return inputFile
+        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", build_id)
     }
 
-    // Scan results are not available until the full scan is complete so there is no risk in caching the report.
-    @OutputFiles
+    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     List<File> getOutputFiles() {
         return [flawsDetailedReportCSVFile, openFlawsDetailedReportCSVFile, softwareCompositionAnalysisFile]
     }

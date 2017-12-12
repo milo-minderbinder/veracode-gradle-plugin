@@ -33,6 +33,10 @@ import org.apache.commons.csv.CSVPrinter
 @CompileStatic
 class VeracodeDetailedReport {
 
+    static File getFile(String dir, String build_id) {
+        return new File(dir, "detailed-report-${build_id}.xml")
+    }
+
     /**
      * Extracts the software_composition_analysis information of the detailed XML report and return a list of rows with it
      * @param xml - detailed report.
