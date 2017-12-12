@@ -26,29 +26,23 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
-import org.gradle.api.tasks.OutputFile
+class VeracodeDetailedReportTest extends TestCommonSetup {
+    File detailedReportFile = getResource('detailedreport-1.5.xml')
 
-@CompileStatic
-class VeracodeDetailedReportPDFTask extends VeracodeTask {
-    static final String NAME = 'veracodeDetailedReportPDF'
-    private String build_id
+    def 'Test veracodeDetailedReport Task'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeDetailedReport')
 
-    VeracodeDetailedReportPDFTask() {
-        description = "Get the Veracode Scan Report in PDF format based on the given 'build_id'"
-        requiredArguments << 'build_id'
-        build_id = project.findProperty("build_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
-    }
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
 
-    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
-    File getOutputFile() {
-        return defaultOutputFile
-    }
-
-    void run() {
-        File file = getOutputFile()
-        file.bytes = veracodeAPI.detailedReportPdf(build_id)
-        printf "report file: %s\n", file
+        then:
+        1 * task.veracodeAPI.detailedReport(_) >> {
+            return new String(detailedReportFile.readBytes())
+        }
+        assert is.readLine() =~ 'report file: '
     }
 }
