@@ -1,0 +1,22 @@
+= veracodeDetailedReportCSV
+
+Get the Veracode Scan Report in CSV format based on the given 'build_id'.
+
+It will produce several reports:
+
+Flaws Detailed Report CSV:: All flaws are listed in this report.
+
+Open Flaws Detailed Report CSV:: Flaws that have not been _Fixed_ or _Mitigated_.
+Includes any other _Open_ and _New_ flaw.
+
+Software Composition Analysis CSV:: A CSV version of the Software Composition Analysis report.
+
+== Usage
+
+----
+gradle veracodeDetailedReport -P build_id=xxx
+----
+
+== Properties
+
+build_id:: The Veracode _build_id_ that is being targeted.

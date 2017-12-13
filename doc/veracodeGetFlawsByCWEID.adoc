@@ -1,0 +1,18 @@
+= veracodeGetFlawsByCWEID
+
+Gets flaw information for the given 'build_id'.
+Optionally filters flaw information to a given CWEID.
+
+== Usage
+
+----
+gradle veracodeGetFlawsByCWEID -P build_id=xxx
+
+gradle veracodeGetFlawsByCWEID -P build_id=xxx -P cweid=xxx
+----
+
+== Properties
+
+build_id:: The Veracode _build_id_ that is being targeted.
+
+cweid:: The CWEID to filter flaws with.

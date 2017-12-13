@@ -117,6 +117,10 @@ task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowSa
 }
 ----
 
+=== Additional Task Documentation
+
+For additional documentation please review the link:./doc/README.adoc[veracode-gradle-plugin Documentation].
+
 == Compatibility
 
 Tested with the Java API version: `VeracodeJavaAPI v17.6.4.4 c201706231537`

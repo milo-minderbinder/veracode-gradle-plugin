@@ -142,7 +142,7 @@ class VeracodeDetailedReport {
     static List<Node> filterOpenFlaws(List<Node> flaws) {
         flaws.findAll { flaw ->
             String status = flaw.attribute('remediation_status')
-            (status == "Open" || status == "New" || status != "Fixed")
+            (status == "Open" || status == "New" || (status != "Fixed" && status != "Mitigated"))
         }
     }
 
@@ -275,5 +275,34 @@ class VeracodeDetailedReport {
      */
     static List<List<String>> getOpenFlawRowsFromDetailedReport(Node xml) {
         return getFlawsAsRows(VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml))
+    }
+
+    static void printFlawListByCWEID(Node xml, String cweid) {
+        List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
+        println "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
+        flaws.findAll { flaw ->
+            ((flaw.attribute('cweid') as String) == cweid)
+        }.each { flaw ->
+            printf "%s, %s, %s, %s, %s, %s, %s, %s\n",
+                    XMLIO.getNodeAttributes(flaw, 'issueid', 'remediation_status', 'mitigation_status', 'module', 'sourcefilepath', 'sourcefile', 'line', 'type')
+        }
+    }
+
+    static void printFlawInformationByCWEID(Node xml) {
+        List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
+        List<List<String>> cweidInfo = getCWEIDInfoFromFlaws(flaws)
+        println "CWEID, Severity, Count, Name"
+        cweidInfo.each { printf "%5s, %8s, %5s, %s\n", it }
+    }
+
+    private static List<List<String>> getCWEIDInfoFromFlaws(List<Node> flaws) {
+        List<String> cweids = flaws.collect { flaw -> flaw.attribute("cweid") as String }.unique()
+        List<List<String>> cweidInfo = cweids.collect { cweid ->
+            Node flawByCWEID = flaws.find { flaw -> flaw.attribute("cweid") == cweid }
+            List<String> attributes = XMLIO.getNodeAttributes(flawByCWEID, 'severity', 'categoryname')
+            String count = flaws.count { flaw -> flaw.attribute("cweid") == cweid } as String
+            [cweid, attributes[0], count, attributes[1]]
+        }
+        return cweidInfo
     }
 }
