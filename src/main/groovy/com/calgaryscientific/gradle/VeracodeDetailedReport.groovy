@@ -290,41 +290,19 @@ class VeracodeDetailedReport {
 
     static void printFlawInformationByCWEID(Node xml) {
         List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
-        // CWEID : {
-        //   attributes: [ Severity, Name]
-        //   count: 0
-        // }
-        Map<String, Map<String, Object>> flawsByCWE = new HashMap<>()
-        flaws.each { flaw ->
-            String cweid = flaw.attribute('cweid')
-            Map<String, Object> m = flawsByCWE.get(cweid)
-            if (m) {
-                flawsByCWE.put(cweid, increaseCountFlawsByCWEMapEntry(m))
-            } else {
-                flawsByCWE.put(cweid, initializeFlawsByCWEMapEntry(flaw))
-            }
-        }
-        printFlawsByCWEMap(flawsByCWE)
-    }
-
-    static Map<String, Object> initializeFlawsByCWEMapEntry(Node flaw) {
-        Map<String, Object> m = new HashMap<>()
-        m.put('attributes', XMLIO.getNodeAttributes(flaw, 'severity', 'categoryname'))
-        m.put('count', 1)
-        return m
-    }
-
-    static Map<String, Object> increaseCountFlawsByCWEMapEntry(Map<String, Object> m) {
-        Integer count = m.get('count') as Integer
-        m.put('count', count + 1)
-        return m
-    }
-
-    static void printFlawsByCWEMap(Map<String, Map<String, Object>> flawsByCWE) {
+        List<List<String>> cweidInfo = getCWEIDInfoFromFlaws(flaws)
         println "CWEID, Severity, Count, Name"
-        flawsByCWE.each { cweid, m ->
-            List<String> attributes = m['attributes'] as List<String>
-            printf "%5s, %8s, %5d, %s\n", cweid, attributes[0], m['count'], attributes[1]
+        cweidInfo.each { printf "%5s, %8s, %5s, %s\n", it }
+    }
+
+    private static List<List<String>> getCWEIDInfoFromFlaws(List<Node> flaws) {
+        List<String> cweids = flaws.collect { flaw -> flaw.attribute("cweid") as String }.unique()
+        List<List<String>> cweidInfo = cweids.collect { cweid ->
+            Node flawByCWEID = flaws.find { flaw -> flaw.attribute("cweid") == cweid }
+            List<String> attributes = XMLIO.getNodeAttributes(flawByCWEID, 'severity', 'categoryname')
+            String count = flaws.count { flaw -> flaw.attribute("cweid") == cweid } as String
+            [cweid, attributes[0], count, attributes[1]]
         }
+        return cweidInfo
     }
 }
