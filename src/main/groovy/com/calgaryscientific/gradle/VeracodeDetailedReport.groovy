@@ -280,11 +280,9 @@ class VeracodeDetailedReport {
     static void printFlawListByCWEID(Node xml, String cweid) {
         List<Node> flaws = VeracodeDetailedReport.getOpenFlawsFromDetailedReportXML(xml)
         println "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
-        flaws.each { flaw ->
-            String flawCWEID = flaw.attribute('cweid')
-            if (flawCWEID != cweid) {
-                return
-            }
+        flaws.findAll { flaw ->
+            ((flaw.attribute('cweid') as String) == cweid)
+        }.each { flaw ->
             printf "%s, %s, %s, %s, %s, %s, %s, %s\n",
                     XMLIO.getNodeAttributes(flaw, 'issueid', 'remediation_status', 'mitigation_status', 'module', 'sourcefilepath', 'sourcefile', 'line', 'type')
         }
@@ -299,19 +297,30 @@ class VeracodeDetailedReport {
         Map<String, Map<String, Object>> flawsByCWE = new HashMap<>()
         flaws.each { flaw ->
             String cweid = flaw.attribute('cweid')
-            List<String> attributes = XMLIO.getNodeAttributes(flaw, 'severity', 'categoryname')
             Map<String, Object> m = flawsByCWE.get(cweid)
-            if (!m) {
-                m = new HashMap<>()
-                m.put('attributes', attributes)
-                m.put('count', 1)
-                flawsByCWE.put(cweid, m)
-                return
+            if (m) {
+                flawsByCWE.put(cweid, increaseCountFlawsByCWEMapEntry(m))
+            } else {
+                flawsByCWE.put(cweid, initializeFlawsByCWEMapEntry(flaw))
             }
-            Integer count = m.get('count') as Integer
-            m.put('count', count + 1)
-            flawsByCWE.put(cweid, m)
         }
+        printFlawsByCWEMap(flawsByCWE)
+    }
+
+    static Map<String, Object> initializeFlawsByCWEMapEntry(Node flaw) {
+        Map<String, Object> m = new HashMap<>()
+        m.put('attributes', XMLIO.getNodeAttributes(flaw, 'severity', 'categoryname'))
+        m.put('count', 1)
+        return m
+    }
+
+    static Map<String, Object> increaseCountFlawsByCWEMapEntry(Map<String, Object> m) {
+        Integer count = m.get('count') as Integer
+        m.put('count', count + 1)
+        return m
+    }
+
+    static void printFlawsByCWEMap(Map<String, Map<String, Object>> flawsByCWE) {
         println "CWEID, Severity, Count, Name"
         flawsByCWE.each { cweid, m ->
             List<String> attributes = m['attributes'] as List<String>

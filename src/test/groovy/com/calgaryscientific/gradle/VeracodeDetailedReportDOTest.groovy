@@ -109,6 +109,7 @@ class VeracodeDetailedReportDOTest extends TestCommonSetup {
         List<String> lines = is.readLines()
 
         then:
+        assert lines.size() == 2
         assert lines[0] == "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
         assert lines[1] == "123, New, proposed, lib1.dll, path1, chunk.c, 305, vsprintf"
     }
