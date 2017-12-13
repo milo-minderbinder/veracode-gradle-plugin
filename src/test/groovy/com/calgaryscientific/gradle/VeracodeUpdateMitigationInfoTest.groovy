@@ -30,6 +30,7 @@ import org.gradle.api.GradleException
 
 class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
     File mitigationInfoFile = getResource('mitigationinfo-1.1.xml')
+    File mitigationInfoErrorFile = getResource('mitigationinfo-1.1-error.xml')
 
     def 'Test veracodeUpdateMitigationInfo Task'() {
         given:
@@ -91,5 +92,27 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         then:
         def e = thrown(GradleException)
         e.toString().contains("comment must not exceed 1024 chars")
+    }
+
+    def 'Test veracodeUpdateMitigationInfo response failure'() {
+        given:
+        def os = mockSystemOut()
+        def task = taskSetup('veracodeUpdateMitigationInfo')
+        task.build_id = "1"
+        task.flaw_id_list = "123,456"
+        task.action = "appdesign"
+        task.comment = "meant to be..."
+
+        when:
+        task.run()
+        def is = getSystemOut(os)
+        restoreStdout()
+
+        then:
+        1 * task.veracodeAPI.updateMitigationInfo('1', 'appdesign', 'meant to be...', '123,456') >> {
+            return new String(mitigationInfoErrorFile.readBytes())
+        }
+        def e = thrown(GradleException)
+        e.toString().contains("ERROR: Failed to update Mitigation Information")
     }
 }
