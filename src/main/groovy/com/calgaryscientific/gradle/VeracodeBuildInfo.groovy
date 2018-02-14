@@ -56,7 +56,11 @@ class VeracodeBuildInfo {
     }
 
     static String getBuildStatus(Node xml) {
-        return XMLIO.getNode(xml, 'build', 'analysis_unit').attribute('status')
+        String status = XMLIO.getNode(xml, 'build', 'analysis_unit').attribute('status')
+        if (status != null) {
+            return status
+        }
+        return xml.text()
     }
 
     static boolean isBuildReady(Node xml) {

@@ -51,6 +51,11 @@ class XMLIO {
         xml
     }
 
+    static Node writeXmlNoFail(File file, String content) {
+        GFileUtils.writeFile(content, file)
+        new XmlParser().parseText(content)
+    }
+
     static Node readXml(File file) {
         new XmlParser().parse(file)
     }

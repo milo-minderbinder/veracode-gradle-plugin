@@ -48,12 +48,13 @@ class VeracodeWorkflow {
         String build_id = null
 
         // Save to variable to do the API call only once
-        Node buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.getBuildInfo(build_id))
+        // This call to writeXml is allowed to contained an error since Veracode errors out for empty spaces
+        Node buildInfo = XMLIO.writeXmlNoFail(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.getBuildInfo(build_id))
         String buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
         log.info("buildStatus: " + buildStatus)
 
-        // Done previous work
-        if (buildStatus == "Results Ready") {
+        // Done previous work or empty list
+        if (buildStatus == "Results Ready" || buildStatus =~ "Could not find a build for application=\\S+\$" ) {
             log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.createBuild(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
@@ -98,12 +99,13 @@ class VeracodeWorkflow {
         String build_id = null
 
         // Save to variable to do the API call only once
-        Node buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.getBuildInfoSandbox(build_id))
+        // This call to writeXml is allowed to contained an error since Veracode errors out for empty spaces
+        Node buildInfo = XMLIO.writeXmlNoFail(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.getBuildInfoSandbox(build_id))
         String buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
         log.info("buildStatus: " + buildStatus)
 
         // Done previous work
-        if (buildStatus == "Results Ready") {
+        if (buildStatus == "Results Ready" || buildStatus =~ "Could not find a build for application=\\S+ and sandbox=\\S+\$" ) {
             log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.createBuildSandbox(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
