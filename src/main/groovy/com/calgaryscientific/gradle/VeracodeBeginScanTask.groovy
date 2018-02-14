@@ -48,11 +48,11 @@ class VeracodeBeginScanTask extends VeracodeTask {
     }
 
     void run() {
-        Node preScanResultsXML = XMLIO.writeXml(VeracodePreScanResults.getFile("${project.buildDir}/veracode", app_id, null), veracodeAPI.getPreScanResults(null))
+        Node preScanResultsXML = XMLIO.writeXmlWithErrorCheck(VeracodePreScanResults.getFile("${project.buildDir}/veracode", app_id, null), veracodeAPI.getPreScanResults(null))
         VeracodePreScanResults.printModuleStatus(preScanResultsXML)
         Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(preScanResultsXML, getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScan(moduleIds))
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.beginScan(moduleIds))
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

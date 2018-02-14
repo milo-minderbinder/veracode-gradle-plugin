@@ -68,7 +68,7 @@ class VeracodeUploadFile {
                 } else {
                     response = veracodeAPI.uploadFile(file.absolutePath)
                 }
-                Node xml = XMLIO.writeXml(outputFile, response)
+                Node xml = XMLIO.writeXmlWithErrorCheck(outputFile, response)
                 VeracodeFileList.printFileList(xml)
                 success = true
             } catch (Exception e) {

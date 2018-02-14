@@ -42,16 +42,15 @@ class XMLIO {
         return xmlParser.parse(file)
     }
 
-    static Node writeXml(File file, String content) {
-        GFileUtils.writeFile(content, file)
-        Node xml = new XmlParser().parseText(content)
+    static Node writeXmlWithErrorCheck(File file, String content) {
+        Node xml =  writeXml(file, content)
         if (xml.name() == 'error') {
             fail("ERROR: ${xml.text()}\nSee ${file} for details!")
         }
         xml
     }
 
-    static Node writeXmlNoFail(File file, String content) {
+    static Node writeXml(File file, String content) {
         GFileUtils.writeFile(content, file)
         new XmlParser().parseText(content)
     }

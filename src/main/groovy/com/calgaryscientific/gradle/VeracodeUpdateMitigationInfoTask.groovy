@@ -59,7 +59,7 @@ class VeracodeUpdateMitigationInfoTask extends VeracodeTask {
         log.info(String.format("build_id: %s, action: %s", build_id, action))
         log.info(String.format("flaw_id_list: %s", flaw_id_list))
         log.info(String.format("comment: %s\n\n", comment))
-        Node mitigationInfo = XMLIO.writeXml(getOutputFile(),
+        Node mitigationInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(),
                 veracodeAPI.updateMitigationInfo(build_id, action, comment, flaw_id_list))
         VeracodeMitigationInfo.printMitigationInfo(mitigationInfo)
         // Mitigation Info Updates have errors that are not top level as all other tasks.

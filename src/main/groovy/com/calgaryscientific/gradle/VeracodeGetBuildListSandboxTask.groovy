@@ -45,7 +45,7 @@ class VeracodeGetBuildListSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildListSandbox())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildListSandbox())
         VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()
     }

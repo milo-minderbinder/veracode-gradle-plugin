@@ -43,7 +43,7 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScan())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.beginPreScan())
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

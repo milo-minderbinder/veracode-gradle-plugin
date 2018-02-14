@@ -45,7 +45,7 @@ class VeracodeBeginPreScanSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginPreScanSandbox())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.beginPreScanSandbox())
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }
