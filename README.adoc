@@ -13,8 +13,6 @@ It helps perform the following tasks:
 == Pre-Requisites
 
 * Veracode account & application to perform scanning.
-* Veracode Java API JAR file (copy to `lib` directory).
-The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAPI.zip[zip file] is found in the https://analysiscenter.veracode.com/auth/helpCenter/api/c_about_wrappers.html[documentation] from Veracode's website.
 * JDK 7+ is a requirement for the Veracode Java API.
 
 == Getting Started
@@ -149,8 +147,6 @@ Tested with the following XML file versions:
 
 * Clone the project.
 
-* Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory in the root of the project.
-
 * Run the tests:
 +
 `gradle test`
@@ -162,6 +158,16 @@ Tested with the following XML file versions:
 `gradle publish`
 
 * Create a PR after you have verified things are working as expected.
+
+=== Building Using a local Java API Wrapper
+
+Gradle doesn't support verifying PGP keys.
+If you want to use a local Java API Wrapper instead of the Maven provided one, follow these steps:
+
+. Uncomment the local dependency code on `build.gradle` and comment out the Maven Central one.
+. Copy the Veracode Java API JAR file to a newly created `lib` directory.
+The https://tools.veracode.com/integrations/API-Wrappers/Java/bin/VeracodeJavaAPI.zip[zip file] is found in the https://analysiscenter.veracode.com/auth/helpCenter/api/c_about_wrappers.html[documentation] from Veracode's website.
+
 
 == LICENSE
 
