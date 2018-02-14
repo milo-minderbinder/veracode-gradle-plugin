@@ -146,7 +146,6 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
     def 'Test veracodeSandboxWorkflow Task failure'() {
         given:
         def task = taskSetup('veracodeSandboxWorkflow')
-        task.build_version = "new-build"
         task.ignoreFailure = "false"
 
         when:
@@ -154,11 +153,6 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
 
         then:
         1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
-            return new String(buildInfoFileResultsReady.readBytes())
-        }
-
-        then:
-        1 * task.veracodeAPI.createBuildSandbox('new-build') >> {
             return errorXMLResponse
         }
         def e = thrown(GradleException)
@@ -169,7 +163,6 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxWorkflow')
-        task.build_version = "new-build"
         task.ignoreFailure = "true"
 
         when:
@@ -179,11 +172,6 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
 
         then:
         1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
-            return new String(buildInfoFileResultsReady.readBytes())
-        }
-
-        then:
-        1 * task.veracodeAPI.createBuildSandbox('new-build') >> {
             return errorXMLResponse
         }
         assert is.readLine() =~ "ERROR: Veracode API Error"

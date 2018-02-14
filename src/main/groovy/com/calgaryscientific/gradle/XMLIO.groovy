@@ -43,16 +43,12 @@ class XMLIO {
     }
 
     static Node writeXmlWithErrorCheck(File file, String content) {
-        Node xml =  writeXml(file, content)
+        GFileUtils.writeFile(content, file)
+        Node xml = new XmlParser().parseText(content)
         if (xml.name() == 'error') {
             fail("ERROR: ${xml.text()}\nSee ${file} for details!")
         }
         xml
-    }
-
-    static Node writeXml(File file, String content) {
-        GFileUtils.writeFile(content, file)
-        new XmlParser().parseText(content)
     }
 
     static Node readXml(File file) {
@@ -114,11 +110,11 @@ class XMLIO {
         return new ArrayList<Node>()
     }
 
-    static List<String> getNodeAttributes(Node node, String... attributes){
+    static List<String> getNodeAttributes(Node node, String... attributes) {
         return getNodeAttributes(node, attributes.toList())
     }
 
-    static List<String> getNodeAttributes(Node node, List<String> attributes){
+    static List<String> getNodeAttributes(Node node, List<String> attributes) {
         return attributes.collect { attr ->
             node.attribute(attr) as String
         }

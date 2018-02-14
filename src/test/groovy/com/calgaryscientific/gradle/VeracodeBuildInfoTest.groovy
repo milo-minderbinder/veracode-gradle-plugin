@@ -30,7 +30,6 @@ class VeracodeBuildInfoTest extends TestCommonSetup {
     File buildInfoFile = getResource('buildinfo-1.4.xml')
     File buildInfoFileIncomplete = getResource('buildinfo-1.4-incomplete.xml')
     File buildInfoFileComplete = getResource('buildinfo-1.4-complete.xml')
-    File buildInfoNoBuildError = getResource('buildinfo-no-build-error.xml')
 
     def 'Test VeracodeBuildInfo getBuildStatus'() {
         given:
@@ -41,17 +40,6 @@ class VeracodeBuildInfoTest extends TestCommonSetup {
 
         then:
         assert buildStatus == "Submitted to Engine"
-    }
-
-    def 'Test VeracodeBuildInfo getBuildStatus when there is no existing build'() {
-        given:
-        Node xml = XMLIO.parse(buildInfoNoBuildError)
-
-        when:
-        String buildStatus = VeracodeBuildInfo.getBuildStatus(xml)
-
-        then:
-        assert buildStatus =~ "Could not find a build for application=\\S+\$"
     }
 
     def 'Test VeracodeBuildInfo isBuildReady'() {

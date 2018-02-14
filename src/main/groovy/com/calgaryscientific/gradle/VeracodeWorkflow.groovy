@@ -46,15 +46,27 @@ class VeracodeWorkflow {
     ) {
         // Work on the latest build
         String build_id = null
-
         // Save to variable to do the API call only once
-        // This call to writeXmlWithErrorCheck is allowed to contain an error since Veracode errors out for empty Apps
-        Node buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.getBuildInfo(build_id))
-        String buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
+        Node buildInfo
+        String emptyAppRegex = "Could not find a build for application=\\S+"
+        String buildStatus
+
+        // This call to writeXmlWithErrorCheck might throw an error since Veracode errors out for empty Apps
+        try {
+            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.getBuildInfo(build_id))
+            buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
+        } catch (Exception e) {
+            if (e.toString() =~ emptyAppRegex) {
+                buildStatus = e.toString()
+            } else {
+                throw e
+            }
+        }
+
         log.info("buildStatus: " + buildStatus)
 
-        // Previous Scan is complete (results are ready) or this is an newly create App that has no existing builds
-        if (buildStatus == "Results Ready" || buildStatus =~ "Could not find a build for application=\\S+\$" ) {
+        // Previous Scan is complete (results are ready) or this is an newly created App that has no existing builds
+        if (buildStatus == "Results Ready" || buildStatus =~ emptyAppRegex) {
             log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getFile(outputDir, app_id, build_id), veracodeAPI.createBuild(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
@@ -97,15 +109,27 @@ class VeracodeWorkflow {
     ) {
         // Work on the latest build
         String build_id = null
-
         // Save to variable to do the API call only once
-        // This call to writeXmlWithErrorCheck is allowed to contain an error since Veracode errors out for empty Sandboxes
-        Node buildInfo = XMLIO.writeXml(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.getBuildInfoSandbox(build_id))
-        String buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
+        Node buildInfo
+        String emptySandboxRegex = "Could not find a build for application=\\S+ and sandbox=\\S+"
+        String buildStatus
+
+        // This call to writeXmlWithErrorCheck might throw an error since Veracode errors out for empty Sandboxes
+        try {
+            buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.getBuildInfoSandbox(build_id))
+            buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
+        } catch (Exception e) {
+            if (e.toString() =~ emptySandboxRegex) {
+                buildStatus = e.toString()
+            } else {
+                throw e
+            }
+        }
+
         log.info("buildStatus: " + buildStatus)
 
         // Previous Scan is complete (results are ready) or this is an newly created Sandbox that has no existing builds
-        if (buildStatus == "Results Ready" || buildStatus =~ "Could not find a build for application=\\S+ and sandbox=\\S+\$" ) {
+        if (buildStatus == "Results Ready" || buildStatus =~ emptySandboxRegex) {
             log.info("createBuild: " + build_version)
             buildInfo = XMLIO.writeXmlWithErrorCheck(VeracodeBuildInfo.getSandboxFile(outputDir, app_id, sandbox_id, build_id), veracodeAPI.createBuildSandbox(build_version))
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
