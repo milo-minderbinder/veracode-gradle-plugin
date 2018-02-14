@@ -39,8 +39,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath files('./lib/VeracodeJavaAPI.jar')
-        classpath 'gradle.plugin.com.calgaryscientific.gradle:veracodePlugin:0.1.0'
+        classpath 'gradle.plugin.com.calgaryscientific.gradle:veracodePlugin:0.4.0'
     }
 }
 
