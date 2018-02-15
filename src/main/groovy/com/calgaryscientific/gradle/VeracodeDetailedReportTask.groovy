@@ -27,7 +27,6 @@
 package com.calgaryscientific.gradle
 
 import groovy.transform.CompileStatic
-import org.gradle.api.tasks.OutputFile
 
 @CompileStatic
 class VeracodeDetailedReportTask extends VeracodeTask {
@@ -46,7 +45,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
     }
 
     void run() {
-        XMLIO.writeXml(getOutputFile(), veracodeAPI.detailedReport(build_id))
+        XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.detailedReport(build_id))
         printf "report file: %s\n", getOutputFile()
     }
 }

@@ -29,6 +29,8 @@ package com.calgaryscientific.gradle
 import org.gradle.api.GradleException
 
 class VeracodeWorkflowSandboxTest extends TestCommonSetup {
+    // Status on an empty sandbox
+    File buildInfoNoBuildError = getResource('buildinfo-sandbox-no-build-error.xml')
     // Status after just creating a new build
     File buildInfoFileIncomplete = getResource('buildinfo-1.4-incomplete.xml')
     // Status after Scan submitted
@@ -65,6 +67,54 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         then:
         1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
             return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.createBuildSandbox('new-build') >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.uploadFileSandbox(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginPreScanSandbox() >> {
+            return new String(buildInfoFilePreScanSuccess.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getPreScanResultsSandbox(_) >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginScanSandbox(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
+    }
+
+    def 'Test veracodeSandboxWorkflow Task on empty sandbox'() {
+        given:
+        def task = taskSetup('veracodeSandboxWorkflow')
+
+        task.app_id = "123"
+        task.sandbox_id = "456"
+        task.build_version = "new-build"
+        task.maxUploadAttempts = "1"
+        task.waitTimeBetweenAttempts = "0"
+        task.delete = "false"
+        task.ignoreFailure = "false"
+        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfoSandbox(_) >> {
+            return new String(buildInfoNoBuildError.readBytes())
         }
 
         then:

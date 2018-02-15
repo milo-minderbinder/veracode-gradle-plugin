@@ -29,6 +29,8 @@ package com.calgaryscientific.gradle
 import org.gradle.api.GradleException
 
 class VeracodeWorkflowTest extends TestCommonSetup {
+    // Status on an empty app
+    File buildInfoNoBuildError = getResource('buildinfo-no-build-error.xml')
     // Status after just creating a new build
     File buildInfoFileIncomplete = getResource('buildinfo-1.4-incomplete.xml')
     // Status after Scan submitted
@@ -64,6 +66,53 @@ class VeracodeWorkflowTest extends TestCommonSetup {
         then:
         1 * task.veracodeAPI.getBuildInfo(_) >> {
             return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.createBuild('new-build') >> {
+            return new String(buildInfoFileIncomplete.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.uploadFile(_) >> {
+            return new String(filelistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginPreScan() >> {
+            return new String(buildInfoFilePreScanSuccess.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.getPreScanResults(_) >> {
+            return new String(preScanResultsFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.beginScan(_) >> {
+            return new String(buildInfoFile.readBytes())
+        }
+    }
+
+    def 'Test veracodeWorkflow Task on empty app'() {
+        given:
+        def task = taskSetup('veracodeWorkflow')
+
+        task.app_id = "123"
+        task.build_version = "new-build"
+        task.maxUploadAttempts = "1"
+        task.waitTimeBetweenAttempts = "0"
+        task.delete = "false"
+        task.ignoreFailure = "false"
+        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+
+        when:
+        task.run()
+
+        then:
+        1 * task.veracodeAPI.getBuildInfo(_) >> {
+            return new String(buildInfoNoBuildError.readBytes())
         }
 
         then:

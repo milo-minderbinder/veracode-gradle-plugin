@@ -50,7 +50,7 @@ class VeracodeCreateSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.createSandbox(sandbox_name))
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.createSandbox(sandbox_name))
         printSandboxInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

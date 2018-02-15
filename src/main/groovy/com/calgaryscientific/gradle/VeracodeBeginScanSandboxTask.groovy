@@ -50,11 +50,11 @@ class VeracodeBeginScanSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node preScanResultsXML = XMLIO.writeXml(VeracodePreScanResults.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id,null), veracodeAPI.getPreScanResultsSandbox(null))
+        Node preScanResultsXML = XMLIO.writeXmlWithErrorCheck(VeracodePreScanResults.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id,null), veracodeAPI.getPreScanResultsSandbox(null))
         VeracodePreScanResults.printModuleStatus(preScanResultsXML)
         Set<String> moduleIds = VeracodePreScanResults.extractWhitelistModuleIds(preScanResultsXML, getModuleWhitelist())
         println "Module IDs: " + moduleIds.join(",")
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.beginScanSandbox(moduleIds))
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.beginScanSandbox(moduleIds))
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

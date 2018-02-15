@@ -46,7 +46,7 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
     }
 
     void run() {
-        Node buildInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getBuildInfo(build_id))
+        Node buildInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildInfo(build_id))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }

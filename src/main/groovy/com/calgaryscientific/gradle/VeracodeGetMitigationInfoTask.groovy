@@ -46,7 +46,7 @@ class VeracodeGetMitigationInfoTask extends VeracodeTask {
     }
 
     void run() {
-        Node mitigationInfo = XMLIO.writeXml(getOutputFile(), veracodeAPI.getMitigationInfo(build_id, flaw_id_list))
+        Node mitigationInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getMitigationInfo(build_id, flaw_id_list))
         VeracodeMitigationInfo.printMitigationInfo(mitigationInfo)
         printf "report file: %s\n", getOutputFile()
     }

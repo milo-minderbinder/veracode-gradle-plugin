@@ -40,7 +40,7 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.getAppInfo())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getAppInfo())
         XMLIO.getNode(xml, 'application').attributes().each { k, v ->
             printf "%s=%s\n", k, v
         }

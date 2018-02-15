@@ -44,7 +44,7 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
 
     void run() {
         // TODO: Run clean UploadFileTask after deleting the build
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.deleteBuild())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.deleteBuild())
         VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()
     }

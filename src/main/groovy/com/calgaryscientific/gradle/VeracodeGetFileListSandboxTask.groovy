@@ -49,7 +49,7 @@ class VeracodeGetFileListSandboxTask extends VeracodeTask {
 
 
     void run() {
-        Node fileList = XMLIO.writeXml(getOutputFile(), veracodeAPI.getFileListSandbox(build_id))
+        Node fileList = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getFileListSandbox(build_id))
         VeracodeFileList.printFileList(fileList)
         printf "report file: %s\n", getOutputFile()
     }

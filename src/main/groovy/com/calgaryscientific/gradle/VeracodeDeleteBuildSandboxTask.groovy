@@ -46,7 +46,7 @@ class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
 
     void run() {
         // TODO: Run clean UploadFileTask after deleting the build
-        Node xml = XMLIO.writeXml(getOutputFile(), veracodeAPI.deleteBuildSandbox())
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.deleteBuildSandbox())
         VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()
     }
