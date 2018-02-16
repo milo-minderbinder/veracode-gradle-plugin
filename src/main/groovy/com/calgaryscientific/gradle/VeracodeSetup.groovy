@@ -27,11 +27,20 @@
 package com.calgaryscientific.gradle
 
 class VeracodeSetup {
+    // Authentication
     String username
     String password
     String id
     String key
+
+    // App and Sandbox
+    String app_id
+    String sandbox_id
+
+    // Upload Config
     Set<File> filesToUpload
     Set<File> sandboxFilesToUpload
+
+    // Scan Config
     Set<String> moduleWhitelist
 }

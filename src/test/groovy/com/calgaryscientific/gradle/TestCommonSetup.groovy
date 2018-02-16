@@ -67,6 +67,7 @@ class TestCommonSetup extends Specification {
         // Mock VeracodeAPI calls
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
         task.veracodeAPI = veracodeAPIMock
+        task.veracodeSetup = new VeracodeSetup()
         return task
     }
 

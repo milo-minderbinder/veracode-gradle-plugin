@@ -35,7 +35,6 @@ class VeracodeGetBuildListTask extends VeracodeTask {
     VeracodeGetBuildListTask() {
         description = "List builds for the given 'app_id'"
         requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
     }
 
     File getOutputFile() {
@@ -43,6 +42,7 @@ class VeracodeGetBuildListTask extends VeracodeTask {
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id)
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildList())
         VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()
