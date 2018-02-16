@@ -31,15 +31,15 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeCreateSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateSandbox'
-    private String sandbox_name
 
     VeracodeCreateSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Creates a new sandbox for the given 'app_id'"
         requiredArguments << 'app_id' << 'sandbox_name'
-        app_id = project.findProperty("app_id")
-        sandbox_name = project.findProperty("sandbox_name")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxinfo-${app_id}-latest.xml")
+    }
+
+    File getOutputFile() {
+        return new File("${project.buildDir}/veracode", "sandboxinfo-${app_id}-latest.xml")
     }
 
     void printSandboxInfo(Node xml) {
@@ -50,7 +50,8 @@ class VeracodeCreateSandboxTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.createSandbox(sandbox_name))
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_name)
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.createSandbox(veracodeSetup.sandbox_name))
         printSandboxInfo(xml)
         printf "report file: %s\n", getOutputFile()
     }

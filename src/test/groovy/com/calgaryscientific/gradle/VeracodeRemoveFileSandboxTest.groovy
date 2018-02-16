@@ -33,6 +33,9 @@ class VeracodeRemoveFileSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxRemoveFile')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
+        task.veracodeSetup.file_id = '123'
 
         when:
         task.run()

@@ -36,8 +36,10 @@ class VeracodeGetSandboxListTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "List sandboxes for the given 'app_id'"
         requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
+    }
+
+    File getOutputFile() {
+        return new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
     }
 
     static void printSandboxList(Node xml) {
@@ -48,6 +50,7 @@ class VeracodeGetSandboxListTask extends VeracodeTask {
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id)
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getSandboxList())
         printSandboxList(xml)
         printf "report file: %s\n", getOutputFile()

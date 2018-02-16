@@ -33,6 +33,7 @@ class VeracodeDetailedReportTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeDetailedReport')
+        task.veracodeSetup.build_id = '123'
 
         when:
         task.run()

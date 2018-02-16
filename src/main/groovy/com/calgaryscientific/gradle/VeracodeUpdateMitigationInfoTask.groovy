@@ -31,36 +31,29 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeUpdateMitigationInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeUpdateMitigationInfo'
-    String build_id
-    String flaw_id_list
-    String action
-    String comment
 
     VeracodeUpdateMitigationInfoTask() {
         description = "Updates flaw information for the given 'build_id' and 'flaw_id_list'"
         requiredArguments << 'build_id' << 'flaw_id_list' << 'action' << 'comment'
-        build_id = project.findProperty("build_id")
-        flaw_id_list = project.findProperty("flaw_id_list")
-        action = project.findProperty("action")
-        comment = project.findProperty("comment")
     }
 
     File getOutputFile() {
-        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", build_id, flaw_id_list)
+        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", veracodeSetup.build_id, veracodeSetup.flaw_id_list)
     }
 
     void run() {
-        if (!VeracodeMitigationInfo.validAction(action)) {
-            fail("action must be one of: 'comment', 'fp', 'appdesign', 'osenv', 'netenv', 'rejected', 'accepted'. Received: ${action}")
+        failIfNull(veracodeSetup.build_id, veracodeSetup.flaw_id_list, veracodeSetup.action, veracodeSetup.comment)
+        if (!VeracodeMitigationInfo.validAction(veracodeSetup.action)) {
+            fail("action must be one of: 'comment', 'fp', 'appdesign', 'osenv', 'netenv', 'rejected', 'accepted'. Received: ${veracodeSetup.action}")
         }
-        if (!VeracodeMitigationInfo.validComment(comment)) {
+        if (!VeracodeMitigationInfo.validComment(veracodeSetup.comment)) {
             fail("comment must not exceed 1024 chars")
         }
-        log.info(String.format("build_id: %s, action: %s", build_id, action))
-        log.info(String.format("flaw_id_list: %s", flaw_id_list))
-        log.info(String.format("comment: %s\n\n", comment))
+        log.info(String.format("build_id: %s, action: %s", veracodeSetup.build_id, veracodeSetup.action))
+        log.info(String.format("flaw_id_list: %s", veracodeSetup.flaw_id_list))
+        log.info(String.format("comment: %s\n\n", veracodeSetup.comment))
         Node mitigationInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(),
-                veracodeAPI.updateMitigationInfo(build_id, action, comment, flaw_id_list))
+                veracodeAPI.updateMitigationInfo(veracodeSetup.build_id, veracodeSetup.action, veracodeSetup.comment, veracodeSetup.flaw_id_list))
         VeracodeMitigationInfo.printMitigationInfo(mitigationInfo)
         // Mitigation Info Updates have errors that are not top level as all other tasks.
         // Custom error checking required.

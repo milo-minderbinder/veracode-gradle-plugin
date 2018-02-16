@@ -31,21 +31,20 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeDetailedReportTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReport'
-    private String build_id
 
     VeracodeDetailedReportTask() {
         description = "Get the Veracode Scan Report in XML format based on the given 'build_id'"
         requiredArguments << 'build_id'
-        build_id = project.findProperty("build_id")
     }
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getOutputFile() {
-        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", build_id)
+        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", veracodeSetup.build_id)
     }
 
     void run() {
-        XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.detailedReport(build_id))
+        failIfNull(veracodeSetup.build_id)
+        XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.detailedReport(veracodeSetup.build_id))
         printf "report file: %s\n", getOutputFile()
     }
 }

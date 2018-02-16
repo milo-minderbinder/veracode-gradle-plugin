@@ -31,13 +31,10 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeCreateBuildTask extends VeracodeTask {
     static final String NAME = 'veracodeCreateBuild'
-    private String build_version
 
     VeracodeCreateBuildTask() {
         description = "Create a Veracode Build for the given 'app_id' using 'build_version' as the identifier"
         requiredArguments << 'app_id' << 'build_version'
-        app_id = project.findProperty("app_id")
-        build_version = project.findProperty("build_version")
     }
 
     File getOutputFile() {
@@ -45,7 +42,8 @@ class VeracodeCreateBuildTask extends VeracodeTask {
     }
 
     void run() {
-        Node buildInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.createBuild(build_version))
+        failIfNull(veracodeSetup.app_id, veracodeSetup.build_version)
+        Node buildInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.createBuild(veracodeSetup.build_version))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }

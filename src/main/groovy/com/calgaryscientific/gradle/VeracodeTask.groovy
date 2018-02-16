@@ -44,24 +44,23 @@ abstract class VeracodeTask extends DefaultTask {
     VeracodeAPIWrapperFactory veracodeAPIWrapperFactory
     static Logger log = LoggerFactory.getLogger(VeracodeTask.class);
     File outputFile
-    protected File defaultOutputFile
     List<String> requiredArguments = []
     List<String> optionalArguments = []
     final static Map<String, String> validArguments = [
-            'app_id'                 : '123',
-            'sandbox_id'             : '123',
-            'build_id'               : '123',
-            'flaw_id'                : '123',
-            'flaw_id_list'           : '123',
-            'build_version'          : 'xxx',
-            'sandbox_name'           : 'xxx',
-            'file_id'                : '123',
-            'maxUploadAttempts'      : '123',
-            'waitTimeBetweenAttempts': '123',
-            'delete'                 : 'true',
-            'ignoreFailure'          : 'true',
-            'action'                 : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
-            'comment'                : 'xxx',
+            'app_id'                  : '123',
+            'sandbox_id'              : '123',
+            'build_id'                : '123',
+            'flaw_id'                 : '123',
+            'flaw_id_list'            : '123',
+            'build_version'           : 'xxx',
+            'sandbox_name'            : 'xxx',
+            'file_id'                 : '123',
+            'maxUploadAttempts'       : '123',
+            'waitTimeBetweenAttempts' : '123',
+            'deleteUploadedArtifacts' : 'true',
+            'ignoreFailure'           : 'true',
+            'action'                  : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
+            'comment'                 : 'xxx',
     ]
 
     VeracodeTask() {
@@ -102,13 +101,6 @@ abstract class VeracodeTask extends DefaultTask {
     }
 
     // === utility methods ===
-    protected void setOutputFile(File file) {
-        defaultOutputFile = file
-    }
-
-    protected File getOutputFile() {
-        return defaultOutputFile
-    }
 
     /**
      * Fail the task if any the given required objects is null

@@ -31,24 +31,21 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetPreScanResultsSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxGetPreScanResults'
-    String build_id
 
     VeracodeGetPreScanResultsSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Get the Veracode Pre-Scan Results based on the given 'app_id', 'sandbox_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
         requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'build_id'
-        app_id = project.findProperty('app_id')
-        sandbox_id = project.findProperty('sandbox_id')
-        build_id = project.findProperty('build_id')
     }
 
     File getOutputFile() {
-        VeracodePreScanResults.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, build_id)
+        VeracodePreScanResults.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, veracodeSetup.build_id)
     }
 
     void run() {
-        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getPreScanResultsSandbox(build_id))
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id)
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getPreScanResultsSandbox(veracodeSetup.build_id))
         VeracodePreScanResults.printModuleStatus(xml)
         printf "report file: %s\n", getOutputFile()
     }

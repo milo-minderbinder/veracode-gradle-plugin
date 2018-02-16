@@ -31,13 +31,10 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeRemoveFileTask extends VeracodeTask {
     static final String NAME = 'veracodeRemoveFile'
-    private String file_id
 
     VeracodeRemoveFileTask() {
         description = "Remove an uploaded file based on the given 'app_id' and 'file_id' combination"
         requiredArguments << 'app_id' << 'file_id'
-        app_id = project.findProperty("app_id")
-        file_id = project.findProperty("file_id")
     }
 
     File getOutputFile() {
@@ -45,7 +42,8 @@ class VeracodeRemoveFileTask extends VeracodeTask {
     }
 
     void run() {
-        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.removeFile(file_id))
+        failIfNull(veracodeSetup.app_id, veracodeSetup.file_id)
+        Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.removeFile(veracodeSetup.file_id))
         VeracodeFileList.printFileList(xml)
         printf "report file: %s\n", getOutputFile()
     }

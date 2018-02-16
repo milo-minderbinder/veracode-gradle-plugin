@@ -31,52 +31,37 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeWorkflowSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxWorkflow'
-    String build_version
-    String maxUploadAttempts
-    String waitTimeBetweenAttempts
-    String delete
-    String ignoreFailure
 
     VeracodeWorkflowSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Run through the Veracode Workflow for the given 'app_id' and 'sandbox_id' using 'build_version' as the build identifier"
         requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
         optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete' << 'ignoreFailure'
-        app_id = project.findProperty("app_id")
-        sandbox_id = project.findProperty("sandbox_id")
-        build_version = project.findProperty("build_version")
-        maxUploadAttempts = project.findProperty("maxUploadAttempts")
-        waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
-        delete = project.findProperty("delete")
-        ignoreFailure = project.findProperty("ignoreFailure")
     }
 
     Set<File> getFileSet() {
-        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.sandboxFilesToUpload
     }
 
     Set<String> getModuleWhitelist() {
-        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.moduleWhitelist
     }
 
     void run() {
-        Integer maxTries = Integer.parseInt((maxUploadAttempts != null) ? maxUploadAttempts : '10')
-        Integer waitTime = Integer.parseInt((waitTimeBetweenAttempts != null) ? waitTimeBetweenAttempts : '5000')
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id, veracodeSetup.build_version)
         try {
             VeracodeWorkflow.sandboxWorkflow(veracodeAPI,
                     "${project.buildDir}/veracode",
                     app_id,
                     sandbox_id,
-                    build_version,
+                    veracodeSetup.build_version,
                     getFileSet(),
                     getModuleWhitelist(),
-                    maxTries,
-                    waitTime,
-                    Boolean.valueOf(delete))
+                    veracodeSetup.maxUploadAttempts,
+                    veracodeSetup.waitTimeBetweenAttempts,
+                    veracodeSetup.deleteUploadedArtifacts)
         } catch (Exception e) {
-            if (Boolean.valueOf(ignoreFailure)) {
+            if (veracodeSetup.ignoreFailure) {
                 println e.getMessage()
             } else {
                 throw e

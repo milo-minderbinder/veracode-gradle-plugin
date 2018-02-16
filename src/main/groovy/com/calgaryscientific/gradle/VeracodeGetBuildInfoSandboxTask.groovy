@@ -31,24 +31,21 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetBuildInfoSandboxTask extends VeracodeTask {
     static final String NAME = 'veracodeSandboxGetBuildInfo'
-    private String build_id
 
     VeracodeGetBuildInfoSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Lists build information for the given 'app_id', 'sandbox_id' and 'build_id'. If no 'build_id' is provided the latest will be used"
         requiredArguments << 'app_id' << 'sandbox_id'
         optionalArguments << 'build_id'
-        app_id = project.findProperty("app_id")
-        sandbox_id = project.findProperty("sandbox_id")
-        build_id = project.findProperty('build_id')
     }
 
     File getOutputFile() {
-        VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, build_id)
+        VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, veracodeSetup.build_id)
     }
 
     void run() {
-        Node buildInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildInfoSandbox(build_id))
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id)
+        Node buildInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildInfoSandbox(veracodeSetup.build_id))
         VeracodeBuildInfo.printBuildInfo(buildInfo)
         printf "report file: %s\n", getOutputFile()
     }

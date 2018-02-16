@@ -146,6 +146,7 @@ class VeracodePluginTest extends TestCommonSetup {
         Set<File> expected = [buildFile] as Set
         assert vsRead.filesToUpload == expected
         VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
+        task.setupTask()
         assert task.getFileSet() == expected
         def _ = vsRead.filesToUpload.add(buildFile)
         assert vsRead.filesToUpload == [buildFile, buildFile] as Set

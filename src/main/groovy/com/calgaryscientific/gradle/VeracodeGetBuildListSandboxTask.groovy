@@ -36,8 +36,6 @@ class VeracodeGetBuildListSandboxTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "List builds for the given 'app_id' and 'sandbox_id'"
         requiredArguments << 'app_id' << 'sandbox_id'
-        app_id = project.findProperty("app_id")
-        sandbox_id = project.findProperty("sandbox_id")
     }
 
     File getOutputFile() {
@@ -45,6 +43,7 @@ class VeracodeGetBuildListSandboxTask extends VeracodeTask {
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id)
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getBuildListSandbox())
         VeracodeBuildList.printBuildList(xml)
         printf "report file: %s\n", getOutputFile()

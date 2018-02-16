@@ -33,7 +33,6 @@ import org.gradle.api.tasks.OutputFiles
 @CompileStatic
 class VeracodeDetailedReportCSVTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReportCSV'
-    private String build_id
     private File flawsDetailedReportCSVFile
     private File openFlawsDetailedReportCSVFile
     private File softwareCompositionAnalysisFile
@@ -42,23 +41,18 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
         description = "Get the Veracode Scan Report in CSV format based on the given 'build_id'"
         requiredArguments << 'build_id'
         dependsOn 'veracodeDetailedReport'
-        build_id = project.findProperty("build_id")
-        flawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-flaws-${build_id}.csv")
-        openFlawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-open-flaws-${build_id}.csv")
-        softwareCompositionAnalysisFile = new File("${project.buildDir}/veracode", "detailed-report-software-composition-analysis-${build_id}.csv")
     }
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getInputFile() {
-        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", build_id)
-    }
-
-    // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
-    List<File> getOutputFiles() {
-        return [flawsDetailedReportCSVFile, openFlawsDetailedReportCSVFile, softwareCompositionAnalysisFile]
+        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", veracodeSetup.build_id)
     }
 
     void run() {
+        failIfNull(veracodeSetup.build_id)
+        flawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-flaws-${veracodeSetup.build_id}.csv")
+        openFlawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-open-flaws-${veracodeSetup.build_id}.csv")
+        softwareCompositionAnalysisFile = new File("${project.buildDir}/veracode", "detailed-report-software-composition-analysis-${veracodeSetup.build_id}.csv")
         Node xml = XMLIO.readXml(inputFile)
         List<List<String>> flaws = VeracodeDetailedReport.getFlawRowsFromDetailedReport(xml)
         VeracodeDetailedReport.writeCSV(flawsDetailedReportCSVFile, flaws)

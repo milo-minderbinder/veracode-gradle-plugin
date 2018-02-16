@@ -33,6 +33,9 @@ class VeracodeCreateBuildSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxCreateBuild')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
+        task.veracodeSetup.build_version = 'xxx'
 
         when:
         task.run()

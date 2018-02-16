@@ -32,23 +32,21 @@ import org.gradle.api.tasks.OutputFile
 @CompileStatic
 class VeracodeDetailedReportPDFTask extends VeracodeTask {
     static final String NAME = 'veracodeDetailedReportPDF'
-    private String build_id
 
     VeracodeDetailedReportPDFTask() {
         description = "Get the Veracode Scan Report in PDF format based on the given 'build_id'"
         requiredArguments << 'build_id'
-        build_id = project.findProperty("build_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.pdf")
     }
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getOutputFile() {
-        return defaultOutputFile
+        return new File("${project.buildDir}/veracode", "detailed-report-${veracodeSetup.build_id}.pdf")
     }
 
     void run() {
+        failIfNull(veracodeSetup.build_id)
         File file = getOutputFile()
-        file.bytes = veracodeAPI.detailedReportPdf(build_id)
+        file.bytes = veracodeAPI.detailedReportPdf(veracodeSetup.build_id)
         printf "report file: %s\n", file
     }
 }

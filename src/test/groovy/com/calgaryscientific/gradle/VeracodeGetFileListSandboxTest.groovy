@@ -33,6 +33,8 @@ class VeracodeGetFileListSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxGetFileList')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
 
         when:
         task.run()
