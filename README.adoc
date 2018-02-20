@@ -25,7 +25,7 @@ The plugin is published as a gradle plugin: https://plugins.gradle.org/plugin/co
 
 . Copy the `VeracodeJavaAPI.jar` (from Veracode) to a newly created `lib` directory within your project.
 
-. Apply the plugin:
+. Apply the plugin with a minimal setup:
 +
 [source,groovy]
 ----
@@ -44,12 +44,20 @@ buildscript {
 }
 
 veracodeSetup {
+    // Authentication
     username = project.findProperty("veracodeUsername") <1>
     password = project.findProperty("veracodePassword")
     id = project.findProperty("veracodeID") <1>
     key = project.findProperty("veracodeKey")
+
+    // App info
+    app_id = project.findProperty("veracodeAppID")
+
+    // Upload Config
     filesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
     sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
+
+    // Scan Config
     moduleWhitelist = ['class1.jar', 'class2.jar']
 }
 ----
@@ -59,6 +67,70 @@ veracodeSetup {
 Optionally, the Veracode credentials properties can be placed in the `~/.gradle/gradle.properties` file.
 
 . Execute `gradle tasks` to see available tasks.
+
+=== veracodeSetup extension
+
+The `veracodeSetup` extension is used to configure the Plugin and to pass details the tasks.
+
+A minimal setup is shown above, a full description of all fields is shown below:
+
+.veracodeSetup configuration
+[source,groovy]
+----
+// Authentication
+String username
+String password
+String id
+String key
+
+// App and Sandbox
+String app_id
+String sandbox_id
+String sandbox_name
+
+// Build Info
+String build_id
+String build_version
+
+// Flaw Info
+String flaw_id
+String flaw_id_list
+String action
+String comment
+String cweid
+
+// File Info
+String file_id
+
+// Upload Config
+Boolean deleteUploadedArtifacts = false
+Integer maxUploadAttempts = 10
+Integer waitTimeBetweenAttempts = 5000
+Set<File> filesToUpload
+Set<File> sandboxFilesToUpload
+
+// Scan Config
+Set<String> moduleWhitelist
+
+// Error Management
+Boolean ignoreFailure = false
+----
+
+To pass these fields to the Plugin as properties, set the field on `veracodeSetup` to read the desired property, for example:
+
+----
+veracodeSetup {
+    ...
+    build_id = project.findProperty("build_id")
+}
+----
+
+Then:
+
+----
+./gradlew veracodeDetailedReport -P build_id=xxx
+----
+
 
 === Work flow tasks (CI environment)
 
@@ -84,10 +156,10 @@ A sample configuration looks like this:
 ----
 task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowTask) {
     dependsOn buildMyApplication
-    project.ext.build_version =  "build-name-if-creating-a-new-build"
-    project.ext.ignoreFailure =  "true" <1>
     doFirst {
         veracodeSetup {
+            build_version =  "build-name-if-creating-a-new-build"
+            ignoreFailure =  true <1>
             filesToUpload = fileTree(dir: "upload/", include: "*").getFiles() <2>
         }
     }
@@ -104,10 +176,10 @@ The Sandbox counterpart can be used as:
 ----
 task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowSandboxTask) {
     dependsOn buildMyApplication
-    project.ext.build_version =  "build-name-if-creating-a-new-sandbox-build"
-    project.ext.ignoreFailure =  "true"
     doFirst {
         veracodeSetup {
+            build_version =  "build-name-if-creating-a-new-sandbox-build"
+            ignoreFailure =  true
             sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
         }
     }
