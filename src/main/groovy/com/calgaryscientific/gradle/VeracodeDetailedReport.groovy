@@ -135,6 +135,16 @@ class VeracodeDetailedReport {
     }
 
     /**
+     * Extracts the New flaw Nodes from the detailed XML report
+     *
+     * @param xml
+     * @return flaws
+     */
+    static List<Node> getNewFlawsFromDetailedReportXML(Node xml) {
+        return filterNewFlaws(getAllFlawsFromDetailedReportXML(xml))
+    }
+
+    /**
      * Extract Open flaws from a list of flaws.
      * @param flaws
      * @return flaws
@@ -143,6 +153,25 @@ class VeracodeDetailedReport {
         flaws.findAll { flaw ->
             String status = flaw.attribute('remediation_status')
             (status == "Open" || status == "New" || (status != "Fixed" && status != "Mitigated"))
+        }
+    }
+
+    /**
+     * Extract New flaws from a list of flaws.
+     * @param flaws
+     * @return flaws
+     */
+    static List<Node> filterNewFlaws(List<Node> flaws) {
+        flaws.findAll { flaw ->
+            String status = flaw.attribute('remediation_status')
+            (status == "New")
+        }
+    }
+
+    static void printFlawSummary(List<Node> flaws) {
+        flaws.each { flaw ->
+            printf "issueid: %s, severity: %s, cweid: %s, categoryname: %s, module: %s, date_first_occurrence: %s",
+                    XMLIO.getNodeAttributes(flaw, 'issueid', 'severity', 'cweid', 'categoryname', 'module', 'date_first_occurrence')
         }
     }
 
