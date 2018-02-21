@@ -35,7 +35,6 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
     VeracodeBeginPreScanTask() {
         description = "Begin a Veracode Pre-Scan for the given 'app_id'"
         requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
     }
 
     File getOutputFile() {
@@ -43,6 +42,7 @@ class VeracodeBeginPreScanTask extends VeracodeTask {
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id)
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.beginPreScan())
         VeracodeBuildInfo.printBuildInfo(xml)
         printf "report file: %s\n", getOutputFile()

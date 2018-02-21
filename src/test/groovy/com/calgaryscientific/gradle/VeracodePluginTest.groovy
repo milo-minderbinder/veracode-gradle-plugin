@@ -84,7 +84,11 @@ class VeracodePluginTest extends TestCommonSetup {
         String correctUsage = VeracodeTask.correctUsage('VeracodeGetBuildList', requiredArgs, optionalArgs)
 
         then:
-        correctUsage == "Missing required arguments: gradle VeracodeGetBuildList -Papp_id=123 [-Pbuild_id=123]"
+        correctUsage == "Missing required arguments for task VeracodeGetBuildList:\n" +
+                "veracodeSetup {\n" +
+                "  app_id=123\n" +
+                " [build_id=123]\n" +
+                "}\n"
     }
 
     def 'Test veracodeSetup usage'() {
@@ -142,6 +146,7 @@ class VeracodePluginTest extends TestCommonSetup {
         Set<File> expected = [buildFile] as Set
         assert vsRead.filesToUpload == expected
         VeracodeUploadFileTask task = project.tasks.getByName("veracodeUploadFile") as VeracodeUploadFileTask
+        task.setupTask()
         assert task.getFileSet() == expected
         def _ = vsRead.filesToUpload.add(buildFile)
         assert vsRead.filesToUpload == [buildFile, buildFile] as Set

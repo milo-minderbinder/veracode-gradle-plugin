@@ -31,21 +31,17 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetFlawsByCWEIDTask extends VeracodeTask {
     static final String NAME = 'veracodeGetFlawsByCWEID'
-    private String build_id
-    private String cweid
-    private File detailedReportFile
 
     VeracodeGetFlawsByCWEIDTask() {
         description = "List the flaws by CWE ID of the given 'build_id' report"
         requiredArguments << 'build_id'
-        build_id = project.findProperty("build_id")
-        cweid = project.findProperty("cweid")
-        detailedReportFile = new File("${project.buildDir}/veracode", "detailed-report-${build_id}.xml")
     }
 
     void run() {
-        if (cweid) {
-            VeracodeDetailedReport.printFlawListByCWEID(XMLIO.readXml(detailedReportFile), cweid)
+        failIfNull(veracodeSetup.build_id)
+        File detailedReportFile = new File("${project.buildDir}/veracode", "detailed-report-${veracodeSetup.build_id}.xml")
+        if (veracodeSetup.cweid) {
+            VeracodeDetailedReport.printFlawListByCWEID(XMLIO.readXml(detailedReportFile), veracodeSetup.cweid)
         } else {
             VeracodeDetailedReport.printFlawInformationByCWEID(XMLIO.readXml(detailedReportFile))
         }

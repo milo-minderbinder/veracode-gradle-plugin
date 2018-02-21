@@ -33,7 +33,8 @@ class VeracodeGetMitigationInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeGetMitigationInfo')
-        task.flaw_id_list = "123,456"
+        task.veracodeSetup.build_id = "123"
+        task.veracodeSetup.flaw_id_list = "123,456"
 
         when:
         task.run()

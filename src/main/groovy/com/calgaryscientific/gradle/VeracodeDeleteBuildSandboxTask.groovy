@@ -36,8 +36,6 @@ class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
         group = 'Veracode Sandbox'
         description = "Delete the most recent Veracode build for 'app_id' and 'sandbox_id', even if it has a completed scan"
         requiredArguments << 'app_id' << 'sandbox_id'
-        app_id = project.findProperty("app_id")
-        sandbox_id = project.findProperty("sandbox_id")
     }
 
     File getOutputFile() {
@@ -45,6 +43,7 @@ class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id)
         // TODO: Run clean UploadFileTask after deleting the build
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.deleteBuildSandbox())
         VeracodeBuildList.printBuildList(xml)

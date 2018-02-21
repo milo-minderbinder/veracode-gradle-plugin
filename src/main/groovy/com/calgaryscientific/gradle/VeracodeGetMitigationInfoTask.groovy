@@ -31,22 +31,19 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetMitigationInfoTask extends VeracodeTask {
     static final String NAME = 'veracodeGetMitigationInfo'
-    String build_id
-    String flaw_id_list
 
     VeracodeGetMitigationInfoTask() {
         description = "Lists flaw information for the given 'build_id' and 'flaw_id_list'"
         requiredArguments << 'build_id' << 'flaw_id_list'
-        build_id = project.findProperty("build_id")
-        flaw_id_list = project.findProperty("flaw_id_list")
     }
 
     File getOutputFile() {
-        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", build_id, flaw_id_list)
+        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", veracodeSetup.build_id, veracodeSetup.flaw_id_list)
     }
 
     void run() {
-        Node mitigationInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getMitigationInfo(build_id, flaw_id_list))
+        failIfNull(veracodeSetup.build_id, veracodeSetup.flaw_id_list)
+        Node mitigationInfo = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getMitigationInfo(veracodeSetup.build_id, veracodeSetup.flaw_id_list))
         VeracodeMitigationInfo.printMitigationInfo(mitigationInfo)
         printf "report file: %s\n", getOutputFile()
     }

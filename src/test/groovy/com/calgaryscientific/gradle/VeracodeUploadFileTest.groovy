@@ -40,9 +40,10 @@ class VeracodeUploadFileTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUploadFile')
+        task.veracodeSetup.app_id = '123'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()
@@ -65,10 +66,11 @@ class VeracodeUploadFileTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUploadFile')
+        task.veracodeSetup.app_id = '123'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        task.setProperty("delete", "true")
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.deleteUploadedArtifacts = true
 
         when:
         task.run()
@@ -90,9 +92,10 @@ class VeracodeUploadFileTest extends TestCommonSetup {
     def 'Test VeracodeUploadFile Task failure'() {
         given:
         def task = taskSetup('veracodeUploadFile')
+        task.veracodeSetup.app_id = '123'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.filesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()

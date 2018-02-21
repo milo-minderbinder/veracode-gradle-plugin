@@ -35,11 +35,14 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
     VeracodeGetAppInfoTask() {
         description = "List application information for the given 'app_id'"
         requiredArguments << 'app_id'
-        app_id = project.findProperty("app_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "appinfo-${app_id}.xml")
+    }
+
+    File getOutputFile() {
+        return new File("${project.buildDir}/veracode", "appinfo-${app_id}.xml")
     }
 
     void run() {
+        failIfNull(veracodeSetup.app_id)
         Node xml = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getAppInfo())
         XMLIO.getNode(xml, 'application').attributes().each { k, v ->
             printf "%s=%s\n", k, v

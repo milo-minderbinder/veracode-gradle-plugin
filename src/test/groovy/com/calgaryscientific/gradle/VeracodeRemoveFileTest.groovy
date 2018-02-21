@@ -33,6 +33,8 @@ class VeracodeRemoveFileTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeRemoveFile')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.file_id = '123'
 
         when:
         task.run()

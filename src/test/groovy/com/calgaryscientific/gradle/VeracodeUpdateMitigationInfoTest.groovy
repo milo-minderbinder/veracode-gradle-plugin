@@ -36,10 +36,10 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUpdateMitigationInfo')
-        task.build_id = "1"
-        task.flaw_id_list = "123,456"
-        task.action = "appdesign"
-        task.comment = "meant to be..."
+        task.veracodeSetup.build_id = "1"
+        task.veracodeSetup.flaw_id_list = "123,456"
+        task.veracodeSetup.action = "appdesign"
+        task.veracodeSetup.comment = "meant to be..."
 
         when:
         task.run()
@@ -60,10 +60,10 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUpdateMitigationInfo')
-        task.build_id = "1"
-        task.flaw_id_list = "123,456"
-        task.action = "badAction"
-        task.comment = "meant to be..."
+        task.veracodeSetup.build_id = "1"
+        task.veracodeSetup.flaw_id_list = "123,456"
+        task.veracodeSetup.action = "badAction"
+        task.veracodeSetup.comment = "meant to be..."
 
         when:
         task.run()
@@ -79,10 +79,10 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUpdateMitigationInfo')
-        task.build_id = "1"
-        task.flaw_id_list = "123,456"
-        task.action = "appdesign"
-        task.comment = "x"*1025
+        task.veracodeSetup.build_id = "1"
+        task.veracodeSetup.flaw_id_list = "123,456"
+        task.veracodeSetup.action = "appdesign"
+        task.veracodeSetup.comment = "x"*1025
 
         when:
         task.run()
@@ -98,10 +98,10 @@ class VeracodeUpdateMitigationInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeUpdateMitigationInfo')
-        task.build_id = "1"
-        task.flaw_id_list = "123,456"
-        task.action = "appdesign"
-        task.comment = "meant to be..."
+        task.veracodeSetup.build_id = "1"
+        task.veracodeSetup.flaw_id_list = "123,456"
+        task.veracodeSetup.action = "appdesign"
+        task.veracodeSetup.comment = "meant to be..."
 
         when:
         task.run()

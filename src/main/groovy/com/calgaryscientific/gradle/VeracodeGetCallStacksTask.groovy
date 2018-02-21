@@ -32,25 +32,21 @@ import org.gradle.api.tasks.OutputFile
 @CompileStatic
 class VeracodeGetCallStacksTask extends VeracodeTask {
     static final String NAME = 'veracodeGetCallStacks'
-    private String build_id
-    private String flaw_id
 
     VeracodeGetCallStacksTask() {
         description = "Get the Veracode Flaw Call Stack in XML format based on the given 'build_id' and 'flaw_id'"
         requiredArguments << 'build_id' << 'flaw_id'
-        build_id = project.findProperty("build_id")
-        flaw_id = project.findProperty("flaw_id")
-        defaultOutputFile = new File("${project.buildDir}/veracode", "callstacks-${build_id}-${flaw_id}.xml")
     }
 
     // Scan results are not available until the full scan is complete so there is no risk in caching the report.
     @OutputFile
     File getOutputFile() {
-        return defaultOutputFile
+        return new File("${project.buildDir}/veracode", "callstacks-${veracodeSetup.build_id}-${veracodeSetup.flaw_id}.xml")
     }
 
     void run() {
-        XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getCallStacks(build_id, flaw_id))
+        failIfNull(veracodeSetup.build_id, veracodeSetup.flaw_id)
+        XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getCallStacks(veracodeSetup.build_id, veracodeSetup.flaw_id))
         printf "report file: %s\n", getOutputFile()
     }
 }

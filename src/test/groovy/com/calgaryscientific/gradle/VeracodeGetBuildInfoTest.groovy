@@ -33,6 +33,7 @@ class VeracodeGetBuildInfoTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeGetBuildInfo')
+        task.veracodeSetup.app_id = '123'
 
         when:
         task.run()

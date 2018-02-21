@@ -44,24 +44,23 @@ abstract class VeracodeTask extends DefaultTask {
     VeracodeAPIWrapperFactory veracodeAPIWrapperFactory
     static Logger log = LoggerFactory.getLogger(VeracodeTask.class);
     File outputFile
-    protected File defaultOutputFile
     List<String> requiredArguments = []
     List<String> optionalArguments = []
     final static Map<String, String> validArguments = [
-            'app_id'                 : '123',
-            'sandbox_id'             : '123',
-            'build_id'               : '123',
-            'flaw_id'                : '123',
-            'flaw_id_list'           : '123',
-            'build_version'          : 'xxx',
-            'sandbox_name'           : 'xxx',
-            'file_id'                : '123',
-            'maxUploadAttempts'      : '123',
-            'waitTimeBetweenAttempts': '123',
-            'delete'                 : 'true',
-            'ignoreFailure'          : 'true',
-            'action'                 : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
-            'comment'                : 'xxx',
+            'app_id'                  : '123',
+            'sandbox_id'              : '123',
+            'build_id'                : '123',
+            'flaw_id'                 : '123',
+            'flaw_id_list'            : '123',
+            'build_version'           : 'xxx',
+            'sandbox_name'            : 'xxx',
+            'file_id'                 : '123',
+            'maxUploadAttempts'       : '123',
+            'waitTimeBetweenAttempts' : '123',
+            'deleteUploadedArtifacts' : 'true',
+            'ignoreFailure'           : 'true',
+            'action'                  : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
+            'comment'                 : 'xxx',
     ]
 
     VeracodeTask() {
@@ -73,30 +72,23 @@ abstract class VeracodeTask extends DefaultTask {
     protected static String correctUsage(String taskName,
                                          List<String> requiredArguments,
                                          List<String> optionalArguments) {
-        StringBuilder sb = new StringBuilder("Missing required arguments: gradle ${taskName}")
+        StringBuilder sb = new StringBuilder("Missing required arguments for task ${taskName}:\n")
+        sb.append( "veracodeSetup {\n")
         requiredArguments.each() { arg ->
-            sb.append(" -P${arg}=${validArguments.get(arg)}")
+            sb.append("  ${arg}=${validArguments.get(arg)}\n")
         }
         optionalArguments.each() { arg ->
-            sb.append(" [-P${arg}=${validArguments.get(arg)}]")
+            sb.append(" [${arg}=${validArguments.get(arg)}]\n")
         }
+        sb.append( "}\n")
         sb.toString()
     }
 
-    protected boolean hasRequiredArguments() {
-        boolean hasRequiredArguments = true
-        requiredArguments.each() { arg ->
-            hasRequiredArguments &= getProject().hasProperty(arg)
-        }
-        if (!hasRequiredArguments) {
-            fail(correctUsage(this.name, this.requiredArguments, this.optionalArguments))
-        }
-        return hasRequiredArguments
-    }
-
     protected void setupTask() {
-        log.info("[SetupTask] app_id=${app_id} sandbox_id=${sandbox_id}")
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        app_id = veracodeSetup.app_id
+        sandbox_id = veracodeSetup.sandbox_id
+        log.info("[SetupTask] name=${name} app_id=${app_id} sandbox_id=${sandbox_id}")
         veracodeAPIWrapperFactory = new VeracodeAPIWrapperFactory(veracodeSetup.username, veracodeSetup.password, veracodeSetup.key, veracodeSetup.id)
         veracodeAPI = new VeracodeAPI(veracodeAPIWrapperFactory, app_id, sandbox_id)
     }
@@ -104,19 +96,22 @@ abstract class VeracodeTask extends DefaultTask {
     @TaskAction
     final def vExecute() {
         logging.level = LogLevel.INFO
-        if (hasRequiredArguments()) {
-            setupTask()
-            run()
-        }
+        setupTask()
+        run()
     }
 
     // === utility methods ===
-    protected void setOutputFile(File file) {
-        defaultOutputFile = file
-    }
 
-    protected File getOutputFile() {
-        return defaultOutputFile
+    /**
+     * Fail the task if any the given required objects is null
+     * @param objs
+     */
+    protected void failIfNull(Object... objs) {
+        for (Object obj : objs) {
+            if (obj == null) {
+                fail(correctUsage(this.name, this.requiredArguments, this.optionalArguments))
+            }
+        }
     }
 
     protected fail(String msg) {

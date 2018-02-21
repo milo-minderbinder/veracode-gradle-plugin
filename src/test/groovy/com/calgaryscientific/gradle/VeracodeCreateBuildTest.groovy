@@ -33,6 +33,8 @@ class VeracodeCreateBuildTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeCreateBuild')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.build_version = 'new-build'
 
         when:
         task.run()

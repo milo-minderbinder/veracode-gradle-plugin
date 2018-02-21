@@ -33,7 +33,8 @@ class VeracodeGetPreScanResultsTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeGetPreScanResults')
-        task.build_id = '123'
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.build_id = '123'
 
         when:
         task.run()

@@ -27,11 +27,41 @@
 package com.calgaryscientific.gradle
 
 class VeracodeSetup {
+    // Authentication
     String username
     String password
     String id
     String key
+
+    // App and Sandbox
+    String app_id
+    String sandbox_id
+    String sandbox_name
+
+    // Build Info
+    String build_id
+    String build_version
+
+    // Flaw Info
+    String flaw_id
+    String flaw_id_list
+    String action
+    String comment
+    String cweid
+
+    // File Info
+    String file_id
+
+    // Upload Config
+    Boolean deleteUploadedArtifacts = false
+    Integer maxUploadAttempts = 10
+    Integer waitTimeBetweenAttempts = 5000
     Set<File> filesToUpload
     Set<File> sandboxFilesToUpload
+
+    // Scan Config
     Set<String> moduleWhitelist
+
+    // Error Management
+    Boolean ignoreFailure = false
 }

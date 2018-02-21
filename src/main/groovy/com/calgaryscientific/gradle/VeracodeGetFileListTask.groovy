@@ -31,22 +31,20 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class VeracodeGetFileListTask extends VeracodeTask {
     static final String NAME = 'veracodeGetFileList'
-    private String build_id
 
     VeracodeGetFileListTask() {
         description = "Lists all files for the given 'app_id' and 'build_id' combination. If no 'build_id' is provided, the latest will be used"
         requiredArguments << 'app_id'
         optionalArguments << 'build_id'
-        app_id = project.findProperty("app_id")
-        build_id = project.findProperty('build_id')
     }
 
     File getOutputFile() {
-        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, build_id)
+        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, veracodeSetup.build_id)
     }
 
     void run() {
-        Node fileList = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getFileList(build_id))
+        failIfNull(veracodeSetup.app_id)
+        Node fileList = XMLIO.writeXmlWithErrorCheck(getOutputFile(), veracodeAPI.getFileList(veracodeSetup.build_id))
         VeracodeFileList.printFileList(fileList)
         printf "report file: %s\n", getOutputFile()
     }

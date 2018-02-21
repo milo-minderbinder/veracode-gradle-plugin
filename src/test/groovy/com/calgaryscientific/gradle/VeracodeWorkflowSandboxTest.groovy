@@ -51,15 +51,15 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         given:
         def task = taskSetup('veracodeSandboxWorkflow')
 
-        task.app_id = "123"
-        task.sandbox_id = "456"
-        task.build_version = "new-build"
-        task.maxUploadAttempts = "1"
-        task.waitTimeBetweenAttempts = "0"
-        task.delete = "false"
-        task.ignoreFailure = "false"
-        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+        task.veracodeSetup.app_id = "123"
+        task.veracodeSetup.sandbox_id = "456"
+        task.veracodeSetup.build_version = "new-build"
+        task.veracodeSetup.maxUploadAttempts = 1
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.deleteUploadedArtifacts = false
+        task.veracodeSetup.ignoreFailure = false
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
         task.run()
@@ -99,15 +99,15 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         given:
         def task = taskSetup('veracodeSandboxWorkflow')
 
-        task.app_id = "123"
-        task.sandbox_id = "456"
-        task.build_version = "new-build"
-        task.maxUploadAttempts = "1"
-        task.waitTimeBetweenAttempts = "0"
-        task.delete = "false"
-        task.ignoreFailure = "false"
-        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        task.project.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
+        task.veracodeSetup.app_id = "123"
+        task.veracodeSetup.sandbox_id = "456"
+        task.veracodeSetup.build_version = "new-build"
+        task.veracodeSetup.maxUploadAttempts = 1
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.deleteUploadedArtifacts = false
+        task.veracodeSetup.ignoreFailure = false
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
 
         when:
         task.run()
@@ -146,7 +146,10 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
     def 'Test veracodeSandboxWorkflow Task failure'() {
         given:
         def task = taskSetup('veracodeSandboxWorkflow')
-        task.ignoreFailure = "false"
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
+        task.veracodeSetup.build_version = 'new-build'
+        task.veracodeSetup.ignoreFailure = false
 
         when:
         task.run()
@@ -163,7 +166,10 @@ class VeracodeWorkflowSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxWorkflow')
-        task.ignoreFailure = "true"
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
+        task.veracodeSetup.build_version = 'new-build'
+        task.veracodeSetup.ignoreFailure = true
 
         when:
         task.run()

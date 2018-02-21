@@ -40,9 +40,11 @@ class VeracodeUploadFileSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxUploadFile')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()
@@ -65,10 +67,12 @@ class VeracodeUploadFileSandboxTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeSandboxUploadFile')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
-        task.setProperty("delete", "true")
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.deleteUploadedArtifacts = true
 
         when:
         task.run()
@@ -90,9 +94,11 @@ class VeracodeUploadFileSandboxTest extends TestCommonSetup {
     def 'Test VeracodeSandboxUploadFile Task failure'() {
         given:
         def task = taskSetup('veracodeSandboxUploadFile')
+        task.veracodeSetup.app_id = '123'
+        task.veracodeSetup.sandbox_id = '456'
         // Don't delay unit tests
-        task.waitTimeBetweenAttempts = "0"
-        task.project.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
+        task.veracodeSetup.waitTimeBetweenAttempts = 0
+        task.veracodeSetup.sandboxFilesToUpload = task.project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
 
         when:
         task.run()

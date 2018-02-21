@@ -33,18 +33,11 @@ import org.gradle.api.tasks.OutputFile
 @CompileStatic
 class VeracodeUploadFileTask extends VeracodeTask {
     static final String NAME = 'veracodeUploadFile'
-    String maxUploadAttempts
-    String waitTimeBetweenAttempts
-    String delete
 
     VeracodeUploadFileTask() {
         description = "Uploads all files defined in 'filesToUpload' to Veracode based on the given 'app_id'. Use the 'delete=true' property to delete uploaded files"
         requiredArguments << 'app_id'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete'
-        app_id = project.findProperty("app_id")
-        maxUploadAttempts = project.findProperty("maxUploadAttempts")
-        waitTimeBetweenAttempts = project.findProperty("waitTimeBetweenAttempts")
-        delete = project.findProperty("delete")
+        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'deleteUploadedArtifacts'
     }
 
     @OutputFile
@@ -54,14 +47,18 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     @InputFiles
     Set<File> getFileSet() {
-        veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
         return veracodeSetup.filesToUpload
     }
 
     void run() {
-        Integer maxTries = Integer.parseInt((this.maxUploadAttempts != null) ? this.maxUploadAttempts : '10')
-        Integer waitTime = Integer.parseInt((this.waitTimeBetweenAttempts != null) ? this.waitTimeBetweenAttempts : '5000')
-        VeracodeUploadFile.uploadFiles(veracodeAPI, getOutputFile(), getFileSet(), maxTries, waitTime, Boolean.valueOf(delete))
+        failIfNull(veracodeSetup.app_id)
+        VeracodeUploadFile.uploadFiles(
+                veracodeAPI,
+                getOutputFile(),
+                getFileSet(),
+                veracodeSetup.maxUploadAttempts,
+                veracodeSetup.waitTimeBetweenAttempts,
+                veracodeSetup.deleteUploadedArtifacts)
         println "results file: ${getOutputFile()}"
     }
 }

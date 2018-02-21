@@ -34,7 +34,10 @@ class VeracodeGetAppListTask extends VeracodeTask {
 
     VeracodeGetAppListTask() {
         description = 'List all Veracode applications'
-        defaultOutputFile = new File("${project.buildDir}/veracode", "applist.xml")
+    }
+
+    File getOutputFile() {
+        return new File("${project.buildDir}/veracode", "applist.xml")
     }
 
     void run() {

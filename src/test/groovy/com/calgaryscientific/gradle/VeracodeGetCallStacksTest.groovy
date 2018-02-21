@@ -33,6 +33,8 @@ class VeracodeGetCallStacksTest extends TestCommonSetup {
         given:
         def os = mockSystemOut()
         def task = taskSetup('veracodeGetCallStacks')
+        task.veracodeSetup.build_id = '123'
+        task.veracodeSetup.flaw_id = '456'
 
         when:
         task.run()
