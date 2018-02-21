@@ -26,32 +26,17 @@
 
 package com.calgaryscientific.gradle
 
-import groovy.transform.CompileStatic
+class VeracodeBuildListTest extends TestCommonSetup {
+    File buildlistFile = getResource('buildlist-1.3.xml')
 
-@CompileStatic
-class VeracodeBuildList {
-    static File getFile(String dir, String app_id) {
-        return new File(dir, "buildlist-${app_id}-latest.xml")
-    }
+    def 'Test veracodeGetBuildList Task'() {
+        given:
+        Node xml = XMLIO.parse(buildlistFile)
 
-    static File getSandboxFile(String dir, String app_id, String sandbox_id) {
-        return new File(dir, "buildlist-${app_id}-${sandbox_id}-latest.xml")
-    }
+        when:
+        String buildID = VeracodeBuildList.getLatestBuildID(xml)
 
-    static void printBuildList(Node xml) {
-        String app_id = xml.attribute('app_id') as String
-        String sandbox_id = xml.attribute('sandbox_id') as String
-        XMLIO.getNodeList(xml, 'build').each { build ->
-            printf "app_id=%s ", app_id
-            if (sandbox_id) {
-                printf "sandbox_id=%s ", sandbox_id
-            }
-            printf "build_id=%-10s date=%-25s version=\"%s\"\n",
-                    XMLIO.getNodeAttributes(build, 'build_id', 'policy_updated_date', 'version')
-        }
-    }
-
-    static String getLatestBuildID(Node xml) {
-        XMLIO.getNodeList(xml, 'build').last().attribute('build_id')
+        then:
+        assert buildID == '125'
     }
 }
