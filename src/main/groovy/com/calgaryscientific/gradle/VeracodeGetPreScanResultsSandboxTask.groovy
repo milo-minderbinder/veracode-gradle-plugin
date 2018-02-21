@@ -40,7 +40,7 @@ class VeracodeGetPreScanResultsSandboxTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodePreScanResults.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, veracodeSetup.build_id)
+        VeracodePreScanResults.getSandboxFile(veracodeSetup.outputDir, app_id, sandbox_id, veracodeSetup.build_id)
     }
 
     void run() {

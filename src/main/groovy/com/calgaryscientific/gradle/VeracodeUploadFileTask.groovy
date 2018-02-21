@@ -42,7 +42,7 @@ class VeracodeUploadFileTask extends VeracodeTask {
 
     @OutputFile
     File getOutputFile() {
-        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, null)
+        VeracodeFileList.getFile(veracodeSetup.outputDir, app_id, null)
     }
 
     @InputFiles

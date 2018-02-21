@@ -41,7 +41,7 @@ class VeracodeGetCallStacksTask extends VeracodeTask {
     // Scan results are not available until the full scan is complete so there is no risk in caching the report.
     @OutputFile
     File getOutputFile() {
-        return new File("${project.buildDir}/veracode", "callstacks-${veracodeSetup.build_id}-${veracodeSetup.flaw_id}.xml")
+        return new File(veracodeSetup.outputDir, "callstacks-${veracodeSetup.build_id}-${veracodeSetup.flaw_id}.xml")
     }
 
     void run() {

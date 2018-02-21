@@ -40,7 +40,7 @@ class VeracodeGetFileListSandboxTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeFileList.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, veracodeSetup.build_id)
+        VeracodeFileList.getSandboxFile(veracodeSetup.outputDir, app_id, sandbox_id, veracodeSetup.build_id)
     }
 
 

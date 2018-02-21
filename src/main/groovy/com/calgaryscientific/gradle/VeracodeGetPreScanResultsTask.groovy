@@ -39,7 +39,7 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodePreScanResults.getFile("${project.buildDir}/veracode", app_id, veracodeSetup.build_id)
+        VeracodePreScanResults.getFile(veracodeSetup.outputDir, app_id, veracodeSetup.build_id)
     }
 
     void run() {

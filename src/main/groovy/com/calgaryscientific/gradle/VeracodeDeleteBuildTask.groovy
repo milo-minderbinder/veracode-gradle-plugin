@@ -38,7 +38,7 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        return VeracodeBuildList.getFile("${project.buildDir}/veracode", app_id)
+        return VeracodeBuildList.getFile(veracodeSetup.outputDir, app_id)
     }
 
     void run() {

@@ -38,7 +38,7 @@ class VeracodeRemoveFileTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeFileList.getFile("${project.buildDir}/veracode", app_id, null)
+        VeracodeFileList.getFile(veracodeSetup.outputDir, app_id, null)
     }
 
     void run() {

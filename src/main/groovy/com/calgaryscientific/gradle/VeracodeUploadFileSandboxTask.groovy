@@ -43,7 +43,7 @@ class VeracodeUploadFileSandboxTask extends VeracodeTask {
 
     @OutputFile
     File getOutputFile() {
-        VeracodeFileList.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
+        VeracodeFileList.getSandboxFile(veracodeSetup.outputDir, app_id, sandbox_id, null)
     }
 
     @InputFiles

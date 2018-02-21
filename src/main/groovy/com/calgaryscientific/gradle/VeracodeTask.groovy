@@ -47,20 +47,20 @@ abstract class VeracodeTask extends DefaultTask {
     List<String> requiredArguments = []
     List<String> optionalArguments = []
     final static Map<String, String> validArguments = [
-            'app_id'                  : '123',
-            'sandbox_id'              : '123',
-            'build_id'                : '123',
-            'flaw_id'                 : '123',
-            'flaw_id_list'            : '123',
-            'build_version'           : 'xxx',
-            'sandbox_name'            : 'xxx',
-            'file_id'                 : '123',
-            'maxUploadAttempts'       : '123',
-            'waitTimeBetweenAttempts' : '123',
-            'deleteUploadedArtifacts' : 'true',
-            'ignoreFailure'           : 'true',
-            'action'                  : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
-            'comment'                 : 'xxx',
+            'app_id'                 : '123',
+            'sandbox_id'             : '123',
+            'build_id'               : '123',
+            'flaw_id'                : '123',
+            'flaw_id_list'           : '123',
+            'build_version'          : 'xxx',
+            'sandbox_name'           : 'xxx',
+            'file_id'                : '123',
+            'maxUploadAttempts'      : '123',
+            'waitTimeBetweenAttempts': '123',
+            'deleteUploadedArtifacts': 'true',
+            'ignoreFailure'          : 'true',
+            'action'                 : '[comment|fp|appdesign|osenv|netenv|rejected|accepted]',
+            'comment'                : 'xxx',
     ]
 
     VeracodeTask() {
@@ -73,19 +73,22 @@ abstract class VeracodeTask extends DefaultTask {
                                          List<String> requiredArguments,
                                          List<String> optionalArguments) {
         StringBuilder sb = new StringBuilder("Missing required arguments for task ${taskName}:\n")
-        sb.append( "veracodeSetup {\n")
+        sb.append("veracodeSetup {\n")
         requiredArguments.each() { arg ->
             sb.append("  ${arg}=${validArguments.get(arg)}\n")
         }
         optionalArguments.each() { arg ->
             sb.append(" [${arg}=${validArguments.get(arg)}]\n")
         }
-        sb.append( "}\n")
+        sb.append("}\n")
         sb.toString()
     }
 
     protected void setupTask() {
         veracodeSetup = project.findProperty("veracodeSetup") as VeracodeSetup
+        if (veracodeSetup.outputDir == null) {
+            veracodeSetup.outputDir = "${project.buildDir}/veracode"
+        }
         app_id = veracodeSetup.app_id
         sandbox_id = veracodeSetup.sandbox_id
         log.info("[SetupTask] name=${name} app_id=${app_id} sandbox_id=${sandbox_id}")

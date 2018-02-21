@@ -39,7 +39,7 @@ class VeracodeCreateBuildSandboxTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeBuildInfo.getSandboxFile("${project.buildDir}/veracode", app_id, sandbox_id, null)
+        VeracodeBuildInfo.getSandboxFile(veracodeSetup.outputDir, app_id, sandbox_id, null)
     }
 
     void run() {
