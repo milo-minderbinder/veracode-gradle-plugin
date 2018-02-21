@@ -1,7 +1,7 @@
 /*******************************************************************************
  * MIT License
  *
- * Copyright (c) 2017 Calgary Scientific Incorporated
+ * Copyright (c) 2017-2018 Calgary Scientific Incorporated
  *
  * Copyright (c) 2013-2014 kctang
  *
