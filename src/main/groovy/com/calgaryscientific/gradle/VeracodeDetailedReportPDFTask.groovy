@@ -40,7 +40,7 @@ class VeracodeDetailedReportPDFTask extends VeracodeTask {
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getOutputFile() {
-        return new File("${project.buildDir}/veracode", "detailed-report-${veracodeSetup.build_id}.pdf")
+        return new File(veracodeSetup.outputDir, "detailed-report-${veracodeSetup.build_id}.pdf")
     }
 
     void run() {

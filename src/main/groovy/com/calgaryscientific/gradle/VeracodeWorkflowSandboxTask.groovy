@@ -51,7 +51,7 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
         failIfNull(veracodeSetup.app_id, veracodeSetup.sandbox_id, veracodeSetup.build_version)
         try {
             VeracodeWorkflow.sandboxWorkflow(veracodeAPI,
-                    "${project.buildDir}/veracode",
+                    veracodeSetup.outputDir,
                     app_id,
                     sandbox_id,
                     veracodeSetup.build_version,

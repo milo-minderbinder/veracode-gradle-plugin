@@ -38,7 +38,7 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        return new File("${project.buildDir}/veracode", "appinfo-${app_id}.xml")
+        return new File(veracodeSetup.outputDir, "appinfo-${app_id}.xml")
     }
 
     void run() {

@@ -45,14 +45,14 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.
     File getInputFile() {
-        VeracodeDetailedReport.getFile("${project.buildDir}/veracode", veracodeSetup.build_id)
+        VeracodeDetailedReport.getFile(veracodeSetup.outputDir, veracodeSetup.build_id)
     }
 
     void run() {
         failIfNull(veracodeSetup.build_id)
-        flawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-flaws-${veracodeSetup.build_id}.csv")
-        openFlawsDetailedReportCSVFile = new File("${project.buildDir}/veracode", "detailed-report-open-flaws-${veracodeSetup.build_id}.csv")
-        softwareCompositionAnalysisFile = new File("${project.buildDir}/veracode", "detailed-report-software-composition-analysis-${veracodeSetup.build_id}.csv")
+        flawsDetailedReportCSVFile = new File(veracodeSetup.outputDir, "detailed-report-flaws-${veracodeSetup.build_id}.csv")
+        openFlawsDetailedReportCSVFile = new File(veracodeSetup.outputDir, "detailed-report-open-flaws-${veracodeSetup.build_id}.csv")
+        softwareCompositionAnalysisFile = new File(veracodeSetup.outputDir, "detailed-report-software-composition-analysis-${veracodeSetup.build_id}.csv")
         Node xml = XMLIO.readXml(inputFile)
         List<List<String>> flaws = VeracodeDetailedReport.getFlawRowsFromDetailedReport(xml)
         VeracodeDetailedReport.writeCSV(flawsDetailedReportCSVFile, flaws)

@@ -38,7 +38,7 @@ class VeracodeCreateBuildTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, null)
+        VeracodeBuildInfo.getFile(veracodeSetup.outputDir, app_id, null)
     }
 
     void run() {

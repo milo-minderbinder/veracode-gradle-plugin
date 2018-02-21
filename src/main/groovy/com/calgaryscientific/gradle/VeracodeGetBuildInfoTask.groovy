@@ -39,7 +39,7 @@ class VeracodeGetBuildInfoTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeBuildInfo.getFile("${project.buildDir}/veracode", app_id, veracodeSetup.build_id)
+        VeracodeBuildInfo.getFile(veracodeSetup.outputDir, app_id, veracodeSetup.build_id)
     }
 
     void run() {

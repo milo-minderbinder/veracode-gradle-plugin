@@ -49,7 +49,7 @@ class VeracodeWorkflowTask extends VeracodeTask {
     void run() {
         try {
             VeracodeWorkflow.appWorkflow(veracodeAPI,
-                    "${project.buildDir}/veracode",
+                    veracodeSetup.outputDir,
                     app_id,
                     veracodeSetup.build_version,
                     getFileSet(),

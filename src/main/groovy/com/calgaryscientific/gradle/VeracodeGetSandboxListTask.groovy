@@ -39,7 +39,7 @@ class VeracodeGetSandboxListTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        return new File("${project.buildDir}/veracode", "sandboxlist-${app_id}.xml")
+        return new File(veracodeSetup.outputDir, "sandboxlist-${app_id}.xml")
     }
 
     static void printSandboxList(Node xml) {

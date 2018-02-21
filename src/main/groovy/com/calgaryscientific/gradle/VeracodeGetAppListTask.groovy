@@ -37,7 +37,7 @@ class VeracodeGetAppListTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        return new File("${project.buildDir}/veracode", "applist.xml")
+        return new File(veracodeSetup.outputDir, "applist.xml")
     }
 
     void run() {

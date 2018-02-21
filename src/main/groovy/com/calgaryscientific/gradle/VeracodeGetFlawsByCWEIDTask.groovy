@@ -39,7 +39,7 @@ class VeracodeGetFlawsByCWEIDTask extends VeracodeTask {
 
     void run() {
         failIfNull(veracodeSetup.build_id)
-        File detailedReportFile = new File("${project.buildDir}/veracode", "detailed-report-${veracodeSetup.build_id}.xml")
+        File detailedReportFile = new File(veracodeSetup.outputDir, "detailed-report-${veracodeSetup.build_id}.xml")
         if (veracodeSetup.cweid) {
             VeracodeDetailedReport.printFlawListByCWEID(XMLIO.readXml(detailedReportFile), veracodeSetup.cweid)
         } else {

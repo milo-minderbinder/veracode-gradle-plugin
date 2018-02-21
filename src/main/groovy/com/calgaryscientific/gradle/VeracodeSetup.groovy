@@ -33,6 +33,9 @@ class VeracodeSetup {
     String id
     String key
 
+    // Output location
+    String outputDir
+
     // App and Sandbox
     String app_id
     String sandbox_id

@@ -38,7 +38,7 @@ class VeracodeGetMitigationInfoTask extends VeracodeTask {
     }
 
     File getOutputFile() {
-        VeracodeMitigationInfo.getFile("${project.buildDir}/veracode", veracodeSetup.build_id, veracodeSetup.flaw_id_list)
+        VeracodeMitigationInfo.getFile(veracodeSetup.outputDir, veracodeSetup.build_id, veracodeSetup.flaw_id_list)
     }
 
     void run() {
