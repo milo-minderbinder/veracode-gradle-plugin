@@ -50,4 +50,8 @@ class VeracodeBuildList {
                     XMLIO.getNodeAttributes(build, 'build_id', 'policy_updated_date', 'version')
         }
     }
+
+    static String getLatestBuildID(Node xml) {
+        XMLIO.getNodeList(xml, 'build').last().attribute('build_id')
+    }
 }

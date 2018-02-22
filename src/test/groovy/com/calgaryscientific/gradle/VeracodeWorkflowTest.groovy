@@ -40,8 +40,10 @@ class VeracodeWorkflowTest extends TestCommonSetup {
     // Status after scan completed
     File buildInfoFileResultsReady = getResource('buildinfo-1.4-complete.xml')
 
+    File buildlistFile = getResource('buildlist-1.3.xml')
     File filelistFile = getResource('filelist-1.1.xml')
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
+    File detailedReportFile = getResource('detailedreport-1.5.xml')
 
     String errorXMLResponse = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <error>Veracode API Error</error>
@@ -68,6 +70,15 @@ class VeracodeWorkflowTest extends TestCommonSetup {
             return new String(buildInfoFileResultsReady.readBytes())
         }
 
+        then:
+        1 * task.veracodeAPI.getBuildList() >> {
+            return new String(buildlistFile.readBytes())
+        }
+
+        then:
+        1 * task.veracodeAPI.detailedReport(_) >> {
+            return new String(detailedReportFile.readBytes())
+        }
         then:
         1 * task.veracodeAPI.createBuild('new-build') >> {
             return new String(buildInfoFileIncomplete.readBytes())

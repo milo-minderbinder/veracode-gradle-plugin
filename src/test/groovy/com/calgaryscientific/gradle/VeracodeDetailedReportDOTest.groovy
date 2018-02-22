@@ -113,4 +113,32 @@ class VeracodeDetailedReportDOTest extends TestCommonSetup {
         assert lines[0] == "issueid, remediation_status, mitigation_status, module, sourcefilepath, sourcefile, line, type"
         assert lines[1] == "123, New, proposed, lib1.dll, path1, chunk.c, 305, vsprintf"
     }
+
+    def 'Test getting new flaws'() {
+        given:
+        Node xml = XMLIO.parse(detailedReportFile)
+
+        when:
+        List<Node> newFlaws = VeracodeDetailedReport.getNewFlawsFromDetailedReportXML(xml)
+
+        then:
+        assert newFlaws.size() == 1
+        assert newFlaws[0].attribute('issueid') as String == '123'
+    }
+
+    def 'Test printing flaw summary'() {
+        given:
+        Node xml = XMLIO.parse(detailedReportFile)
+        def os = mockSystemOut()
+
+        when:
+        VeracodeDetailedReport.printFlawSummary(VeracodeDetailedReport.getNewFlawsFromDetailedReportXML(xml))
+        def is = getSystemOut(os)
+        restoreStdout()
+        List<String> lines = is.readLines()
+
+        then:
+        assert lines.size() == 1
+        assert lines[0] == "issueid: 123, severity: 5, cweid: 121, categoryname: Stack-based Buffer Overflow, module: lib1.dll, date_first_occurrence: 2017-06-18 16:22:39 UTC"
+    }
 }

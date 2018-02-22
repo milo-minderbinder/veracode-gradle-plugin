@@ -27,6 +27,7 @@
 package com.calgaryscientific.gradle
 
 import groovy.transform.CompileStatic
+import org.gradle.api.GradleException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -42,7 +43,8 @@ class VeracodeWorkflow {
                             Set<String> moduleWhitelist,
                             Integer maxTries,
                             Integer waitTime,
-                            Boolean delete
+                            Boolean delete,
+                            Boolean failOnNewFlaws
     ) {
         // Work on the latest build
         String build_id = null
@@ -50,6 +52,7 @@ class VeracodeWorkflow {
         Node buildInfo
         String emptyAppRegex = "Could not find a build for application=\\S+"
         String buildStatus
+        Boolean newFlaws = false
 
         // This call to writeXmlWithErrorCheck might throw an error since Veracode errors out for empty Apps
         try {
@@ -64,6 +67,18 @@ class VeracodeWorkflow {
         }
 
         log.info("buildStatus: " + buildStatus)
+
+        // Previous Scan is complete
+        if (buildStatus == "Results Ready") {
+            log.info("Retrieving build list to obtain latest build_id")
+            Node buildList = XMLIO.writeXmlWithErrorCheck(VeracodeBuildList.getFile(outputDir, app_id), veracodeAPI.getBuildList())
+            // Get the last build ID
+            build_id = VeracodeBuildList.getLatestBuildID(buildList)
+            log.info("Latest build_id: " + build_id)
+            newFlaws = printReportSummaryAndCheckForNewFlaws(veracodeAPI, outputDir, build_id)
+            // Reset to work on the latest build
+            build_id = null
+        }
 
         // Previous Scan is complete (results are ready) or this is an newly created App that has no existing builds
         if (buildStatus == "Results Ready" || buildStatus =~ emptyAppRegex) {
@@ -94,6 +109,10 @@ class VeracodeWorkflow {
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
         }
+
+        if (failOnNewFlaws && newFlaws) {
+            throw new GradleException('New Veracode flaws introduced in latest build results')
+        }
     }
 
     static void sandboxWorkflow(VeracodeAPI veracodeAPI,
@@ -105,7 +124,8 @@ class VeracodeWorkflow {
                                 Set<String> moduleWhitelist,
                                 Integer maxTries,
                                 Integer waitTime,
-                                Boolean delete
+                                Boolean delete,
+                                Boolean failOnNewFlaws
     ) {
         // Work on the latest build
         String build_id = null
@@ -113,6 +133,7 @@ class VeracodeWorkflow {
         Node buildInfo
         String emptySandboxRegex = "Could not find a build for application=\\S+ and sandbox=\\S+"
         String buildStatus
+        Boolean newFlaws = false
 
         // This call to writeXmlWithErrorCheck might throw an error since Veracode errors out for empty Sandboxes
         try {
@@ -127,6 +148,18 @@ class VeracodeWorkflow {
         }
 
         log.info("buildStatus: " + buildStatus)
+
+        // Previous Scan is complete
+        if (buildStatus == "Results Ready") {
+            log.info("Retrieving build list to obtain latest build_id")
+            Node buildList = XMLIO.writeXmlWithErrorCheck(VeracodeBuildList.getSandboxFile(outputDir, app_id, sandbox_id), veracodeAPI.getBuildListSandbox())
+            // Get the last build ID
+            build_id = VeracodeBuildList.getLatestBuildID(buildList)
+            log.info("Latest build_id: " + build_id)
+            newFlaws = printReportSummaryAndCheckForNewFlaws(veracodeAPI, outputDir, build_id)
+            // Reset to work on the latest build
+            build_id = null
+        }
 
         // Previous Scan is complete (results are ready) or this is an newly created Sandbox that has no existing builds
         if (buildStatus == "Results Ready" || buildStatus =~ emptySandboxRegex) {
@@ -157,5 +190,31 @@ class VeracodeWorkflow {
             buildStatus = VeracodeBuildInfo.getBuildStatus(buildInfo)
             log.info("buildStatus: " + buildStatus)
         }
+
+        if (failOnNewFlaws && newFlaws) {
+            throw new GradleException('New Veracode flaws introduced in latest build results')
+        }
+    }
+
+    /**
+     * Prints a report summary for the given build_id and returns true or false depending of if there are new flaws.
+     * @param veracodeAPI
+     * @param outputDir
+     * @param build_id
+     * @return
+     */
+    private static Boolean printReportSummaryAndCheckForNewFlaws(VeracodeAPI veracodeAPI,
+                                    String outputDir,
+                                    String build_id) {
+        log.info("Get DetailedReport for build_id: " + build_id)
+        File detailedReportFile = VeracodeDetailedReport.getFile(outputDir, build_id)
+        Node detailedReport = XMLIO.writeXmlWithErrorCheck(detailedReportFile, veracodeAPI.detailedReport(build_id))
+        log.info("report file: " + detailedReportFile)
+        log.info("Overall flaw results:")
+        VeracodeDetailedReport.printFlawInformationByCWEID(detailedReport)
+        log.info("New flaw information:")
+        List<Node> newFlaws = VeracodeDetailedReport.getNewFlawsFromDetailedReportXML(detailedReport)
+        VeracodeDetailedReport.printFlawSummary(newFlaws)
+        return (newFlaws.size() > 0)
     }
 }

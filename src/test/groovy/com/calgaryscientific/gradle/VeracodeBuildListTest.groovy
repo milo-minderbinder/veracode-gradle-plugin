@@ -26,48 +26,17 @@
 
 package com.calgaryscientific.gradle
 
-class VeracodeSetup {
-    // Authentication
-    String username
-    String password
-    String id
-    String key
+class VeracodeBuildListTest extends TestCommonSetup {
+    File buildlistFile = getResource('buildlist-1.3.xml')
 
-    // Output location
-    String outputDir
+    def 'Test veracodeGetBuildList Task'() {
+        given:
+        Node xml = XMLIO.parse(buildlistFile)
 
-    // App and Sandbox
-    String app_id
-    String sandbox_id
-    String sandbox_name
+        when:
+        String buildID = VeracodeBuildList.getLatestBuildID(xml)
 
-    // Build Info
-    String build_id
-    String build_version
-
-    // Flaw Info
-    String flaw_id
-    String flaw_id_list
-    String action
-    String comment
-    String cweid
-
-    // File Info
-    String file_id
-
-    // Upload Config
-    Boolean deleteUploadedArtifacts = false
-    Integer maxUploadAttempts = 10
-    Integer waitTimeBetweenAttempts = 5000
-    Set<File> filesToUpload
-    Set<File> sandboxFilesToUpload
-
-    // Scan Config
-    Set<String> moduleWhitelist
-
-    // Error Management
-    Boolean ignoreFailure = false
-
-    // Workflow reports
-    Boolean failWorkflowTasksOnNewFlaws = false
+        then:
+        assert buildID == '125'
+    }
 }

@@ -59,7 +59,9 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
                     getModuleWhitelist(),
                     veracodeSetup.maxUploadAttempts,
                     veracodeSetup.waitTimeBetweenAttempts,
-                    veracodeSetup.deleteUploadedArtifacts)
+                    veracodeSetup.deleteUploadedArtifacts,
+                    veracodeSetup.failWorkflowTasksOnNewFlaws
+            )
         } catch (Exception e) {
             if (veracodeSetup.ignoreFailure) {
                 println e.getMessage()
