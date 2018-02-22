@@ -117,6 +117,9 @@ Set<String> moduleWhitelist
 
 // Error Management
 Boolean ignoreFailure = false
+
+// Workflow reports
+Boolean failWorkflowTasksOnNewFlaws = false
 ----
 
 To pass these fields to the Plugin as properties, set the field on `veracodeSetup` to read the desired property, for example:
@@ -143,9 +146,11 @@ A single task will do the following:
 
 * _Query the status_ of the latest build:
   ** If the latest build Scan is complete:
+    . Get latest build’s _Detailed Report_ and print flaw summary.
     . _Creates a new build_.
     . _Uploads the given files_ to the Veracode platform.
     . _Begins a Pre-Scan_ of the uploaded files.
+    . Optionally fail the build if there were new flaws from the _Detailed Report_ on step 1.
 
   ** If the latest build has a completed Pre-scan:
     *** _Begins the Scan_ of the application selecting the given white list modules.
@@ -164,12 +169,15 @@ task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowTa
             build_version =  "build-name-if-creating-a-new-build"
             ignoreFailure =  true <1>
             filesToUpload = fileTree(dir: "upload/", include: "*").getFiles() <2>
+            failWorkflowTasksOnNewFlaws = true <3>
         }
     }
 }
 ----
 <1> Optionally ignore failures to avoid stopping the build process if there is a problem with the Veracode calls.
 <2> Setup `veracodeSetup` `filesToUpload` again to ensure it is evaluated after the `buildMyApplication` task.
+<3> Optionally fail the task if there are new flaws introduced in the latest build.
+The failure will be triggered after a new build creation, file upload and pre-scan submission.
 
 This task can be triggered by every commit and will only create a new build, upload files, begin pre-scans or begin scans when the Veracode platform is ready for it.
 
@@ -184,6 +192,7 @@ task veracodeBuildWorkflow(type: com.calgaryscientific.gradle.VeracodeWorkflowSa
             build_version =  "build-name-if-creating-a-new-sandbox-build"
             ignoreFailure =  true
             sandboxFilesToUpload = fileTree(dir: "upload/", include: "*").getFiles()
+            failWorkflowTasksOnNewFlaws = true
         }
     }
 }
