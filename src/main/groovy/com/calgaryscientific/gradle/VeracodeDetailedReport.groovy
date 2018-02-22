@@ -170,7 +170,7 @@ class VeracodeDetailedReport {
 
     static void printFlawSummary(List<Node> flaws) {
         flaws.each { flaw ->
-            printf "issueid: %s, severity: %s, cweid: %s, categoryname: %s, module: %s, date_first_occurrence: %s",
+            printf "issueid: %s, severity: %s, cweid: %s, categoryname: %s, module: %s, date_first_occurrence: %s\n",
                     XMLIO.getNodeAttributes(flaw, 'issueid', 'severity', 'cweid', 'categoryname', 'module', 'date_first_occurrence')
         }
     }

@@ -67,4 +67,7 @@ class VeracodeSetup {
 
     // Error Management
     Boolean ignoreFailure = false
+
+    // Workflow reports
+    Boolean failWorkflowTasksOnNewFlaws = false
 }

@@ -39,8 +39,10 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
     // Status after scan completed
     File buildInfoFileResultsReady = getResource('buildinfo-1.4-complete.xml')
 
+    File buildlistFile = getResource('buildlist-1.3.xml')
     File filelistFile = getResource('filelist-1.1.xml')
     File preScanResultsFile = getResource('prescanresults-1.4.xml')
+    File detailedReportFile = getResource('detailedreport-1.5.xml')
 
     def 'Test appWorkflow when previous build has results ready'() {
         given:
@@ -52,6 +54,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<File> fileSet = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
+        Boolean failOnNewFlaws = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -63,11 +66,23 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 moduleWhitelist,
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
-                delete)
+                delete,
+                failOnNewFlaws
+        )
 
         then:
         1 * veracodeAPIMock.getBuildInfo(null) >> {
             return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * veracodeAPIMock.getBuildList() >> {
+            return new String(buildlistFile.readBytes())
+        }
+
+        then:
+        1 * veracodeAPIMock.detailedReport(_) >> {
+            return new String(detailedReportFile.readBytes())
         }
 
         then:
@@ -97,6 +112,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<File> fileSet = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
+        Boolean failOnNewFlaws = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -108,7 +124,9 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 moduleWhitelist,
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
-                delete)
+                delete,
+                failOnNewFlaws
+        )
 
         then:
         1 * veracodeAPIMock.getBuildInfo(null) >> {
@@ -137,6 +155,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<File> fileSet = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
+        Boolean failOnNewFlaws = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -149,11 +168,23 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 moduleWhitelist,
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
-                delete)
+                delete,
+                failOnNewFlaws
+        )
 
         then:
         1 * veracodeAPIMock.getBuildInfoSandbox(null) >> {
             return new String(buildInfoFileResultsReady.readBytes())
+        }
+
+        then:
+        1 * veracodeAPIMock.getBuildListSandbox() >> {
+            return new String(buildlistFile.readBytes())
+        }
+
+        then:
+        1 * veracodeAPIMock.detailedReport(_) >> {
+            return new String(detailedReportFile.readBytes())
         }
 
         then:
@@ -184,6 +215,7 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
         Set<File> fileSet = project.fileTree(dir: testProjectDir.root, include: '**/*').getFiles()
         Set<String> moduleWhitelist = ['class1.jar', 'class2.jar', 'class3.jar']
         Boolean delete = false
+        Boolean failOnNewFlaws = false
         VeracodeAPI veracodeAPIMock = Mock(VeracodeAPI, constructorArgs: [null, null, null])
 
         when:
@@ -196,7 +228,9 @@ class VeracodeWorkflowDOTest extends TestCommonSetup {
                 moduleWhitelist,
                 maxUploadAttempts,
                 waitTimeBetweenAttempts,
-                delete)
+                delete,
+                failOnNewFlaws
+        )
 
         then:
         1 * veracodeAPIMock.getBuildInfoSandbox(null) >> {
