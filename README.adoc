@@ -39,7 +39,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'gradle.plugin.com.calgaryscientific.gradle:veracodePlugin:0.5.0'
+        classpath 'gradle.plugin.com.calgaryscientific.gradle:veracodePlugin:0.6.0'
     }
 }
 
