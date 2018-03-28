@@ -35,7 +35,7 @@ class VeracodeCreateSandboxTask extends VeracodeTask {
     VeracodeCreateSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Creates a new sandbox for the given 'app_id'"
-        requiredArguments << 'app_id' << 'sandbox_name'
+        requiredArguments.addAll(['app_id', 'sandbox_name'])
     }
 
     File getOutputFile() {

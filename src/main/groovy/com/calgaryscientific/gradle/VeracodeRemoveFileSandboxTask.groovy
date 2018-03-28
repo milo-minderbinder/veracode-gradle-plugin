@@ -35,7 +35,7 @@ class VeracodeRemoveFileSandboxTask extends VeracodeTask {
     VeracodeRemoveFileSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Remove an uploaded file based on the given 'app_id', 'sandbox_id' and 'file_id' combination"
-        requiredArguments << 'app_id' << 'sandbox_id' << 'file_id'
+        requiredArguments.addAll(['app_id', 'sandbox_id', 'file_id'])
     }
 
     File getOutputFile() {

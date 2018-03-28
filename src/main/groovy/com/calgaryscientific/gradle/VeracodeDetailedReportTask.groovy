@@ -34,7 +34,7 @@ class VeracodeDetailedReportTask extends VeracodeTask {
 
     VeracodeDetailedReportTask() {
         description = "Get the Veracode Scan Report in XML format based on the given 'build_id'"
-        requiredArguments << 'build_id'
+        requiredArguments.addAll(['build_id'])
     }
 
     // Scan reports can be modified by mitigation workflows so results shouldn't be cached.

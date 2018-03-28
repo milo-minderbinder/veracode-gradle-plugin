@@ -35,7 +35,7 @@ class VeracodeGetCallStacksTask extends VeracodeTask {
 
     VeracodeGetCallStacksTask() {
         description = "Get the Veracode Flaw Call Stack in XML format based on the given 'build_id' and 'flaw_id'"
-        requiredArguments << 'build_id' << 'flaw_id'
+        requiredArguments.addAll(['build_id', 'flaw_id'])
     }
 
     // Scan results are not available until the full scan is complete so there is no risk in caching the report.

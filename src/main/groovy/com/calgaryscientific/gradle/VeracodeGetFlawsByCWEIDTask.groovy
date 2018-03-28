@@ -34,7 +34,7 @@ class VeracodeGetFlawsByCWEIDTask extends VeracodeTask {
 
     VeracodeGetFlawsByCWEIDTask() {
         description = "List the flaws by CWE ID of the given 'build_id' report"
-        requiredArguments << 'build_id'
+        requiredArguments.addAll(['build_id'])
     }
 
     void run() {

@@ -34,8 +34,8 @@ class VeracodeGetPreScanResultsTask extends VeracodeTask {
 
     VeracodeGetPreScanResultsTask() {
         description = "Get the Veracode Pre-Scan Results based on the given 'app_id' and 'build_id'. If no 'build_id' is provided, the latest will be used"
-        requiredArguments << 'app_id'
-        optionalArguments << 'build_id'
+        requiredArguments.addAll(['app_id'])
+        optionalArguments.addAll(['build_id'])
     }
 
     File getOutputFile() {

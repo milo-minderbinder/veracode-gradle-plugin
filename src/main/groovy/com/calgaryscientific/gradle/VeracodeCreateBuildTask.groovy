@@ -34,7 +34,7 @@ class VeracodeCreateBuildTask extends VeracodeTask {
 
     VeracodeCreateBuildTask() {
         description = "Create a Veracode Build for the given 'app_id' using 'build_version' as the identifier"
-        requiredArguments << 'app_id' << 'build_version'
+        requiredArguments.addAll(['app_id', 'build_version'])
     }
 
     File getOutputFile() {

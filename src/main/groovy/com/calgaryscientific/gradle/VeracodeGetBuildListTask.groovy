@@ -34,7 +34,7 @@ class VeracodeGetBuildListTask extends VeracodeTask {
 
     VeracodeGetBuildListTask() {
         description = "List builds for the given 'app_id'"
-        requiredArguments << 'app_id'
+        requiredArguments.addAll(['app_id'])
     }
 
     File getOutputFile() {

@@ -34,7 +34,7 @@ class VeracodeGetMitigationInfoTask extends VeracodeTask {
 
     VeracodeGetMitigationInfoTask() {
         description = "Lists flaw information for the given 'build_id' and 'flaw_id_list'"
-        requiredArguments << 'build_id' << 'flaw_id_list'
+        requiredArguments.addAll(['build_id', 'flaw_id_list'])
     }
 
     File getOutputFile() {

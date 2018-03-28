@@ -34,7 +34,7 @@ class VeracodeBeginScanTask extends VeracodeTask {
 
     VeracodeBeginScanTask() {
         description = "Begin a Veracode Scan for the given 'app_id'"
-        requiredArguments << 'app_id'
+        requiredArguments.addAll(['app_id'])
     }
 
     File getOutputFile() {

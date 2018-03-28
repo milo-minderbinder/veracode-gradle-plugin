@@ -35,8 +35,8 @@ class VeracodeWorkflowSandboxTask extends VeracodeTask {
     VeracodeWorkflowSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Run through the Veracode Workflow for the given 'app_id' and 'sandbox_id' using 'build_version' as the build identifier"
-        requiredArguments << 'app_id' << 'sandbox_id' << 'build_version'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'delete' << 'ignoreFailure'
+        requiredArguments.addAll(['app_id', 'sandbox_id', 'build_version'])
+        optionalArguments.addAll(['maxUploadAttempts', 'waitTimeBetweenAttempts', 'delete', 'ignoreFailure'])
     }
 
     Set<File> getFileSet() {

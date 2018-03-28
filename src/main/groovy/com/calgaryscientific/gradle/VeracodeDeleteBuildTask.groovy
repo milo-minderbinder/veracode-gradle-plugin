@@ -34,7 +34,7 @@ class VeracodeDeleteBuildTask extends VeracodeTask {
 
     VeracodeDeleteBuildTask() {
         description = "Delete the most recent Veracode build for 'app_id', even if it has a completed scan"
-        requiredArguments << 'app_id'
+        requiredArguments.addAll(['app_id'])
     }
 
     File getOutputFile() {

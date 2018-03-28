@@ -34,7 +34,7 @@ class VeracodeGetAppInfoTask extends VeracodeTask {
 
     VeracodeGetAppInfoTask() {
         description = "List application information for the given 'app_id'"
-        requiredArguments << 'app_id'
+        requiredArguments.addAll(['app_id'])
     }
 
     File getOutputFile() {

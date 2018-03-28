@@ -34,7 +34,7 @@ class VeracodeRemoveFileTask extends VeracodeTask {
 
     VeracodeRemoveFileTask() {
         description = "Remove an uploaded file based on the given 'app_id' and 'file_id' combination"
-        requiredArguments << 'app_id' << 'file_id'
+        requiredArguments.addAll(['app_id', 'file_id'])
     }
 
     File getOutputFile() {

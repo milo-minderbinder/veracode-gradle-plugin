@@ -34,8 +34,8 @@ class VeracodeWorkflowTask extends VeracodeTask {
 
     VeracodeWorkflowTask() {
         description = "Run through the Veracode Workflow for the given 'app_id' using 'build_version' as the build identifier"
-        requiredArguments << 'app_id' << 'build_version'
-        optionalArguments << 'maxUploadAttempts' << 'waitTimeBetweenAttempts' << 'deleteUploadedArtifacts' << 'ignoreFailure'
+        requiredArguments.addAll(['app_id', 'build_version'])
+        optionalArguments.addAll(['maxUploadAttempts', 'waitTimeBetweenAttempts', 'deleteUploadedArtifacts', 'ignoreFailure'])
     }
 
     Set<File> getFileSet() {

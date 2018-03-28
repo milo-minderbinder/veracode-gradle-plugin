@@ -35,7 +35,7 @@ class VeracodeDeleteBuildSandboxTask extends VeracodeTask {
     VeracodeDeleteBuildSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Delete the most recent Veracode build for 'app_id' and 'sandbox_id', even if it has a completed scan"
-        requiredArguments << 'app_id' << 'sandbox_id'
+        requiredArguments.addAll(['app_id', 'sandbox_id'])
     }
 
     File getOutputFile() {

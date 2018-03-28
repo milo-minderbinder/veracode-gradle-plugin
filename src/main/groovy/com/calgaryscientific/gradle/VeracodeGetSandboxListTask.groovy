@@ -35,7 +35,7 @@ class VeracodeGetSandboxListTask extends VeracodeTask {
     VeracodeGetSandboxListTask() {
         group = 'Veracode Sandbox'
         description = "List sandboxes for the given 'app_id'"
-        requiredArguments << 'app_id'
+        requiredArguments.addAll(['app_id'])
     }
 
     File getOutputFile() {

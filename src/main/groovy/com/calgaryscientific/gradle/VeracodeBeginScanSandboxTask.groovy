@@ -35,7 +35,7 @@ class VeracodeBeginScanSandboxTask extends VeracodeTask {
     VeracodeBeginScanSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Begin a Veracode Scan for the given 'app_id' and 'sandbox_id'"
-        requiredArguments << 'app_id' << 'sandbox_id'
+        requiredArguments.addAll(['app_id', 'sandbox_id'])
     }
 
     File getOutputFile() {

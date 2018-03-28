@@ -35,8 +35,8 @@ class VeracodeGetBuildInfoSandboxTask extends VeracodeTask {
     VeracodeGetBuildInfoSandboxTask() {
         group = 'Veracode Sandbox'
         description = "Lists build information for the given 'app_id', 'sandbox_id' and 'build_id'. If no 'build_id' is provided the latest will be used"
-        requiredArguments << 'app_id' << 'sandbox_id'
-        optionalArguments << 'build_id'
+        requiredArguments.addAll(['app_id', 'sandbox_id'])
+        optionalArguments.addAll(['build_id'])
     }
 
     File getOutputFile() {

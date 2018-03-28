@@ -39,7 +39,7 @@ class VeracodeDetailedReportCSVTask extends VeracodeTask {
 
     VeracodeDetailedReportCSVTask() {
         description = "Get the Veracode Scan Report in CSV format based on the given 'build_id'"
-        requiredArguments << 'build_id'
+        requiredArguments.addAll(['build_id'])
         dependsOn 'veracodeDetailedReport'
     }
 
