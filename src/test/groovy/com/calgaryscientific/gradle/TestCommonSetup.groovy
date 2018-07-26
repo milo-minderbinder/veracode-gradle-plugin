@@ -39,7 +39,7 @@ class TestCommonSetup extends Specification {
     PrintStream stdout = System.out
 
     def setup() {
-        testProjectDir = new TemporaryFolder()
+        testProjectDir = new TemporaryFolder(new File(System.getProperty('java.io.tmpdir')).canonicalFile)
         testProjectDir.create()
         buildFile = testProjectDir.newFile('build.gradle')
         debug = true

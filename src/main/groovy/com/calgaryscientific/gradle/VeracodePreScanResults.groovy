@@ -83,7 +83,7 @@ class VeracodePreScanResults {
      */
     private static List<Node> filterOutFatalModules(List<Node> moduleList) {
         moduleList.findAll { module ->
-            !(module.attribute('status') as String).startsWith('(Fatal)')
+            module.attribute('has_fatal_errors').toString() == 'false'
         }
     }
 
@@ -95,8 +95,10 @@ class VeracodePreScanResults {
      */
     private
     static List<Node> getWhitelistModules(List<Node> modules, Set<String> whitelist) {
+        if (whitelist.empty)
+            return [] as List<Node>
         modules.findAll { module ->
-            if (module && whitelist && whitelist.contains(module.attribute('name') as String)) {
+            if (whitelist.contains(module.attribute('name').toString())) {
                 printf "Selecting module: %s: %s - %s\n", XMLIO.getNodeAttributes(module, 'id', 'name', 'status')
                 return true
             }
