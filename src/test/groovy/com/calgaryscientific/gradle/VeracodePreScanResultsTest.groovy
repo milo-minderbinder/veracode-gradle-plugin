@@ -45,6 +45,7 @@ class VeracodePreScanResultsTest extends TestCommonSetup {
                 'id=5 name="class1.jar" status="OK"',
                 'id=6 name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File"',
                 'id=7 name="class2.jar" status="OK"',
+                'id=8 name="class8.jar" status="OK"',
         ]
     }
 

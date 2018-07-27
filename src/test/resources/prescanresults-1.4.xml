@@ -5,20 +5,22 @@
                 prescanresults_version="1.4"
                 xsi:schemaLocation="https://analysiscenter.veracode.com/schema/2.0/prescanresults
                  https://analysiscenter.veracode.com/resource/2.0/prescanresults.xsd">
-    <module app_file_id="3" has_fatal_errors="false" id="4" is_dependency="false" name="goodLib.jar"
+    <module app_file_id="3" checksum="d57f151d9f786b56b72f2dbca7b0c9c3" has_fatal_errors="false" id="4" is_dependency="false" name="goodLib.jar" size="221KB"
             status="Supporting Files Compiled without Debug Symbols - X Files, PDB Files Missing - X Files">
         <file_issue details="Compiled without debug symbols (Optional)" filename="noDebug.ext"/>
         <file_issue details="Found (Optional)" filename="good.pdb"/>
         <file_issue details="Not Found (Optional)" filename="notFound.pdb"/>
     </module>
-    <module has_fatal_errors="false" id="5" name="class1.jar" status="OK">
+    <module app_file_id="2" checksum="d57f151d9f786b56b72f2dbca7b0c9c2" has_fatal_errors="false" id="5" is_dependency="false" name="class1.jar" size="220KB" status="OK">
         <file_issue details="Found (Optional)" filename="path.pdb"/>
     </module>
-    <module has_fatal_errors="true" id="6" name="badLib.dll" status="(Fatal)PDB Files Missing - 1 File">
+    <module app_file_id="1" checksum="d57f151d9f786b56b72f2dbca7b0c9c1" has_fatal_errors="true" id="6" is_dependency="false" name="badLib.dll" size="222KB" status="(Fatal)PDB Files Missing - 1 File">
         <file_issue details="Not Found (Required)" filename="notFound.pdb"/>
     </module>
-    <module has_fatal_errors="false" id="7" name="class2.jar" status="OK">
+    <module app_file_id="4" checksum="d57f151d9f786b56b72f2dbca7b0c9c4" has_fatal_errors="false" id="7" is_dependency="false" name="class2.jar" size="223KB" status="OK">
         <file_issue details="Found (Optional)" filename="path.pdb"/>
+    </module>
+    <module app_file_id="5" checksum="d57f151d9f786b56b72f2dbca7b0c9c5" has_fatal_errors="false" id="8" is_dependency="true" name="class8.jar" size="223KB" status="OK">
     </module>
 </prescanresults>
 

@@ -1,1 +1,2 @@
 rootProject.name = 'veracodePlugin'
+enableFeaturePreview('STABLE_PUBLISHING')

@@ -52,14 +52,14 @@ class VeracodePreScanResults {
 
     /**
      * Given Veracode's GetPreScanResults xml and a whitelist list of modules,
-     * it will return the module IDs for the non fatal whitelisted modules.
+     * it will return the module IDs for the non fatal whitelisted top-level (not dependency) modules.
      *
      * @param xml
      * @param whitelist
      * @return
      */
     static Set<String> extractWhitelistModuleIds(Node xml, Set<String> whitelist) {
-        List<Node> nonFatalModules = filterOutFatalModules(XMLIO.getNodeList(xml, 'module'))
+        List<Node> nonFatalModules = filterOutFatalAndDependencyModules(XMLIO.getNodeList(xml, 'module'))
         List<Node> whitelistModules = getWhitelistModules(nonFatalModules, whitelist)
         printMissingWhitelistModules(whitelist, whitelistModules)
         return whitelistModules.collect { module ->
@@ -76,14 +76,15 @@ class VeracodePreScanResults {
     }
 
     /**
-     * Given a Veracode moduleList List<Node> (xml), it will filter out modules that are not fatal.
+     * Given a Veracode moduleList List<Node> (xml), it will return all modules that are not dependencies and/or that
+     * have fatal errors, either of which would prevent the module from being selected as an entrypoint.
      *
      * @param moduleList
      * @return Map{ name: [id, status] }
      */
-    private static List<Node> filterOutFatalModules(List<Node> moduleList) {
+    private static List<Node> filterOutFatalAndDependencyModules(List<Node> moduleList) {
         moduleList.findAll { module ->
-            module.attribute('has_fatal_errors').toString() == 'false'
+            module.attribute('has_fatal_errors').toString() == 'false' && module.attribute('is_dependency').toString() == 'false'
         }
     }
 
@@ -93,8 +94,7 @@ class VeracodePreScanResults {
      * @param whitelist
      * @return Map{ name: [id, status] }
      */
-    private
-    static List<Node> getWhitelistModules(List<Node> modules, Set<String> whitelist) {
+    private static List<Node> getWhitelistModules(List<Node> modules, Set<String> whitelist) {
         if (whitelist.empty)
             return [] as List<Node>
         modules.findAll { module ->
